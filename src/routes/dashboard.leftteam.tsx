@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
 import { Users, UserPlus, ArrowLeftRight } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
+import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
 
 type Member = {
   id: string;
@@ -14,29 +16,20 @@ type Member = {
 const PAGE_SIZE = 10;
 
 export default function Team() {
-  const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
   const userId = sessionStorage.getItem("memberID");
 
-  useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true);
-        const left = await teamApi.left(userId as string);
-        setMembers(Array.isArray(left) ? left : []);
-      } catch (err) {
-        console.error("LOAD ERROR:", err);
-        setMembers([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, []);
+  const { isLoading } = useQuery({
+    queryKey: ["team", userId],
+    queryFn: async () => {
+      const res = await teamApi.left(userId as string);
+      setMembers(Array.isArray(res) ? res : []);
+      return res;
+    },
+  });
 
   const filteredMembers = useMemo(() => {
     if (!search.trim()) return members;
@@ -56,7 +49,6 @@ export default function Team() {
     return filteredMembers.slice(start, start + PAGE_SIZE);
   }, [filteredMembers, page]);
 
-  /* reset page when search changes */
   useEffect(() => {
     setPage(1);
   }, [search]);
@@ -69,7 +61,7 @@ export default function Team() {
     return { total, active, totalBV };
   }, [filteredMembers]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
         <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -84,17 +76,6 @@ export default function Team() {
         subtitle="Overview of your left leg performance and member distribution"
       />
 
-      {/* SEARCH */}
-      <div className="flex items-center gap-3">
-        <input
-          type="text"
-          placeholder="Search by Name or ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded w-full max-w-md"
-        />
-      </div>
-
       {/* STATS */}
       <div className="grid md:grid-cols-3 gap-4">
         <StatCard
@@ -108,6 +89,16 @@ export default function Team() {
           icon={<ArrowLeftRight />}
         />
         <StatCard label="New" value="26" icon={<UserPlus />} />
+      </div>
+
+      {/* SEARCH */}
+      <div className="flex items-center gap-3">
+        <Input
+          type="text"
+          placeholder="Search by Name or ID..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {/* TABLE */}
@@ -140,7 +131,7 @@ export default function Team() {
               paginatedMembers.map((m) => (
                 <tr key={m.id} className="hover:bg-accent/30 transition-smooth">
                   <td className="p-3 flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold bg-brass text-white">
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold bg-amber-600 text-white">
                       {m.name
                         ?.split(" ")
                         .map((n) => n?.[0] || "")
@@ -151,8 +142,8 @@ export default function Team() {
                   </td>
 
                   <td className="p-3 font-mono text-xs">{m.id}</td>
-                  <td className="p-3 font-mono text-xs">
-                    {new Date(m.joinDate).toLocaleString("en-IN")}
+                  <td className="p-3 font-mono text-xs ">
+                    {new Date(m.joinDate).toLocaleDateString("en-IN")}
                   </td>
 
                   <td className="p-3 ">{m.bv?.toLocaleString("en-IN")}</td>

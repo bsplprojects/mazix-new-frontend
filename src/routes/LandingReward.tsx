@@ -220,7 +220,7 @@ export default function LandingReward() {
   return (
     <div className="bg-gray-50">
       {/* HERO */}
-      <section className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white py-14 text-center">
+      <section className="bg-linear-to-r from-blue-700 to-cyan-600 text-white py-14 text-center">
         <h1 className="text-3xl md:text-4xl font-bold">
           The Sweet Smell of Success
         </h1>
@@ -293,7 +293,7 @@ export default function LandingReward() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {rewards.map((item, i) => (
             <div
               key={i}
@@ -320,7 +320,7 @@ export default function LandingReward() {
 }
 
 /* SECTION TITLE */
-function SectionTitle({ title }) {
+function SectionTitle({ title }: { title: string }) {
   return (
     <h2 className="mt-10 mb-3 text-xl font-bold text-blue-700 border-l-4 border-blue-600 pl-3">
       {title}

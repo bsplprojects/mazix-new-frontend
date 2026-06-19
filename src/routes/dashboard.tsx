@@ -24,7 +24,7 @@ export default function DashboardLayout() {
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-16 flex items-center gap-4 px-4 lg:px-6 border-b border-border bg-card/40 backdrop-blur-md sticky top-0 z-30">
-            <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+            <SidebarTrigger className="text-muted-foreground hover:text-foreground block lg:hidden" />
             <div className="hidden md:flex items-center gap-2 flex-1 max-w-md">
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -74,6 +74,7 @@ export default function DashboardLayout() {
                 variant="ghost"
                 size="icon"
                 title="Sign out"
+                className="md:hidden"
               >
                 <LogOut className="h-4 w-4" />
               </Button>

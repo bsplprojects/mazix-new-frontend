@@ -1,29 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { teamApi } from "@/services/teamApi";
+import { useQuery } from "@tanstack/react-query";
 
 export default function PayoutStatement() {
   const { id } = useParams();
-  console.log(id);
   const [data, setData] = useState<any>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await teamApi.statement(id as string);
-        console.log(res);
-        setData(res?.[0] || null);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    if (id) load();
-  }, [id]);
+  const { isLoading } = useQuery({
+    queryKey: ["statement", id],
+    queryFn: async () => {
+      const res = await teamApi.statement(id as string);
+      setData(res?.[0] || null);
+    },
+    enabled: !!id,
+  });
 
   const printPage = () => window.print();
 
-  if (!data) {
+  if (isLoading) {
     return <div className="p-10 text-center">Loading...</div>;
   }
 
@@ -34,8 +29,9 @@ export default function PayoutStatement() {
         <div>
           <h1 className="text-xl font-bold">Mazix Marketing Pvt. Ltd.</h1>
           <p className="text-xs text-gray-600">
-            Email: example@gmail.com <br />
-            Address: Ranchi, Jharkhand
+            Email: rkrajpragati6@gmail.com <br />
+            Address: Kokar Chunna Bhatta, H.B Road Kokar,
+            Ranchi-834001[Jharkhand]
           </p>
         </div>
 
@@ -59,15 +55,15 @@ export default function PayoutStatement() {
 
         <div className="text-right">
           <p>
-            <b>From:</b> {new Date(data.PayoutFromDate).toLocaleString("en-IN")}
+            <b>From:</b>{" "}
+            {new Date(data.PayoutFromDate).toLocaleDateString("en-IN")}
           </p>
           <p>
-            <b>To:</b> {new Date(data.PayoutToDate).toLocaleString("en-IN")}
+            <b>To:</b> {new Date(data.PayoutToDate).toLocaleDateString("en-IN")}
           </p>
         </div>
       </div>
 
-      {/* ================= BINARY SECTION ================= */}
       <div className="mt-6 border rounded-xl overflow-hidden">
         <h3 className="font-semibold p-3 bg-gray-100 border-b">
           Binary Details
@@ -100,7 +96,6 @@ export default function PayoutStatement() {
         </div>
       </div>
 
-      {/* ================= MAIN CARDS ================= */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* SUMMARY */}
         <div className="border rounded-xl p-5 bg-gray-50 shadow-sm">

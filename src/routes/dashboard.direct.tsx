@@ -24,7 +24,6 @@ export default function DirectTeam() {
     load();
   }, []);
 
-  /* ✅ SEARCH FILTER */
   const filtered = members
     .filter((m) =>
       `${m.name} ${m.id} ${m.rank}`
@@ -36,7 +35,7 @@ export default function DirectTeam() {
     );
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto">
+    <div className="space-y-6 max-w-350 mx-auto">
       <PageHeader
         title="Direct Team"
         subtitle="View all your directly sponsored members"

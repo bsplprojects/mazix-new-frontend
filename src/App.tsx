@@ -9,6 +9,7 @@ import PANConfirmation from "./routes/admin/PANConfirmation";
 import OldPANConfirmation from "./routes/admin/OldPANConfirmation";
 import DatewiseDownline from "./routes/DatewiseDownline";
 import RepHistory from "./routes/RepHistory";
+import InvoiceAtJoining from "./routes/admin/InvoiceAtJoining";
 
 // Auth
 const Signin = lazy(() => import("./routes/signin"));
@@ -140,6 +141,10 @@ export default function App() {
             <Route
               path="/dashboard/landing-reward"
               element={<LandingReward />}
+            />
+            <Route
+              path="/dashboard/inv-joining"
+              element={<InvoiceAtJoining />}
             />
             <Route path="/dashboard/old-income" element={<OldIncome />} />
             <Route path="/dashboard/my-payout" element={<MyPayout />} />

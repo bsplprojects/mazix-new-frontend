@@ -27,7 +27,7 @@ export default function AdminLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-zinc-950 via-black to-zinc-900 overflow-hidden">
+      <div className="min-h-screen flex w-full bg-linear-to-br from-zinc-950 via-black to-zinc-900 overflow-hidden">
         {/* Sidebar */}
         <AdminSidebar />
 
@@ -77,7 +77,7 @@ export default function AdminLayout() {
               </div>
 
               {/* Avatar */}
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
+              <div className="h-10 w-10 rounded-full bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
                 <ShieldCheck className="h-5 w-5 text-black" />
               </div>
 
@@ -99,7 +99,7 @@ export default function AdminLayout() {
             {/* Top Welcome */}
             <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-5 shadow-2xl">
               <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+                <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
                   <UserCog className="h-7 w-7 text-black" />
                 </div>
 

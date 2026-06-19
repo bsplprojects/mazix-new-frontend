@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   LayoutGrid,
@@ -7,12 +7,11 @@ import {
   Wallet,
   Users,
   TrendingUp,
-  LifeBuoy,
   User,
   History,
-  Package,
   FileText,
   CreditCard,
+  FileAxis3d,
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,6 +29,7 @@ import {
 import { BrandMark } from "@/components/brand-mark";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 const main = [
   { title: "Overview", url: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -90,6 +90,12 @@ const acct = [
   },
 
   {
+    title: "Invoice at joining",
+    url: "/dashboard/inv-joining",
+    icon: FileAxis3d,
+  },
+
+  {
     title: "Member ID Card",
     url: "/dashboard/member-id-card",
     icon: CreditCard,
@@ -130,7 +136,7 @@ function MenuSection({
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            /* ✅ DROPDOWN MENU */
+            /* DROPDOWN MENU */
             if (item.children) {
               const open = openMenu === item.title;
 
@@ -158,7 +164,7 @@ function MenuSection({
                     )}
                   </button>
 
-                  {/* ✅ SUB MENU */}
+                  {/* SUB MENU */}
                   {open && !collapsed && (
                     <div className="ml-8 mt-2 flex flex-col gap-1">
                       {item.children.map((sub: any) => (
@@ -182,7 +188,7 @@ function MenuSection({
               );
             }
 
-            /* ✅ NORMAL MENU */
+            /*  NORMAL MENU */
             const active = item.exact
               ? current === item.url
               : current === item.url || current.startsWith(item.url + "/");
@@ -213,6 +219,7 @@ export function AppSidebar() {
   const location = useLocation();
   const current = location.pathname;
   const memberId = sessionStorage.getItem("memberID");
+  const navigate = useNavigate()
 
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -239,11 +246,24 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
         {!collapsed && (
-          <div className="rounded-lg bg-gradient-card p-3 border border-border/50">
-            <div className="text-[10px] uppercase tracking-wider text-brass mb-1">
-              Member ID
+          <div className="rounded-lg bg-gradient-card p-3 border border-border/50 flex items-center justify-between">
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-brass mb-1">
+                Member ID
+              </div>
+              <div className="font-mono text-xs text-foreground">
+                {memberId}
+              </div>
             </div>
-            <div className="font-mono text-xs text-foreground">{memberId}</div>
+            <Button
+              className="hover:bg-yellow-500"
+              onClick={() => {
+                sessionStorage.clear();
+                navigate("/");
+              }}
+            >
+              Logout
+            </Button>
           </div>
         )}
       </SidebarFooter>

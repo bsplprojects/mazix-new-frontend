@@ -249,7 +249,7 @@ const DatewiseDownline = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">No Sales Found</h3>
+            <h3 className="text-xl font-semibold text-white">No Downline Found</h3>
 
             <p className="mt-2 text-sm text-zinc-500">
               Try searching with another keyword or dates.

@@ -94,9 +94,9 @@ export default function JoiningWallet() {
         subtitle="Available balance, payouts and withdrawal history"
       />
 
-      <div className="grid lg:grid-cols-4 gap-4">
+      <div className="grid lg:grid-cols-2 gap-4">
         {/* WALLET CARD */}
-        <div className="lg:col-span-2 rounded-2xl bg-gradient-hero border border-border/60 p-8 shadow-elegant relative overflow-hidden">
+        <div className=" rounded-2xl bg-gradient-hero border border-border/60 p-8 shadow-elegant relative overflow-hidden">
           <div className="absolute inset-0 bg-radial-emerald opacity-60" />
           <div className="relative">
             <div className="flex items-center gap-2 mb-2 text-brass">
@@ -132,8 +132,8 @@ export default function JoiningWallet() {
           </div>
         </div>
 
-        {/* ✅ SEND WALLET CARD */}
-        <div className="lg:col-span-2 rounded-2xl bg-gradient-card border border-border/60 p-6 shadow-card">
+        {/* SEND WALLET CARD */}
+        <div className=" rounded-2xl bg-gradient-card border border-border/60 p-6 shadow-card">
           <h3 className="font-display text-lg mb-4 flex items-center gap-2">
             <ArrowUpRight className="h-4 w-4 text-primary" />
             Send Wallet Balance

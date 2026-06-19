@@ -96,7 +96,7 @@ export default function Team() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-8">
+    <div className="max-w-350 mx-auto space-y-8">
       <PageHeader
         title="Team Performance"
         subtitle="Overview of your right leg performance and member distribution"
@@ -137,7 +137,7 @@ export default function Team() {
           </span>
         </div>
 
-        <table className="min-w-[700px] w-full border">
+        <table className="min-w-175 w-full border">
           <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40">
             <tr>
               <th className="text-right px-6 py-3">Member Name</th>
@@ -158,7 +158,7 @@ export default function Team() {
               paginatedMembers.map((m) => (
                 <tr key={m.id} className="hover:bg-accent/30 transition-smooth">
                   <td className="p-3 flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold bg-gradient-emerald text-white">
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold bg-amber-600 text-white">
                       {m.name
                         ?.split(" ")
                         .map((n) => n?.[0] || "")
@@ -170,7 +170,7 @@ export default function Team() {
 
                   <td className="p-3 font-mono text-xs">{m.id}</td>
                   <td className="p-3 font-mono text-xs">
-                    {new Date(m.joinDate).toLocaleString("en-IN")}
+                    {new Date(m.joinDate).toLocaleDateString("en-IN")}
                   </td>
 
                   <td className="p-3 ">{m.bv?.toLocaleString("en-IN")}</td>
