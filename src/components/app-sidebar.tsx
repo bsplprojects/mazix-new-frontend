@@ -12,6 +12,7 @@ import {
   FileText,
   CreditCard,
   FileAxis3d,
+  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
@@ -48,6 +49,7 @@ const main = [
       { title: "Left Team", url: "/dashboard/team/left-team" },
       { title: "Right Team", url: "/dashboard/team/right-team" },
       { title: "Datewise Downline", url: "/dashboard/team/datewise" },
+      { title: "Tree", url: "/dashboard/team/tree" },
     ],
   },
   { title: "New User", url: "/dashboard/userinfo", icon: User },
@@ -219,7 +221,7 @@ export function AppSidebar() {
   const location = useLocation();
   const current = location.pathname;
   const memberId = sessionStorage.getItem("memberID");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -246,7 +248,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
         {!collapsed && (
-          <div className="rounded-lg bg-gradient-card p-3 border border-border/50 flex items-center justify-between">
+          <div className="rounded-lg bg-gradient-card p-3 border border-border/50  flex items-center justify-between">
             <div>
               <div className="text-[10px] uppercase tracking-wider text-brass mb-1">
                 Member ID
@@ -262,10 +264,14 @@ export function AppSidebar() {
                 navigate("/");
               }}
             >
+              <LogOut />
               Logout
             </Button>
           </div>
         )}
+        <p className="text-[12px] text-muted-foreground mt-2 text-center">
+          All Rights Reserved by Mazix 2022 .
+        </p>
       </SidebarFooter>
     </Sidebar>
   );

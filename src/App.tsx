@@ -10,6 +10,7 @@ import OldPANConfirmation from "./routes/admin/OldPANConfirmation";
 import DatewiseDownline from "./routes/DatewiseDownline";
 import RepHistory from "./routes/RepHistory";
 import InvoiceAtJoining from "./routes/admin/InvoiceAtJoining";
+import Tree from "./routes/Tree";
 
 // Auth
 const Signin = lazy(() => import("./routes/signin"));
@@ -112,6 +113,7 @@ export default function App() {
               path="/dashboard/team/datewise"
               element={<DatewiseDownline />}
             />
+            <Route path="/dashboard/team/tree" element={<Tree />} />
             <Route
               path="/dashboard/wallet/repurchase-wallet"
               element={<RepurchaseWallet />}

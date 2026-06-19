@@ -128,8 +128,9 @@ export default function RepHistory() {
                       {o?.OrderNo}
                     </Link>
                   </td>
+                  
                   <td className="px-6 py-4 font-mono text-xs">
-                    {o?.OrderDate?.split("T")[0]}
+                    {o?.OrderDate?.split("T")[0]?.split("-").reverse().join("/")}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs">
                     ₹{o?.TotalAmount?.toLocaleString("en-IN")}

@@ -61,7 +61,7 @@ export default function MyPayout() {
   }, [data]);
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto">
+    <div className="space-y-6 max-w-350 mx-auto">
       <PageHeader title="Old Income" subtitle="Payout history with summary" />
 
       {/* ================= SUMMARY + STAT CARD ================= */}
@@ -210,8 +210,8 @@ export default function MyPayout() {
                       {(page - 1) * pageSize + i + 1}
                     </td>
 
-                    <td className="px-5 py-3">
-                      {new Date(item.PayoutDate).toLocaleString("en-IN")}
+                    <td className="px-5 py-3 text-nowrap">
+                      {item.PayoutDate?.split("T")[0]?.split("-").reverse().join("/")}
                     </td>
 
                     <td className="px-5 py-3">{item.CurrentLeft}</td>

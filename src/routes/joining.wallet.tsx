@@ -7,6 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
 import Loader from "@/components/Loader";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export default function JoiningWallet() {
   const [toMemberId, setToMemberId] = useState("");
@@ -80,6 +81,13 @@ export default function JoiningWallet() {
       toast.success(data?.Message);
       setTransferWallet(0);
       setToMemberId("");
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 
@@ -162,6 +170,8 @@ export default function JoiningWallet() {
                 value={transferWallet}
                 onChange={(e) => setTransferWallet(Number(e.target.value))}
                 placeholder="Enter Amount"
+                min={0}
+                onFocus={(e) => e.target.select()}
                 className="w-full h-11 mt-1 px-3 rounded-md bg-input border border-border focus:outline-none"
               />
             </div>

@@ -43,6 +43,8 @@ export default function DashboardHome() {
   const m = memberDetail?.data;
   const r = memberRewards?.data;
 
+  console.log(r);
+
   if (isLoading) return <Loader2 className="animate-spin" />;
 
   return (
@@ -114,9 +116,9 @@ export default function DashboardHome() {
               <TableHead>#</TableHead>
               <TableHead>Reward Name</TableHead>
               <TableHead>Reward</TableHead>
-              <TableHead>Required PV</TableHead>
-              <TableHead>Achieved PV</TableHead>
-              <TableHead>Required BV</TableHead>
+              <TableHead>Pair</TableHead>
+              <TableHead>Achieved Pair</TableHead>
+              <TableHead>Bonus</TableHead>
               <TableHead>Target</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
@@ -138,16 +140,18 @@ export default function DashboardHome() {
 
                   <TableCell>{row.AchivePV}</TableCell>
 
-                  <TableCell>{row.AchiveBV}</TableCell>
+                  <TableCell>
+                    {Number(row.AchiveBV)?.toLocaleString() ?? 0}
+                  </TableCell>
 
-                  <TableCell>{row.Target?.toLocaleString()}</TableCell>
+                  <TableCell>{row.Target?.toLocaleString() ?? 0}</TableCell>
 
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
+                      className={`px-2 py-1  text-xs rounded-full font-medium ${
                         row.Status === "Achieved"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          ? "bg-green-100/10 text-green-500"
+                          : "bg-yellow-100/10 text-yellow-500"
                       }`}
                     >
                       {row.Status}

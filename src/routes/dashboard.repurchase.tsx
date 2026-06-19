@@ -62,8 +62,6 @@ export default function Repurchase() {
     toast.success(`${name} added to cart`);
   };
 
-  console.log(filteredProducts);
-
   return (
     <div className="space-y-6 max-w-350 mx-auto">
       <PageHeader
@@ -261,10 +259,6 @@ export default function Repurchase() {
     </div>
   );
 }
-
-/* ======================================================
-   CART SUMMARY (SAME PAGE)
-====================================================== */
 
 function CartSummary({ kind, products }: { kind: OrderType; products: any[] }) {
   const state = useCart();

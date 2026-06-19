@@ -45,8 +45,7 @@ export default function Profile() {
 
   const m = memberDetail?.data;
 
-  console.log(m);
-
+ 
   return (
     <div className="space-y-8 max-w-300 mx-auto">
       <PageHeader
