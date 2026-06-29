@@ -26,7 +26,6 @@ const AdminTokenList = () => {
     },
   });
 
-
   const { data, refetch, isFetching } = useQuery({
     queryKey: ["token", fromDate, memberId, toDate],
     queryFn: async () => {
@@ -80,7 +79,7 @@ const AdminTokenList = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -128,7 +127,7 @@ const AdminTokenList = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -142,7 +141,7 @@ const AdminTokenList = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 

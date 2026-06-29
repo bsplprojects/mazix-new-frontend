@@ -31,6 +31,8 @@ import { BrandMark } from "@/components/brand-mark";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/config/axios";
 
 const main = [
   { title: "Overview", url: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -46,8 +48,8 @@ const main = [
       { title: "Direct Team", url: "/dashboard/team/direct" },
       // { title: "Binary Genealogy", url: "/dashboard/team/binary" },
       // { title: "Left/Right Team", url: "/dashboard/team/left-right" },
-      { title: "Left Team", url: "/dashboard/team/left-team" },
-      { title: "Right Team", url: "/dashboard/team/right-team" },
+      { title: "ORG 1", url: "/dashboard/team/left-team" },
+      { title: "ORG 2", url: "/dashboard/team/right-team" },
       { title: "Datewise Downline", url: "/dashboard/team/datewise" },
       { title: "Tree", url: "/dashboard/team/tree" },
     ],
@@ -79,6 +81,7 @@ const acct = [
       { title: "Joining", url: "/dashboard/wallet/joining-wallet" },
       { title: "Repurchase", url: "/dashboard/wallet/repurchase-wallet" },
     ],
+    visibility: "franchise",
   },
   // { title: "Notifications", url: "/dashboard/notifications", icon: Bell },
   // { title: "Support", url: "/dashboard/support", icon: LifeBuoy },
@@ -113,10 +116,12 @@ function MenuSection({
   label,
   items,
   current,
+  type,
 }: {
   label: string;
   items: any[];
   current: string;
+  type?: string;
 }) {
   const { state, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
@@ -137,81 +142,85 @@ function MenuSection({
 
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => {
-            /* DROPDOWN MENU */
-            if (item.children) {
-              const open = openMenu === item.title;
+          {items
+            .filter(
+              (item) => item?.visibility?.toLowerCase() === type?.toLowerCase(),
+            )
+            .map((item) => {
+              /* DROPDOWN MENU */
+              if (item.children) {
+                const open = openMenu === item.title;
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <button
+                      onClick={() => {
+                        setOpenMenu(open ? null : item.title);
+                      }}
+                      className="flex items-center justify-between w-full h-10 px-3 rounded-md hover:bg-accent"
+                    >
+                      <div className="flex items-center gap-3">
+                        <item.icon className="h-4 w-4" />
+                        {!collapsed && (
+                          <span className="text-sm">{item.title}</span>
+                        )}
+                      </div>
+
+                      {!collapsed && (
+                        <ChevronDown
+                          className={`h-4 w-4 transition ${
+                            open ? "rotate-180" : ""
+                          }`}
+                        />
+                      )}
+                    </button>
+
+                    {/* SUB MENU */}
+                    {open && !collapsed && (
+                      <div className="ml-8 mt-2 flex flex-col gap-1">
+                        {item.children.map((sub: any) => (
+                          <Link
+                            key={sub.title}
+                            to={sub.url}
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setOpenMobile(false); // only for mobile collapse
+                            }}
+                            className={`text-sm px-2 py-1 rounded-md hover:bg-accent block ${
+                              current === sub.url ? "bg-primary text-white" : ""
+                            }`}
+                          >
+                            {sub.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </SidebarMenuItem>
+                );
+              }
+
+              /*  NORMAL MENU */
+              const active = item.exact
+                ? current === item.url
+                : current === item.url || current.startsWith(item.url + "/");
 
               return (
                 <SidebarMenuItem key={item.title}>
-                  <button
-                    onClick={() => {
-                      setOpenMenu(open ? null : item.title);
-                    }}
-                    className="flex items-center justify-between w-full h-10 px-3 rounded-md hover:bg-accent"
-                  >
-                    <div className="flex items-center gap-3">
+                  <SidebarMenuButton asChild isActive={active}>
+                    <Link
+                      to={item.url}
+                      onClick={handleNavClick}
+                      className="flex items-center gap-3"
+                    >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && (
                         <span className="text-sm">{item.title}</span>
                       )}
-                    </div>
-
-                    {!collapsed && (
-                      <ChevronDown
-                        className={`h-4 w-4 transition ${
-                          open ? "rotate-180" : ""
-                        }`}
-                      />
-                    )}
-                  </button>
-
-                  {/* SUB MENU */}
-                  {open && !collapsed && (
-                    <div className="ml-8 mt-2 flex flex-col gap-1">
-                      {item.children.map((sub: any) => (
-                        <Link
-                          key={sub.title}
-                          to={sub.url}
-                          onClick={() => {
-                            setOpenMenu(null);
-                            setOpenMobile(false); // only for mobile collapse
-                          }}
-                          className={`text-sm px-2 py-1 rounded-md hover:bg-accent block ${
-                            current === sub.url ? "bg-primary text-white" : ""
-                          }`}
-                        >
-                          {sub.title}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                    </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               );
-            }
-
-            /*  NORMAL MENU */
-            const active = item.exact
-              ? current === item.url
-              : current === item.url || current.startsWith(item.url + "/");
-
-            return (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild isActive={active}>
-                  <Link
-                    to={item.url}
-                    onClick={handleNavClick}
-                    className="flex items-center gap-3"
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {!collapsed && (
-                      <span className="text-sm">{item.title}</span>
-                    )}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
+            })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
@@ -222,6 +231,17 @@ export function AppSidebar() {
   const current = location.pathname;
   const memberId = sessionStorage.getItem("memberID");
   const navigate = useNavigate();
+  const MID = sessionStorage.getItem("MID");
+
+  const { data: member } = useQuery({
+    queryKey: ["member", MID],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/member/${MID}`);
+      return res.data?.data;
+    },
+  });
+
+  const type = member?.ExtraFD;
 
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -241,9 +261,18 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-3">
-        <MenuSection label="Network" items={main} current={current} />
-        <MenuSection label="Earnings" items={earn} current={current} />
-        <MenuSection label="Account" items={acct} current={current} />
+        {type?.toLowerCase() !== "franchise" && (
+          <>
+            <MenuSection label="Network" items={main} current={current} />
+            <MenuSection label="Earnings" items={earn} current={current} />
+          </>
+        )}
+        <MenuSection
+          label="Account"
+          items={acct}
+          current={current}
+          type={type}
+        />
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
@@ -270,7 +299,7 @@ export function AppSidebar() {
           </div>
         )}
         <p className="text-[12px] text-muted-foreground mt-2 text-center">
-          All Rights Reserved by Mazix 2022 .
+          All Rights Reserved by Meghdoot Marketing Pvt. Ltd. 2022.
         </p>
       </SidebarFooter>
     </Sidebar>

@@ -137,7 +137,7 @@ export default function MemberIDCard() {
 
           {/* Footer */}
           <div className="absolute bottom-0 w-full text-center text-xs bg-black/20 py-2">
-            Mazix Marketing Pvt Ltd
+            Meghdoot Marketing Pvt. Ltd.
           </div>
         </div>
 

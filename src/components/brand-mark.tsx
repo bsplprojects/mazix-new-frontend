@@ -1,4 +1,4 @@
-import logo from "@/assets/mazix-logo.png";
+import logo from "/meghdoot_logo-original.png";
 
 export function BrandMark({ size = 36 }: { size?: number }) {
   return (
@@ -12,7 +12,9 @@ export function BrandMark({ size = 36 }: { size?: number }) {
         style={{ width: size, height: size }}
       />
       <div className="flex flex-col leading-none">
-        <span className="font-display text-lg font-semibold tracking-tight">Mazix</span>
+        <span className="font-display text-lg font-semibold tracking-tight">
+          Meghdoot
+        </span>
         <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-brass">
           Wealth Network
         </span>

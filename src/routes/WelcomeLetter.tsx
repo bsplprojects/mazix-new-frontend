@@ -21,7 +21,7 @@ export default function WelcomeLetter() {
     html2pdf()
       .set({
         margin: 0,
-        filename: `Mazix-Welcome-${member.id}.pdf`,
+        filename: `Meghdoot-Welcome-${member.id}.pdf`,
         html2canvas: {
           scale: 3,
           useCORS: true,
@@ -96,7 +96,7 @@ mx-auto
           <img src={logo} className="h-16" />
 
           <div className="text-right text-black">
-            <h1 className="text-xl font-bold">Mazix Marketing Pvt. Ltd.</h1>
+            <h1 className="text-xl font-bold">Meghdoot Marketing Pvt. Ltd.</h1>
             <p className="text-sm">Corporate Office, India</p>
             <p className="text-xs mt-1">Letter No: {letterNo}</p>
             <p className="text-xs">Date: {new Date().toLocaleDateString()}</p>
@@ -116,7 +116,7 @@ mx-auto
 
           <p className="mt-4">
             We are pleased to welcome you as an authorized member of
-            <b> Mazix Marketing Pvt. Ltd.</b>.
+            <b> Meghdoot Marketing Pvt. Ltd.</b>.
           </p>
 
           <p className="mt-4">Your registration details are as follows:</p>
@@ -162,7 +162,7 @@ mx-auto
 
         {/* FOOTER */}
         <div className="absolute bottom-6 left-0 right-0 text-center text-sm border-t pt-3">
-          www.mazixmarketing.com | support@mazixmarketing.com
+          www.mymazix.com | support@mazixmarketing.com
         </div>
       </div>
 

@@ -115,7 +115,7 @@ export default function LandingReward() {
       reward: "Cruise",
     },
     {
-      tier: "King of Mazix",
+      tier: "King of Meghdoot Marketing Pvt. Ltd.",
       pairs: "1,50,000",
       income: "₹7,50,00,000",
       bonus: "₹2,00,00,000",
@@ -210,7 +210,7 @@ export default function LandingReward() {
       reward: "Star Cruise",
     },
     {
-      title: "King Of Mazix",
+      title: "King Of Meghdoot Marketing Pvt. Ltd.",
       pairs: "1,50,000 PV",
       bonus: "₹2,00,00,000",
       reward: "3 Country Tour",
@@ -230,7 +230,7 @@ export default function LandingReward() {
       {/* CONTENT */}
       <div className="max-w-6xl mx-auto px-4 py-10">
         <p className="text-gray-700 leading-7 text-justify">
-          At Mazix, success comes handy to those who work with dedication and
+          At Meghdoot Marketing Pvt. Ltd., success comes handy to those who work with dedication and
           high aspirations. Every achievement brings rewards, recognition,
           confidence, and new opportunities to grow.
         </p>
@@ -249,13 +249,13 @@ export default function LandingReward() {
 
         <SectionTitle title="Rewards" />
         <p className="text-gray-700 leading-7 text-justify">
-          Higher achievements promote you to the Mazix Achievers Club where
+          Higher achievements promote you to the Meghdoot Marketing Pvt. Ltd. Achievers Club where
           success unlocks lifestyle rewards.
         </p>
 
         {/* RANKS */}
         <h2 className="text-2xl font-bold text-center mt-5 mb-8 text-gray-600">
-          Mazix Awards – Ranks & Pins
+          Meghdoot Marketing Pvt. Ltd. Awards – Ranks & Pins
         </h2>
 
         {/* TABLE */}

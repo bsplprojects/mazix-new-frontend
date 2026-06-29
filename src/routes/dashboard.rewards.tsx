@@ -49,10 +49,6 @@ export default function Rewards() {
     loadRewards();
   }, []);
 
-  /* ===============================
-        CALCULATIONS
-  =============================== */
-
   const achieved = rewards.filter((r) => r.achieved).length;
 
   const currentReward =
@@ -67,10 +63,6 @@ export default function Rewards() {
   const nextReward = rewards[currentIndex + 1];
 
   const progressValue = nextReward?.progress || 0;
-
-  /* ===============================
-        UI
-  =============================== */
 
   if (loading)
     return (
@@ -127,7 +119,7 @@ export default function Rewards() {
     );
 
   return (
-    <div className="space-y-8 max-w-[1400px] mx-auto">
+    <div className="space-y-8 max-w-350 mx-auto">
       <PageHeader
         title="Reward Ladder"
         subtitle={`${achieved} of ${rewards.length} milestones achieved`}
@@ -196,7 +188,7 @@ export default function Rewards() {
           <div
             key={r.tier}
             className={cn(
-              "rounded-xl border p-5 flex items-center gap-5 transition-smooth",
+              "rounded-xl border p-5 flex md:flex-row flex-col items-start md:items-center gap-5 transition-smooth",
               r.achieved
                 ? "bg-gradient-card border-primary/30 shadow-card"
                 : "bg-card/30 border-border/60 hover:border-border",

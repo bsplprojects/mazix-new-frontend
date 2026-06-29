@@ -67,7 +67,7 @@ export default function AdminDashboardHome() {
             asChild
             className="h-11 px-6 rounded-xl bg-linear-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:opacity-90"
           >
-            <Link to="/admin/users">
+            <Link to="/admin/all-users">
               Manage Members
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -104,9 +104,7 @@ export default function AdminDashboardHome() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
-       
         <div className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl p-6">
-          
           <h2 className="text-xl font-semibold text-white mb-4">
             Current Month Members
           </h2>
@@ -120,7 +118,6 @@ export default function AdminDashboardHome() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl p-6">

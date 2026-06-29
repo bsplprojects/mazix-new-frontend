@@ -1,9 +1,6 @@
-import { Link } from "react-router-dom";
-import { Wallet, Coins, ArrowRight, GitBranch, Loader2 } from "lucide-react";
+import { Wallet, Coins, GitBranch, Loader2 } from "lucide-react";
 
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { Button } from "@/components/ui/button";
-import { member } from "@/lib/mock-data";
 import { useDashboard } from "@/hooks/useDashboard";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
@@ -43,15 +40,13 @@ export default function DashboardHome() {
   const m = memberDetail?.data;
   const r = memberRewards?.data;
 
-  console.log(r);
-
   if (isLoading) return <Loader2 className="animate-spin" />;
 
   return (
     <div className="space-y-8 max-w-400 mx-auto">
+      
       <PageHeader
         title={`Welcome, ${m?.MemberName?.split(" ")[0] ?? "Member"}.`}
-        subtitle={`${member.rank} · Member since ${member.joined} · Sponsor: ${member.sponsor}`}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -85,7 +80,7 @@ export default function DashboardHome() {
         {/* Binary BV */}
         <div className="rounded-2xl bg-gradient-card border border-border/60 p-6 shadow-card">
           <div className="flex items-center justify-between mb-1">
-            <h2 className="font-display text-xl">Binary BV</h2>
+            <h2 className="font-display text-xl">Matching BV</h2>
             <GitBranch className="h-4 w-4 text-brass" />
           </div>
           <p className="text-xs text-muted-foreground mb-6">
@@ -94,13 +89,13 @@ export default function DashboardHome() {
 
           <div className="space-y-5">
             <LegBar
-              label="Left Leg"
+              label="ORG 1"
               value={Number(d?.LeftBV ?? 0)}
               max={500000}
               tone="emerald"
             />
             <LegBar
-              label="Right Leg"
+              label="ORG 2"
               value={Number(d?.RightBV ?? 0)}
               max={500000}
               tone="brass"

@@ -4,9 +4,17 @@ import { axiosInstance } from "@/config/axios";
 const get = (url: string) => axiosInstance.get(url).then((res) => res.data);
 
 export const teamApi = {
-  left: (id: string) => get(`/team/left/${id}`),
-  right: (id: string) => get(`/team/right/${id}`),
+  left: (id: string, queue?: string | null, search = "", limit = 10) =>
+    get(
+      `/team/left/${id}?limit=${limit}${queue ? `&queue=${encodeURIComponent(queue)}` : ""}&search=${encodeURIComponent(search)}`,
+    ),
+
+  right: (id: string, queue?: string | null, search = "", limit = 10) =>
+    get(
+      `/team/right/${id}?limit=${limit}${queue ? `&queue=${encodeURIComponent(queue)}` : ""}&search=${encodeURIComponent(search)}`,
+    ),
   direct: (id: string) => get(`/team/direct/${id}`),
+  stats: (id: string, leg: string) => get(`/team/${leg}/${id}/stats`),
   statement: (id: string) => get(`/team/payout-statement/${id}`),
 
   oldincome: (params: {

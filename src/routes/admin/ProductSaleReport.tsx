@@ -4,6 +4,7 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import ExcelJS from "exceljs";
 
 const ProductSaleReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -28,8 +29,135 @@ const ProductSaleReport = () => {
 
   const reports = data?.data || [];
 
-  const handleExcel = () => {
-    alert("This feature is not available yet");
+  const handleExcel = async () => {
+    if (!reports?.length) {
+      alert("No data available");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("GST Report");
+
+    worksheet.columns = [
+      { header: "Sr.", key: "sr", width: 8 },
+      { header: "Date", key: "date", width: 15 },
+      { header: "Member ID", key: "memberId", width: 18 },
+      { header: "Member", key: "memberName", width: 30 },
+      { header: "State", key: "state", width: 18 },
+      { header: "District", key: "district", width: 18 },
+      { header: "Product", key: "product", width: 35 },
+      { header: "BV", key: "bv", width: 12 },
+      { header: "MRP", key: "mrp", width: 12 },
+      { header: "Member MRP", key: "memberMrp", width: 15 },
+      { header: "Qty", key: "qty", width: 10 },
+      { header: "Taxable Amount", key: "taxable", width: 18 },
+      { header: "GST %", key: "gst", width: 10 },
+      { header: "CGST", key: "cgst", width: 12 },
+      { header: "SGST", key: "sgst", width: 12 },
+      { header: "IGST", key: "igst", width: 12 },
+      { header: "Amount", key: "amount", width: 15 },
+      { header: "Total BV", key: "totalBV", width: 15 },
+    ];
+
+    const header = worksheet.getRow(1);
+
+    header.font = {
+      bold: true,
+      color: { argb: "FFFFFFFF" },
+    };
+
+    header.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "1E40AF" },
+    };
+
+    header.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+
+    reports.forEach((user: any, index: number) => {
+      const calc = calculateGST(user);
+
+      worksheet.addRow({
+        sr: index + 1,
+        date: new Date(user.MPDate).toLocaleDateString(),
+        memberId: user.MemberID,
+        memberName: user.MemberName,
+        state: user.StateName,
+        district: user.CityName,
+        product: user.Product,
+        bv: Number(user.BV || 0),
+        mrp: Number(user.MRP || 0),
+        memberMrp: Number(user.MemberMRP || 0),
+        qty: Number(user.Qty || 0),
+        taxable: Number(user.TMRP || 0),
+        gst: Number(user.GST || 0),
+        cgst: Number(calc?.cgst || 0),
+        sgst: Number(calc?.sgst || 0),
+        igst: Number(calc?.igst || 0),
+        amount: Number(calc?.net || 0),
+        totalBV: Number(user.TBV || 0),
+      });
+    });
+
+    worksheet.eachRow((row, rowNumber) => {
+      row.height = 22;
+
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: rowNumber === 1 ? "center" : "left",
+        };
+      });
+    });
+
+    [
+      "bv",
+      "mrp",
+      "memberMrp",
+      "taxable",
+      "cgst",
+      "sgst",
+      "igst",
+      "amount",
+      "totalBV",
+    ].forEach((col) => {
+      worksheet.getColumn(col).numFmt = "0.00";
+    });
+
+    worksheet.views = [
+      {
+        state: "frozen",
+        ySplit: 1,
+      },
+    ];
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `GST_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   };
 
   const calculateGST = (user: any) => {
@@ -73,7 +201,7 @@ const ProductSaleReport = () => {
                 <span className="font-semibold text-yellow-400">
                   {/* {filteredUsers.length} */}
                 </span>{" "}
-                registered members
+                results
               </p>
             </div>
           </div>

@@ -3,6 +3,13 @@ import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
 import { teamApi } from "@/services/teamApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function MyPayout() {
   const [search, setSearch] = useState("");
@@ -102,7 +109,6 @@ export default function MyPayout() {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="h-11"
             />
           </div>
 
@@ -115,7 +121,6 @@ export default function MyPayout() {
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="h-11"
             />
           </div>
 
@@ -124,16 +129,21 @@ export default function MyPayout() {
             <label className="text-xs text-muted-foreground mb-1 block">
               Rows per page
             </label>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="h-11 w-full rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+
+            <Select
+              value={String(pageSize)}
+              onValueChange={(val) => setPageSize(Number(val))}
             >
-              <option value={10}>10 / page</option>
-              <option value={25}>25 / page</option>
-              <option value={50}>50 / page</option>
-              <option value={100}>100 / page</option>
-            </select>
+              <SelectTrigger className="w-full rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                <SelectValue placeholder="10 / page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10 / page</SelectItem>
+                <SelectItem value="25">25 / page</SelectItem>
+                <SelectItem value="50">50 / page</SelectItem>
+                <SelectItem value="100">100 / page</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Spacer for alignment */}
@@ -153,26 +163,26 @@ export default function MyPayout() {
         <div className="overflow-auto">
           <table className="w-full text-sm">
             {/* HEADER */}
-            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
+            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground text-nowrap">
               <tr>
                 <th className="px-5 py-3 text-left">#</th>
                 <th className="px-5 py-3 text-left">Payout Date</th>
 
-                <th className="px-5 py-3 text-left">Cur Left</th>
-                <th className="px-5 py-3 text-left">Cur Right</th>
+                <th className="px-5 py-3 text-left">Cur ORG 1</th>
+                <th className="px-5 py-3 text-left">Cur ORG 2</th>
 
-                <th className="px-5 py-3 text-left">Old Cur Left</th>
-                <th className="px-5 py-3 text-left">Old Cur Right</th>
+                <th className="px-5 py-3 text-left">Old Cur ORG 1</th>
+                <th className="px-5 py-3 text-left">Old Cur ORG 2</th>
 
-                <th className="px-5 py-3 text-left">Rep Left</th>
-                <th className="px-5 py-3 text-left">Rep Right</th>
+                <th className="px-5 py-3 text-left">Rep ORG 1</th>
+                <th className="px-5 py-3 text-left">Rep ORG 2</th>
                 <th className="px-5 py-3 text-left">Rep Self</th>
 
                 <th className="px-5 py-3 text-left">Pair</th>
 
                 <th className="px-5 py-3 text-left">Amount</th>
                 <th className="px-5 py-3 text-left">TDS</th>
-                <th className="px-5 py-3 text-left">Admin Charge</th>
+                <th className="px-5 py-3 text-left">Processing Charge</th>
 
                 <th className="px-5 py-3 text-left">Voucher</th>
                 <th className="px-5 py-3 text-left">Payable</th>
@@ -211,7 +221,10 @@ export default function MyPayout() {
                     </td>
 
                     <td className="px-5 py-3 text-nowrap">
-                      {item.PayoutDate?.split("T")[0]?.split("-").reverse().join("/")}
+                      {item.PayoutDate?.split("T")[0]
+                        ?.split("-")
+                        .reverse()
+                        .join("/")}
                     </td>
 
                     <td className="px-5 py-3">{item.CurrentLeft}</td>

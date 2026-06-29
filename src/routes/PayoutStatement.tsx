@@ -27,7 +27,7 @@ export default function PayoutStatement() {
       {/* HEADER */}
       <div className="flex justify-between items-start border-b pb-4">
         <div>
-          <h1 className="text-xl font-bold">Mazix Marketing Pvt. Ltd.</h1>
+          <h1 className="text-xl font-bold">Meghdoot Marketing Pvt. Ltd.</h1>
           <p className="text-xs text-gray-600">
             Email: rkrajpragati6@gmail.com <br />
             Address: Kokar Chunna Bhatta, H.B Road Kokar,

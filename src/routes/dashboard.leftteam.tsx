@@ -1,9 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
 import { Users, UserPlus, ArrowLeftRight } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { useDebounce } from "use-debounce";
 
 type Member = {
   id: string;
@@ -13,23 +15,34 @@ type Member = {
   rank?: string;
 };
 
-const PAGE_SIZE = 10;
-
 export default function Team() {
   const [members, setMembers] = useState<Member[]>([]);
-  const [page, setPage] = useState(1);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 500);
 
   const userId = sessionStorage.getItem("memberID");
 
   const { isLoading } = useQuery({
-    queryKey: ["team", userId],
+    queryKey: ["team", userId, debouncedSearch],
     queryFn: async () => {
-      const res = await teamApi.left(userId as string);
-      setMembers(Array.isArray(res) ? res : []);
+      const res = await teamApi.left(userId as string, null, debouncedSearch);
+      setMembers(Array.isArray(res?.members) ? res?.members : []);
+      setCursor(res.nextCursor);
       return res;
     },
   });
+
+  const loadMore = async () => {
+    if (!cursor) return;
+    setLoading(true);
+    const res = await teamApi.left(userId as string, cursor, debouncedSearch);
+
+    setMembers((prev) => [...prev, ...res.members]);
+    setCursor(res.nextCursor);
+    setLoading(false);
+  };
 
   const filteredMembers = useMemo(() => {
     if (!search.trim()) return members;
@@ -41,17 +54,6 @@ export default function Team() {
         m.name?.toLowerCase().includes(q) || m.id?.toLowerCase().includes(q),
     );
   }, [members, search]);
-
-  const totalPages = Math.ceil(filteredMembers.length / PAGE_SIZE);
-
-  const paginatedMembers = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filteredMembers.slice(start, start + PAGE_SIZE);
-  }, [filteredMembers, page]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
 
   const stats = useMemo(() => {
     const total = filteredMembers.length;
@@ -73,7 +75,7 @@ export default function Team() {
     <div className="max-w-350 mx-auto space-y-8">
       <PageHeader
         title="Team Performance"
-        subtitle="Overview of your left leg performance and member distribution"
+        subtitle="Overview of your ORG 1 leg performance and member distribution"
       />
 
       {/* STATS */}
@@ -88,7 +90,7 @@ export default function Team() {
           value={stats.totalBV.toLocaleString("en-IN")}
           icon={<ArrowLeftRight />}
         />
-        <StatCard label="New" value="26" icon={<UserPlus />} />
+        {/* <StatCard label="New" value="26" icon={<UserPlus />} /> */}
       </div>
 
       {/* SEARCH */}
@@ -104,10 +106,7 @@ export default function Team() {
       {/* TABLE */}
       <div className="border rounded-xl overflow-x-auto">
         <div className="px-4 py-3 border-b font-semibold flex justify-between">
-          <span>Left Members</span>
-          <span className="text-xs text-muted-foreground">
-            Page {page} / {totalPages || 1}
-          </span>
+          <span>ORG 1 Members</span>
         </div>
 
         <table className="min-w-175 w-full border">
@@ -121,14 +120,14 @@ export default function Team() {
           </thead>
 
           <tbody className="divide-y divide-border">
-            {paginatedMembers.length === 0 ? (
+            {members.length === 0 ? (
               <tr>
                 <td colSpan={3} className="text-center p-6 text-gray-500">
                   No results found
                 </td>
               </tr>
             ) : (
-              paginatedMembers.map((m) => (
+              members.map((m) => (
                 <tr key={m.id} className="hover:bg-accent/30 transition-smooth">
                   <td className="p-3 flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold bg-amber-600 text-white">
@@ -152,30 +151,12 @@ export default function Team() {
             )}
           </tbody>
         </table>
+      </div>
 
-        {/* PAGINATION */}
-        <div className="flex items-center justify-between p-4 border-t">
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            disabled={page === 1}
-          >
-            Prev
-          </button>
-
-          <div className="text-sm text-muted-foreground">
-            Showing {(page - 1) * PAGE_SIZE + 1} -{" "}
-            {Math.min(page * PAGE_SIZE, filteredMembers.length)}
-          </div>
-
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50"
-            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-            disabled={page === totalPages}
-          >
-            Next
-          </button>
-        </div>
+      <div className="w-full flex justify-center my-8">
+        <Button onClick={loadMore} disabled={!cursor || loading}>
+          {loading ? "Loading..." : cursor ? "Load More" : "No More Members"}
+        </Button>
       </div>
     </div>
   );

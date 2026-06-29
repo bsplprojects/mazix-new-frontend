@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginMember } from "@/services/authApi";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 export default function SignIn() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
@@ -18,34 +19,37 @@ export default function SignIn() {
     Password: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.MemberID || !form.Password) {
-      toast.error("Please enter MemberID and Password");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const data = await loginMember(form.MemberID, form.Password);
-      if (!data.success) {
-        toast.error(data.message || "Login failed");
-        return;
-      }
-
-      // localStorage.setItem("token", data.token);
-      sessionStorage.setItem("MID", data?.user?.MID);
-      sessionStorage.setItem("memberID", data?.user?.MemberID);
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const res = await loginMember(form.MemberID, form.Password);
+      return res.user;
+    },
+    onSuccess: (user: any) => {
+      sessionStorage.setItem("MID", user?.MID);
+      sessionStorage.setItem("memberID", user?.MemberID);
       toast.success("Login successful");
 
       navigate("/dashboard");
-    } catch (error) {
-      console.log(error);
-      toast.error("Server error. Try again later.");
-    } finally {
-      setLoading(false);
+    },
+    onError: (error: any) => {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+      } else if (error.statusCode === 401) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong!");
+      }
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.MemberID || !form.Password) {
+      toast.error("Please enter Member ID and Password");
+      return;
     }
+
+    loginMutation.mutate();
   };
 
   return (
@@ -89,10 +93,10 @@ export default function SignIn() {
         {/* Submit */}
         <Button
           type="submit"
-          disabled={loading}
+          disabled={loginMutation.isPending}
           className="w-full h-11 bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
         >
-          {loading ? "Signing in…" : "Sign In to Dashboard"}
+          {loginMutation.isPending ? "Signing in…" : "Sign In to Dashboard"}
         </Button>
       </form>
     </AuthShell>

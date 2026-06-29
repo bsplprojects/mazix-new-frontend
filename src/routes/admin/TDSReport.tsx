@@ -4,6 +4,7 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import ExcelJS from "exceljs";
 
 const TDSReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -28,13 +29,127 @@ const TDSReport = () => {
 
   const reports = data?.data || [];
 
-  const handleExcel = () => {
-    alert("This feature is not available yet");
+  const handleExcel = async () => {
+    if (!reports?.length) {
+      alert("No data available");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "Buck Softech";
+    workbook.created = new Date();
+
+    const worksheet = workbook.addWorksheet("TDS Report");
+
+    worksheet.columns = [
+      { header: "Sr.", key: "sr", width: 8 },
+      { header: "Member ID", key: "memberId", width: 18 },
+      { header: "Member", key: "memberName", width: 30 },
+      { header: "PAN", key: "pan", width: 20 },
+      { header: "Contact", key: "contact", width: 18 },
+      { header: "Amount", key: "amount", width: 15 },
+      { header: "Payable", key: "payable", width: 15 },
+      { header: "TDS (5%)", key: "tds", width: 15 },
+      { header: "Admin (5%)", key: "admin", width: 15 },
+    ];
+
+    // Header Style
+    const headerRow = worksheet.getRow(1);
+
+    headerRow.height = 24;
+
+    headerRow.eachCell((cell) => {
+      cell.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+      };
+
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "1E40AF" },
+      };
+
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+      };
+
+      cell.border = {
+        top: { style: "thin" },
+        bottom: { style: "thin" },
+        left: { style: "thin" },
+        right: { style: "thin" },
+      };
+    });
+
+    // Data
+    reports.forEach((user: any, index: number) => {
+      const row = worksheet.addRow({
+        sr: index + 1,
+        memberId: user.MemberID || "-",
+        memberName: user.MemberName || "-",
+        pan: user.PAN || "-",
+        contact: user.ContactNo || "-",
+        amount: Number(user.Amount || 0),
+        payable: Number(user.Payable || 0),
+        tds: Number(user.TDS || 0),
+        admin: Number(user.AdminCharge || 0),
+      });
+
+      row.height = 22;
+
+      row.eachCell((cell, colNumber) => {
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: colNumber === 1 || colNumber >= 6 ? "center" : "left",
+        };
+      });
+    });
+
+    // Number Formatting
+    ["amount", "payable", "tds", "admin"].forEach((column) => {
+      worksheet.getColumn(column).numFmt = "0.00";
+    });
+
+    // Freeze Header
+    worksheet.views = [
+      {
+        state: "frozen",
+        ySplit: 1,
+      },
+    ];
+
+    // Download
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `TDS_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
   };
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-white/10  lg:flex-col lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
@@ -68,7 +183,7 @@ const TDSReport = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -83,7 +198,7 @@ const TDSReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -97,7 +212,7 @@ const TDSReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -109,7 +224,7 @@ const TDSReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -121,7 +236,7 @@ const TDSReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
@@ -129,7 +244,7 @@ const TDSReport = () => {
               <Button
                 variant={"default"}
                 onClick={handleExcel}
-                className="h-11 rounded-2xl "
+                className="rounded-2xl "
               >
                 <Download /> Excel
               </Button>

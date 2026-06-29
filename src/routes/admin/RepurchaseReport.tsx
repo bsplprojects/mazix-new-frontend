@@ -4,6 +4,7 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import ExcelJS from "exceljs";
 
 const RepurchaseReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -28,13 +29,120 @@ const RepurchaseReport = () => {
 
   const reports = data?.data || [];
 
-  const handleExcel = () => {
-    alert("This feature is not available yet");
+  const handleExcel = async () => {
+    if (!reports?.length) {
+      alert("No data available");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Member Report");
+
+    worksheet.columns = [
+      { header: "Sr.", key: "sr", width: 8 },
+      { header: "DOJ", key: "doj", width: 15 },
+      { header: "Member ID", key: "memberId", width: 18 },
+      { header: "Member", key: "memberName", width: 30 },
+      { header: "Contact No.", key: "contact", width: 18 },
+      { header: "Sponsor ID", key: "sponsorId", width: 18 },
+      { header: "Placement ID", key: "placementId", width: 18 },
+      { header: "Leaf", key: "leaf", width: 12 },
+      { header: "State", key: "state", width: 20 },
+      { header: "District", key: "district", width: 20 },
+      { header: "BV", key: "bv", width: 12 },
+    ];
+
+    // Header Style
+    const header = worksheet.getRow(1);
+
+    header.font = {
+      bold: true,
+      color: { argb: "FFFFFFFF" },
+    };
+
+    header.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "1E40AF" },
+    };
+
+    header.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+
+    // Data
+    reports.forEach((user: any, index: number) => {
+      worksheet.addRow({
+        sr: index + 1,
+        doj: user.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
+        memberId: user.MemberID || "-",
+        memberName: user.MemberName || "-",
+        contact: user.ContactNo || "-",
+        sponsorId: user.SponserID || "-",
+        placementId: user.PlacementID || "-",
+        leaf: user.Leaf || "-",
+        state: user.StateName || "-",
+        district: user.CityName || "-",
+        bv: Number(user.BV || 0),
+      });
+    });
+
+    // Styling
+    worksheet.eachRow((row, rowNumber) => {
+      row.height = 22;
+
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: rowNumber === 1 ? "center" : "left",
+        };
+      });
+    });
+
+    // Number Formatting
+    worksheet.getColumn("bv").numFmt = "0.00";
+
+    // Freeze Header
+    worksheet.views = [
+      {
+        state: "frozen",
+        ySplit: 1,
+      },
+    ];
+
+    // Download
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Member_Report_${
+      new Date().toISOString().split("T")[0]
+    }.xlsx`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   };
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-white/10 lg:flex-col  lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
@@ -47,7 +155,7 @@ const RepurchaseReport = () => {
                 <span className="font-semibold text-yellow-400">
                   {/* {filteredUsers.length} */}
                 </span>{" "}
-                registered members
+                results
               </p>
             </div>
           </div>
@@ -68,7 +176,7 @@ const RepurchaseReport = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -83,7 +191,7 @@ const RepurchaseReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -97,7 +205,7 @@ const RepurchaseReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -109,7 +217,7 @@ const RepurchaseReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -121,7 +229,7 @@ const RepurchaseReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
@@ -129,7 +237,7 @@ const RepurchaseReport = () => {
               <Button
                 variant={"default"}
                 onClick={handleExcel}
-                className="h-11 rounded-2xl "
+                className="rounded-2xl "
               >
                 <Download /> Excel
               </Button>
@@ -146,7 +254,7 @@ const RepurchaseReport = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -195,8 +303,11 @@ const RepurchaseReport = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index) => (
-                <tr key={index} className="transition hover:bg-white/3">
+              {reports?.map((user: any, index: number) => (
+                <tr
+                  key={index}
+                  className="transition hover:bg-white/3 text-nowrap"
+                >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}

@@ -99,7 +99,7 @@ export default function AllUsersPage() {
 
           <div className="flex items-center gap-3">
             <Button
-              // onClick={fetchUsers}
+              onClick={() => refetch()}
               variant="outline"
               className="border-white/10 bg-white/5 text-white hover:bg-white/10"
             >
@@ -107,22 +107,18 @@ export default function AllUsersPage() {
               Refresh
             </Button>
 
-            <Button className="bg-linear-to-r from-yellow-400 to-yellow-600 text-black hover:opacity-90 h-11 px-5 rounded-xl font-semibold">
+            {/* <Button className="bg-linear-to-r from-yellow-400 to-yellow-600 text-black hover:opacity-90 h-11 px-5 rounded-xl font-semibold">
               <Download className="mr-2 h-4 w-4" />
               Export
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
 
-      {/* =========================================
-          TABLE SECTION
-      ========================================= */}
-
       <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl">
         {/* TOP BAR */}
 
-        <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-col lg:items-start lg:justify-between">
           <div>
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-yellow-400 to-yellow-600 text-black shadow-lg">
@@ -145,7 +141,7 @@ export default function AllUsersPage() {
             </div>
           </div>
 
-          <div className="border-b border-white/10 bg-white/[0.02] p-5">
+          <div className="border-b border-white/10 bg-white/2 p-5">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
               {/* MEMBER ID */}
               <div className="space-y-2">
@@ -247,9 +243,9 @@ export default function AllUsersPage() {
               <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
             </div>
           ) : (
-            <table className="w-full min-w-[1000px]">
-              <thead className="border-b border-white/10 bg-white/[0.03]">
-                <tr className="text-left">
+            <table className="w-full min-w-250">
+              <thead className="border-b border-white/10 bg-white/3">
+                <tr className="text-left text-nowrap">
                   {/* TABLE HEADER */}
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                     Sr.
@@ -326,7 +322,7 @@ export default function AllUsersPage() {
 
               <tbody className="divide-y divide-white/5">
                 {filteredUsers.map((user: any, index) => (
-                  <tr key={index} className="transition hover:bg-white/[0.03]">
+                  <tr key={index} className="transition hover:bg-white/3 text-nowrap">
                     {/* SR NO */}
                     <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                       {index + 1}

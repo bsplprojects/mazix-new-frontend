@@ -11,6 +11,10 @@ import DatewiseDownline from "./routes/DatewiseDownline";
 import RepHistory from "./routes/RepHistory";
 import InvoiceAtJoining from "./routes/admin/InvoiceAtJoining";
 import Tree from "./routes/Tree";
+import Franchise from "./routes/admin/Franchise";
+import PurchaseInvoice from "./routes/admin/PurchaseInvoice";
+import AdminSupport from "./routes/admin/AdminSupport";
+import Settings from "./routes/admin/Settings";
 
 // Auth
 const Signin = lazy(() => import("./routes/signin"));
@@ -24,7 +28,7 @@ const Team = lazy(() => import("./routes/dashboard.team"));
 const JoiningWallet = lazy(() => import("./routes/joining.wallet"));
 const RepurchaseWallet = lazy(() => import("./routes/repurchase.wallet"));
 const UserInfo = lazy(() => import("./routes/dashboard.UserInfo"));
-const Profile = lazy(() => import("./routes/dashboard.profile"));
+const Profile = lazy(() => import("./routes/dashboard.userprofile"));
 const LeftTeam = lazy(() => import("./routes/dashboard.leftteam"));
 const RightTeam = lazy(() => import("./routes/dashboard.rightteam"));
 const Repurchase = lazy(() => import("./routes/dashboard.repurchase"));
@@ -184,6 +188,7 @@ export default function App() {
               path="/admin/sale-invoice-report"
               element={<SaleInvoiceReport />}
             />
+            <Route path="/admin/franchise" element={<Franchise />} />
             <Route path="/admin/invoice" element={<PrintInvoice />} />
             <Route path="/admin/add-user" element={<AddUser />} />
             <Route path="/admin/password" element={<ChangePassword />} />
@@ -198,6 +203,10 @@ export default function App() {
               element={<RepurchaseWalletTransfer />}
             />
             <Route path="/admin/purchase-report" element={<PurchaseReport />} />
+            <Route
+              path="/admin/purchase-report/invoice/:id"
+              element={<PurchaseInvoice />}
+            />
             <Route path="/admin/edit-user/:id" element={<EditUserPage />} />
             <Route path="/admin/token" element={<AdminTokenList />} />
             <Route path="/admin/token-send" element={<SendToken />} />
@@ -208,6 +217,8 @@ export default function App() {
             <Route path="/admin/product" element={<Product />} />
             <Route path="/admin/category" element={<Category />} />
             <Route path="/admin/kyc" element={<KYC />} />
+            <Route path="/admin/support" element={<AdminSupport />} />
+            <Route path="/admin/settings" element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>

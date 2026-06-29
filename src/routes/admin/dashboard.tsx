@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { Bell, Search, LogOut, ShieldCheck, UserCog } from "lucide-react";
+import { Bell, Search, LogOut, ShieldCheck } from "lucide-react";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -80,24 +80,22 @@ export default function AdminLayout() {
               <div className="h-10 w-10 rounded-full bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
                 <ShieldCheck className="h-5 w-5 text-black" />
               </div>
-
-              {/* Logout */}
-              <Button
-                onClick={handleLogout}
-                variant="ghost"
-                size="icon"
-                className="text-zinc-300 hover:text-red-400 hover:bg-red-500/10 transition"
-                title="Logout"
-              >
-                <LogOut className="h-5 w-5" />
-              </Button>
             </div>
+            {/* Logout */}
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="ml-auto"
+              title="Logout"
+            >
+              <LogOut className="h-5 w-5" /> Logout
+            </Button>
           </header>
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto p-4 lg:p-7">
             {/* Top Welcome */}
-            <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-5 shadow-2xl">
+            {/* <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-5 shadow-2xl">
               <div className="flex items-center gap-4">
                 <div className="h-14 w-14 rounded-2xl bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
                   <UserCog className="h-7 w-7 text-black" />
@@ -113,7 +111,7 @@ export default function AdminLayout() {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Page Content */}
             <Outlet />

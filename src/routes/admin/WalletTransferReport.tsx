@@ -4,6 +4,7 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import ExcelJS from "exceljs";
 
 const WalletTransferReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -28,13 +29,131 @@ const WalletTransferReport = () => {
 
   const reports = data?.data || [];
 
-  const handleExcel = () => {
-    alert("This feature is not available yet");
+  const handleExcel = async () => {
+    if (!reports?.length) {
+      alert("No data available");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "Buck Softech";
+    workbook.created = new Date();
+
+    const worksheet = workbook.addWorksheet("Member Report");
+
+    worksheet.columns = [
+      { header: "Sr.", key: "sr", width: 8 },
+      { header: "DOJ", key: "doj", width: 15 },
+      { header: "Member ID", key: "memberId", width: 18 },
+      { header: "Member", key: "memberName", width: 28 },
+      { header: "Contact No.", key: "contactNo", width: 18 },
+      { header: "Sponsor ID", key: "sponsorId", width: 18 },
+      { header: "Placement ID", key: "placementId", width: 18 },
+      { header: "Leaf", key: "leaf", width: 12 },
+      { header: "State", key: "state", width: 20 },
+      { header: "District", key: "district", width: 20 },
+      { header: "BV", key: "bv", width: 12 },
+    ];
+
+    // Header Styling
+    const headerRow = worksheet.getRow(1);
+
+    headerRow.height = 24;
+
+    headerRow.eachCell((cell) => {
+      cell.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+      };
+
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "1E40AF" },
+      };
+
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+      };
+
+      cell.border = {
+        top: { style: "thin" },
+        bottom: { style: "thin" },
+        left: { style: "thin" },
+        right: { style: "thin" },
+      };
+    });
+
+    // Add Data
+    reports.forEach((user: any, index: number) => {
+      const row = worksheet.addRow({
+        sr: index + 1,
+        doj: user.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
+        memberId: user.MemberID || "-",
+        memberName: user.MemberName || "-",
+        contactNo: user.ContactNo || "-",
+        sponsorId: user.SponserID || "-",
+        placementId: user.PlacementID || "-",
+        leaf: user.Leaf || "-",
+        state: user.StateName || "-",
+        district: user.CityName || "-",
+        bv: Number(user.BV || 0),
+      });
+
+      row.height = 22;
+
+      row.eachCell((cell, colNumber) => {
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: colNumber === 1 || colNumber === 11 ? "center" : "left",
+        };
+      });
+    });
+
+    // Format BV Column
+    worksheet.getColumn("bv").numFmt = "0.00";
+
+    // Freeze Header
+    worksheet.views = [
+      {
+        state: "frozen",
+        ySplit: 1,
+      },
+    ];
+
+    // Generate Excel
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Member_Report_${new Date()
+      .toISOString()
+      .slice(0, 10)}.xlsx`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
   };
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-white/10  lg:flex-col lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
@@ -47,7 +166,7 @@ const WalletTransferReport = () => {
                 <span className="font-semibold text-yellow-400">
                   {/* {filteredUsers.length} */}
                 </span>{" "}
-                registered members
+                results
               </p>
             </div>
           </div>
@@ -68,7 +187,7 @@ const WalletTransferReport = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -83,7 +202,7 @@ const WalletTransferReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -97,7 +216,7 @@ const WalletTransferReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -109,7 +228,7 @@ const WalletTransferReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -121,7 +240,7 @@ const WalletTransferReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
@@ -129,7 +248,7 @@ const WalletTransferReport = () => {
               <Button
                 variant={"default"}
                 onClick={handleExcel}
-                className="h-11 rounded-2xl "
+                className="rounded-2xl "
               >
                 <Download /> Excel
               </Button>
@@ -146,7 +265,7 @@ const WalletTransferReport = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -195,8 +314,11 @@ const WalletTransferReport = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index) => (
-                <tr key={index} className="transition hover:bg-white/3">
+              {reports?.map((user: any, index: number) => (
+                <tr
+                  key={index}
+                  className="transition hover:bg-white/3 text-nowrap"
+                >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}

@@ -4,6 +4,7 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import ExcelJS from "exceljs";
 
 const RepurchaseVoucher = () => {
   const [memberId, setMemberId] = useState("");
@@ -26,10 +27,128 @@ const RepurchaseVoucher = () => {
     enabled: false,
   });
 
-  const reports = data || [];
+  const reports = data?.data || [];
 
-  const handleExcel = () => {
-    alert("This feature is not available yet");
+  const handleExcel = async () => {
+    if (!reports?.length) {
+      alert("No data available");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Product GST Report");
+
+    worksheet.columns = [
+      { header: "Sr.", key: "sr", width: 8 },
+      { header: "Date", key: "date", width: 15 },
+      { header: "Member ID", key: "memberId", width: 18 },
+      { header: "Member", key: "memberName", width: 30 },
+      { header: "Category", key: "category", width: 20 },
+      { header: "Product", key: "product", width: 35 },
+      { header: "MRP", key: "mrp", width: 12 },
+      { header: "Quantity", key: "qty", width: 10 },
+      { header: "Taxable Amt", key: "taxable", width: 18 },
+      { header: "GST (%)", key: "gst", width: 10 },
+      { header: "CGST", key: "cgst", width: 12 },
+      { header: "SGST", key: "sgst", width: 12 },
+      { header: "IGST", key: "igst", width: 12 },
+      { header: "Amount", key: "amount", width: 15 },
+    ];
+
+    // Header Style
+    const header = worksheet.getRow(1);
+
+    header.font = {
+      bold: true,
+      color: { argb: "FFFFFFFF" },
+    };
+
+    header.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "1E40AF" },
+    };
+
+    header.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+
+    reports.forEach((user: any, index: number) => {
+      const calc = calculateGST(user);
+
+      worksheet.addRow({
+        sr: index + 1,
+        date: user?.ModifyDate
+          ? new Date(user.ModifyDate).toLocaleDateString()
+          : "-",
+        memberId: user?.MemberID || "-",
+        memberName: user?.MemberName || "-",
+        category: user?.Category || "-",
+        product: user?.Product || "-",
+        mrp: Number(user?.MRP || 0),
+        qty: Number(user?.Qty || 0),
+        taxable: Number(calc.baseAmount || 0),
+        gst: Number(user?.GST || 0),
+        cgst: Number(calc.cgst || 0),
+        sgst: Number(calc.sgst || 0),
+        igst: Number(calc.igst || 0),
+        amount: Number(calc.totalMem || 0),
+      });
+    });
+
+    // Styling
+    worksheet.eachRow((row, rowNumber) => {
+      row.height = 22;
+
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: rowNumber === 1 ? "center" : "left",
+        };
+      });
+    });
+
+    // Number Formatting
+    ["mrp", "taxable", "cgst", "sgst", "igst", "amount"].forEach((col) => {
+      worksheet.getColumn(col).numFmt = "0.00";
+    });
+
+    // Freeze Header
+    worksheet.views = [
+      {
+        state: "frozen",
+        ySplit: 1,
+      },
+    ];
+
+    // Download
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Product_GST_Report_${
+      new Date().toISOString().split("T")[0]
+    }.xlsx`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   };
 
   function calculateGST(item: any) {
@@ -68,7 +187,7 @@ const RepurchaseVoucher = () => {
                 <span className="font-semibold text-yellow-400">
                   {/* {filteredUsers.length} */}
                 </span>{" "}
-                registered members
+                results
               </p>
             </div>
           </div>
@@ -89,7 +208,7 @@ const RepurchaseVoucher = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -104,7 +223,7 @@ const RepurchaseVoucher = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -118,7 +237,7 @@ const RepurchaseVoucher = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -130,7 +249,7 @@ const RepurchaseVoucher = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -142,7 +261,7 @@ const RepurchaseVoucher = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
@@ -150,7 +269,7 @@ const RepurchaseVoucher = () => {
               <Button
                 variant={"default"}
                 onClick={handleExcel}
-                className="h-11 rounded-2xl "
+                className="rounded-2xl "
               >
                 <Download /> Excel
               </Button>
@@ -239,13 +358,13 @@ const RepurchaseVoucher = () => {
                     {/* DATE */}
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      {new Date(user.ModifyDate).toLocaleDateString()}
+                      {new Date(user?.ModifyDate).toLocaleDateString()}
                     </td>
 
                     {/* MEMBER ID */}
 
                     <td className="px-6 py-5 text-sm font-medium text-yellow-400">
-                      {user.MemberID || "-"}
+                      {user?.MemberID || "-"}
                     </td>
 
                     {/* MEMBER */}
@@ -253,25 +372,25 @@ const RepurchaseVoucher = () => {
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
                         <div className="text-white font-medium">
-                          {user.MemberName || "-"}
+                          {user?.MemberName || "-"}
                         </div>
                       </div>
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      {user.Category || "-"}
+                      {user?.Category || "-"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      {user.Product || "-"}
+                      {user?.Product || "-"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      {user.MRP.toFixed(2) || "-"}
+                      {user?.MRP?.toFixed(2) || "-"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
-                      {user.Qty || "-"}
+                      {user?.Qty || "-"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
@@ -279,7 +398,7 @@ const RepurchaseVoucher = () => {
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      {user.GST.toFixed(2) || "-"}
+                      {user?.GST?.toFixed(2) || "-"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">

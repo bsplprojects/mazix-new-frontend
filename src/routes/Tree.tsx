@@ -2,26 +2,32 @@ import { teamApi } from "@/services/teamApi";
 import { useQuery } from "@tanstack/react-query";
 import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, UserRound, UserStar } from "lucide-react";
 import { useMemo } from "react";
+import dagre from "dagre";
+
+const dagreGraph = new dagre.graphlib.Graph();
+
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+dagreGraph.setGraph({
+  rankdir: "TB",
+  nodesep: 120,
+  ranksep: 180,
+});
 
 const nodeStyle = {
-  background: `
-    linear-gradient(
-      180deg,
-      rgba(28,28,28,0.98) 0%,
-      rgba(16,16,16,0.98) 100%
-    )
-  `,
+  background: "transparent",
+  filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))",
 
   color: "#F4D06F",
 
   border: "1px solid rgba(244,208,111,0.22)",
   borderTop: "2px solid rgba(244,208,111,0.75)",
 
-  borderRadius: "18px",
+  borderRadius: "20px",
 
-  minWidth: "200px",
+  minWidth: "250px",
   padding: "14px 18px",
 
   fontSize: "18px",
@@ -114,78 +120,61 @@ const Tree = () => {
       }
     });
 
-    const nodes = [
+    const rawNodes: any[] = [
       {
         id: userId,
-        position: { x: 0, y: 0 },
         data: {
-          label: `${userId}`,
+          label: (
+            <div className="flex items-center flex-col gap-3 p-2">
+              <p className="p-3 rounded-full bg-white/50 border border-white/10 inset-shadow-[0px_0px_12px_rgba(0,0,0,0.4)] shadow-sm shadow-black">
+                <UserStar className="h-14 w-14 text-black" />
+              </p>
+              {`${userId}`}
+            </div>
+          ),
         },
         style: {
           ...nodeStyle,
-
           background:
             "linear-gradient(180deg, #FFE08A 0%, #FFBF00 55%, #D99A00 100%)",
-
           color: "#000",
-
           border: "2px solid #FFF3C2",
-
           borderRadius: "22px",
-
           boxShadow: `
-                0 20px 50px rgba(255,191,0,0.45),
-                0 8px 20px rgba(0,0,0,0.3),
-                inset 0 2px 0 rgba(255,255,255,0.8)
-            `,
-
+          0 20px 50px rgba(255,191,0,0.45),
+          0 8px 20px rgba(0,0,0,0.3),
+          inset 0 2px 0 rgba(255,255,255,0.8)
+        `,
           fontWeight: "800",
           letterSpacing: "0.5px",
           fontSize: "22px",
-          transform: "scale(1.1)",
         },
+        position: { x: 0, y: 0 },
       },
     ];
 
-    const layout = (nodeId: string, x: number, y: number, gap: number) => {
-      const member = nodeMap.get(nodeId);
+    const rawEdges: any[] = [];
 
-      if (!member) return;
-
-      nodes.push({
+    members.forEach((member) => {
+      rawNodes.push({
         id: member.id,
-        position: { x, y },
         data: {
-          label: `${member.name} ${member.id}`,
+          label: (
+            <div className="flex items-center flex-col gap-3 p-2">
+              <p className="p-3 rounded-full bg-white/10 border border-white/10 inset-shadow-[0px_0px_12px_rgba(0,0,0,0.9)] shadow-md shadow-black">
+                <UserRound className="h-14 w-14 text-white" />
+              </p>
+              {`${member.name}\n${member.id}`}
+            </div>
+          ),
         },
         style: nodeStyle,
+        position: { x: 0, y: 0 },
       });
-
-      const children = childrenMap.get(nodeId);
-
-      if (!children) return;
-      const MIN_GAP = 250;
-      if (children.left) {
-        layout(children.left, x - gap, y + 250, Math.max(gap / 2, MIN_GAP));
-      }
-
-      if (children.right) {
-        layout(children.right, x + gap, y + 250, Math.max(gap / 2, MIN_GAP));
-      }
-    };
+    });
 
     if (rootChildren.left) {
-      layout(rootChildren.left, -800, 180, 1000);
-    }
-
-    if (rootChildren.right) {
-      layout(rootChildren.right, 800, 180, 1000);
-    }
-
-    const edges = [];
-
-    if (rootChildren.left) {
-      edges.push({
+      rawEdges.push({
         id: `e-root-left`,
         source: userId,
         target: rootChildren.left,
@@ -195,7 +184,7 @@ const Tree = () => {
     }
 
     if (rootChildren.right) {
-      edges.push({
+      rawEdges.push({
         id: `e-root-right`,
         source: userId,
         target: rootChildren.right,
@@ -206,7 +195,7 @@ const Tree = () => {
 
     members.forEach((member) => {
       if (member.placementId && nodeMap.has(member.placementId)) {
-        edges.push({
+        rawEdges.push({
           id: `e-${member.placementId}-${member.id}`,
           source: member.placementId,
           target: member.id,
@@ -216,7 +205,50 @@ const Tree = () => {
       }
     });
 
-    return { nodes, edges };
+    const dagreGraph = new dagre.graphlib.Graph();
+
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+    dagreGraph.setGraph({
+      rankdir: "TB", // Top -> Bottom
+      ranksep: 180, // Vertical gap
+      nodesep: 120, // Horizontal gap
+    });
+
+    rawNodes.forEach((node) => {
+      dagreGraph.setNode(node.id, {
+        width: node.id === userId ? 260 : 220,
+        height: node.id === userId ? 110 : 90,
+      });
+    });
+
+    rawEdges.forEach((edge) => {
+      dagreGraph.setEdge(edge.source, edge.target);
+    });
+
+    dagre.layout(dagreGraph);
+
+    const layoutedNodes = rawNodes.map((node) => {
+      const position = dagreGraph.node(node.id);
+
+      const width = node.id === userId ? 260 : 220;
+      const height = node.id === userId ? 110 : 90;
+
+      return {
+        ...node,
+        position: {
+          x: position.x - width / 2,
+          y: position.y - height / 2,
+        },
+        sourcePosition: "bottom",
+        targetPosition: "top",
+      };
+    });
+
+    return {
+      nodes: layoutedNodes,
+      edges: rawEdges,
+    };
   }, [members, userId]);
 
   return (
@@ -236,7 +268,16 @@ const Tree = () => {
           </div>
         </div>
       ) : (
-        <ReactFlow nodes={nodes} edges={edges} fitView>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          fitView
+          fitViewOptions={{
+            padding: 0.3,
+          }}
+          minZoom={0.2}
+          maxZoom={2}
+        >
           <Background />
           <Controls className="text-black" />
         </ReactFlow>

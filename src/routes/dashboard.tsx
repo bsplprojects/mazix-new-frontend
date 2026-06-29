@@ -51,10 +51,10 @@ export default function DashboardLayout() {
                 )}
               </Link>
             </Button> */}
-            <Button variant="ghost" size="icon" className="relative">
+            {/* <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-4 w-4" />
               <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-brass shadow-brass" />
-            </Button>
+            </Button> */}
 
             <div className="flex items-center gap-3 pl-3 border-l border-border">
               <div className="text-right hidden sm:block">

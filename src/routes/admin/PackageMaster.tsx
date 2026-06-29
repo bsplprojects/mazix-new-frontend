@@ -107,6 +107,7 @@ const PackageMaster = () => {
           <Input
             className="mt-1"
             value={data.PackageName}
+            placeholder="Package name"
             onChange={(e) => setData({ ...data, PackageName: e.target.value })}
           />
         </div>
@@ -128,6 +129,7 @@ const PackageMaster = () => {
             </SelectContent>
           </Select>
         </div>
+
         <div>
           <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
             Amount
@@ -140,14 +142,13 @@ const PackageMaster = () => {
           />
         </div>
       </div>
-      <div>
-        <Button
-          onClick={handleSubmit}
-          className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black mt-1 w-1/6"
-        >
-          Save
-        </Button>
-      </div>
+
+      <Button
+        onClick={handleSubmit}
+        className="mt-4 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-1/6"
+      >
+        Save
+      </Button>
 
       {/* table */}
       <div className="mt-5">
@@ -209,7 +210,7 @@ const PackageMaster = () => {
           </tbody>
         </table>
 
-        {packages?.length === 0 && (
+        {packages?.data?.length === 0 && (
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 

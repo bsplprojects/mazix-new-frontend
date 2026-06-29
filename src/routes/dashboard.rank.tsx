@@ -3,17 +3,9 @@ import { PageHeader } from "@/components/dashboard-ui";
 import { cn } from "@/lib/utils";
 import { rewardApi } from "@/services/rewardsApi";
 
-/* ============================
-        PAGE
-============================ */
-
 export default function RankPage() {
   const [rewards, setRewards] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  /* ============================
-        FETCH DATA
-  ============================ */
 
   useEffect(() => {
     fetchRewards();
@@ -21,9 +13,9 @@ export default function RankPage() {
 
   const fetchRewards = async () => {
     try {
-      const MemberID = localStorage.getItem("MemberID") || "MAZ094982";
+      const MemberID = sessionStorage.getItem("memberID");
 
-      const res = await rewardApi.rewards(MemberID);
+      const res = await rewardApi.rewards(MemberID as string);
 
       setRewards(res || []);
     } catch (err) {

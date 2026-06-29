@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ExcelJS from "exceljs";
 
 const SaleInvoiceReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -33,8 +34,90 @@ const SaleInvoiceReport = () => {
 
   const reports = data?.data || [];
 
-  const handleExcel = () => {
-    alert("This feature is not available yet");
+  const handleExcel = async () => {
+    if (!reports?.length) {
+      alert("No data available");
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Reports");
+
+    // Header
+    worksheet.columns = [
+      { header: "Sr.", key: "sr", width: 10 },
+      { header: "Date", key: "date", width: 18 },
+      { header: "Member ID", key: "memberId", width: 20 },
+      { header: "Member Name", key: "memberName", width: 30 },
+      { header: "Total BV", key: "totalBV", width: 15 },
+      { header: "Total Amount", key: "amount", width: 18 },
+    ];
+
+    // Header Styling
+    worksheet.getRow(1).font = {
+      bold: true,
+      color: { argb: "FFFFFFFF" },
+    };
+
+    worksheet.getRow(1).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "2563EB" }, // Blue
+    };
+
+    worksheet.getRow(1).alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
+
+    // Data
+    reports.forEach((user: any, index: number) => {
+      worksheet.addRow({
+        sr: index + 1,
+        date: new Date(user.MPDate).toLocaleDateString(),
+        memberId: user.MemberID,
+        memberName: user.MemberName,
+        totalBV: Number(user.TotalBV || 0),
+        amount: Number(user.MMRP || 0),
+      });
+    });
+
+    // Border for all cells
+    worksheet.eachRow((row) => {
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "center",
+        };
+      });
+    });
+
+    // Format numeric columns
+    worksheet.getColumn("totalBV").numFmt = "0.00";
+    worksheet.getColumn("amount").numFmt = "0.00";
+
+    // Generate file
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Reports_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -52,7 +135,7 @@ const SaleInvoiceReport = () => {
                 <span className="font-semibold text-yellow-400">
                   {/* {filteredUsers.length} */}
                 </span>{" "}
-                registered members
+                results
               </p>
             </div>
           </div>

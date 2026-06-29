@@ -9,10 +9,8 @@ import {
   Landmark,
   ShieldCheck,
   Upload,
-  CheckCircle2,
   FileText,
   Camera,
-  Loader2,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
@@ -45,7 +43,6 @@ export default function Profile() {
 
   const m = memberDetail?.data;
 
- 
   return (
     <div className="space-y-8 max-w-300 mx-auto">
       <PageHeader

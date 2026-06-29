@@ -46,11 +46,12 @@ const adminMain = [
 
 const userManagement = [
   { title: "All Users", url: "/admin/all-users", icon: Users },
-  { title: "Add User", url: "/admin/add-user", icon: UserPlus },
+  // { title: "Add User", url: "/admin/add-user", icon: UserPlus },
   { title: "Change Password", url: "/admin/password", icon: Lock },
   { title: "KYC Requests", url: "/admin/kyc", icon: CreditCard },
   { title: "PAN Confirmation", url: "/admin/pan", icon: IdCard },
-  { title: "Old PAN Confirmation", url: "/admin/old-pan", icon: IdCard },
+  // { title: "Old PAN Confirmation", url: "/admin/old-pan", icon: IdCard },
+  { title: "Franchise", url: "/admin/franchise", icon: UserPlus },
 ];
 
 const tokens = [
@@ -142,10 +143,10 @@ const reports = [
   // { title: "Statements", url: "/admin/statements", icon: FileText },
 ];
 
-const settings = [
-  { title: "Support Tickets", url: "/admin/support", icon: LifeBuoy },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
-];
+// const settings = [
+//   { title: "Support Tickets", url: "/admin/support", icon: LifeBuoy },
+//   { title: "Settings", url: "/admin/settings", icon: Settings },
+// ];
 
 function MenuSection({
   label,
@@ -238,7 +239,7 @@ export function AdminSidebar() {
 
         <MenuSection label="Reports" items={reports} current={current} />
 
-        <MenuSection label="System" items={settings} current={current} />
+        {/* <MenuSection label="System" items={settings} current={current} /> */}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3">

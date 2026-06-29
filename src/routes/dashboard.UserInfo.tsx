@@ -73,7 +73,7 @@ export default function UserInfo() {
     PAN: "",
     Email: "",
   });
-
+  const memberId = sessionStorage.getItem("memberID");
   const [checkingSponsor, setCheckingSponsor] = useState(false);
   const [sponsorValid, setSponsorValid] = useState<boolean | null>(null);
   const [sponsorName, setSponsorName] = useState("");
@@ -254,7 +254,7 @@ export default function UserInfo() {
   }, [form.SponsorID]);
 
   const buildPayload = () => ({
-    sessionId: "MAZ094982",
+    sessionId: memberId,
     member: form,
     products: cart.map((p) => ({
       ProductID: p.id,
@@ -683,14 +683,14 @@ export default function UserInfo() {
               {/* AMOUNT CARD */}
               <div
                 className="
-      relative overflow-hidden
-      rounded-xl border border-primary/20
-      bg-gradient-to-br from-primary/10 to-primary/5
-      p-4
-      transition-all
-      hover:shadow-lg
-      hover:scale-[1.02]
-    "
+                  relative overflow-hidden
+                  rounded-xl border border-primary/20
+                  bg-gradient-to-br from-primary/10 to-primary/5
+                  p-4
+                  transition-all
+                  hover:shadow-lg
+                  hover:scale-[1.02]
+            "
               >
                 <p className="text-xs text-muted-foreground mb-1">
                   Total Amount

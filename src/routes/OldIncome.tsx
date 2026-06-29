@@ -3,6 +3,13 @@ import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
 import { teamApi } from "@/services/teamApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function OldIncome() {
   const [search, setSearch] = useState("");
@@ -61,7 +68,7 @@ export default function OldIncome() {
   }, [data]);
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto">
+    <div className="space-y-6 max-w-350 mx-auto">
       <PageHeader title="Old Income" subtitle="Payout history with summary" />
 
       {/* ================= SUMMARY + STAT CARD ================= */}
@@ -102,7 +109,6 @@ export default function OldIncome() {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="h-11"
             />
           </div>
 
@@ -115,7 +121,6 @@ export default function OldIncome() {
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="h-11"
             />
           </div>
 
@@ -124,16 +129,20 @@ export default function OldIncome() {
             <label className="text-xs text-muted-foreground mb-1 block">
               Rows per page
             </label>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="h-11 w-full rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <Select
+              value={String(pageSize)}
+              onValueChange={(val) => setPageSize(Number(val))}
             >
-              <option value={10}>10 / page</option>
-              <option value={25}>25 / page</option>
-              <option value={50}>50 / page</option>
-              <option value={100}>100 / page</option>
-            </select>
+              <SelectTrigger className="w-full rounded-xl border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                <SelectValue placeholder="10 / page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10 / page</SelectItem>
+                <SelectItem value="25">25 / page</SelectItem>
+                <SelectItem value="50">50 / page</SelectItem>
+                <SelectItem value="100">100 / page</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Spacer for alignment */}
@@ -152,7 +161,7 @@ export default function OldIncome() {
       <div className="rounded-2xl border bg-card shadow-sm overflow-hidden">
         <div className="overflow-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
+            <thead className="bg-muted/40 text-xs uppercase text-muted-foreground text-nowrap">
               <tr>
                 <th className="px-5 py-3 text-left">#</th>
                 <th className="px-5 py-3 text-left">Payout Date</th>

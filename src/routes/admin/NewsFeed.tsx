@@ -88,6 +88,7 @@ const NewsFeed = () => {
           <Input
             className="mt-1"
             value={data.News}
+            placeholder="Enter message"
             onChange={(e) => setData({ ...data, News: e.target.value })}
           />
         </div>
@@ -107,7 +108,7 @@ const NewsFeed = () => {
       <div>
         <Button
           onClick={handleSubmit}
-          className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black mt-1 w-1/6"
+          className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black mt-4 w-1/6"
         >
           Save
         </Button>
