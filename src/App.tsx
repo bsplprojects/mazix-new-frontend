@@ -15,6 +15,8 @@ import Franchise from "./routes/admin/Franchise";
 import PurchaseInvoice from "./routes/admin/PurchaseInvoice";
 import AdminSupport from "./routes/admin/AdminSupport";
 import Settings from "./routes/admin/Settings";
+import MemberPaymentTransfer from "./routes/admin/MemberPaymnetTransfer";
+import { Checkout } from "./routes/dashboard.checkout";
 
 // Auth
 const Signin = lazy(() => import("./routes/signin"));
@@ -129,6 +131,8 @@ export default function App() {
             <Route path="/dashboard/userinfo" element={<UserInfo />} />
             <Route path="/dashboard/profile" element={<Profile />} />
             <Route path="/dashboard/repurchase" element={<Repurchase />} />
+            <Route path="/dashboard/checkout" element={<Checkout />} />
+
             <Route
               path="/dashboard/repurchase/history"
               element={<RepHistory />}
@@ -201,6 +205,10 @@ export default function App() {
             <Route
               path="/admin/wallet/repurchase"
               element={<RepurchaseWalletTransfer />}
+            />
+            <Route
+              path="/admin/wallet/member-payment"
+              element={<MemberPaymentTransfer />}
             />
             <Route path="/admin/purchase-report" element={<PurchaseReport />} />
             <Route

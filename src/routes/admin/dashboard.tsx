@@ -119,7 +119,6 @@ export default function AdminLayout() {
         </div>
 
         {/* Toast */}
-        <Toaster richColors position="top-right" />
       </div>
     </SidebarProvider>
   );

@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import * as joiningApi from "@/services/joiningApi";
 
 export default function DashboardHome() {
   const mid = sessionStorage.getItem("MID");
@@ -28,6 +29,18 @@ export default function DashboardHome() {
     },
   });
 
+  const { data: dash } = useQuery({
+    queryKey: ["dashboard", memberId, mid],
+    queryFn: async () => {
+      const res = await joiningApi.getMemberDashboard(
+        mid as string,
+        memberId as string,
+      );
+
+      return res;
+    },
+  });
+
   const { data: memberRewards } = useQuery({
     queryKey: ["member-reward", memberId],
     queryFn: async () => {
@@ -40,16 +53,20 @@ export default function DashboardHome() {
   const m = memberDetail?.data;
   const r = memberRewards?.data;
 
-  if (isLoading) return <Loader2 className="animate-spin" />;
+  if (isLoading)
+    return (
+      <div className="w-full flex items-start justify-center gap-2 ">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
 
   return (
     <div className="space-y-8 max-w-400 mx-auto">
-      
       <PageHeader
         title={`Welcome, ${m?.MemberName?.split(" ")[0] ?? "Member"}.`}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <StatCard
           label="Current Wallet Amount"
           value={d?.CurrentWallet ?? 0}
@@ -71,6 +88,18 @@ export default function DashboardHome() {
         <StatCard
           label="Matching"
           value={d?.Total ?? 0}
+          tone="brass"
+          icon={<Coins className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Joining BV"
+          value={dash?.CurrentWallet ?? "0"}
+          tone="emerald"
+          icon={<Coins className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Repurchase BV"
+          value={Math.floor(dash?.CurrentWallet / 5)}
           tone="brass"
           icon={<Coins className="h-4 w-4" />}
         />

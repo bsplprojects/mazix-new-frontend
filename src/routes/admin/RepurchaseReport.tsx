@@ -81,7 +81,7 @@ const RepurchaseReport = () => {
         contact: user.ContactNo || "-",
         sponsorId: user.SponserID || "-",
         placementId: user.PlacementID || "-",
-        leaf: user.Leaf || "-",
+        leaf: user.Leaf === "Left" ? "ORG 1" : "ORG 2",
         state: user.StateName || "-",
         district: user.CityName || "-",
         bv: Number(user.BV || 0),
@@ -347,7 +347,7 @@ const RepurchaseReport = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
-                    {user.Leaf || "-"}
+                    {user.Leaf === "Left" ? "ORG 1" : "ORG 2"}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">

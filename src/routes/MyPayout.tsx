@@ -1,8 +1,7 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { teamApi } from "@/services/teamApi";
 import {
   Select,
   SelectContent,
@@ -10,6 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/config/axios";
+import { Button } from "@/components/ui/button";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 export default function MyPayout() {
   const [search, setSearch] = useState("");
@@ -21,32 +25,18 @@ export default function MyPayout() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-
-        const res = await teamApi.myincome({
-          fromDate,
-          toDate,
-          id: memberId as string,
-          page,
-          pageSize,
-        });
-
-        setData(res?.items || []);
-        setTotalPages(res?.totalPages || 1);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-  }, [fromDate, toDate, search, page, pageSize]);
+  const { isLoading } = useQuery({
+    queryKey: ["payout", fromDate, toDate, page, pageSize],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/team/my-income/${memberId}?page=${page}&pageSize=${pageSize}&fromDate=${fromDate}&toDate=${toDate}`,
+      );
+      setData(res.data?.items || []);
+      setTotalPages(res.data?.totalPages || 1);
+      return res.data;
+    },
+  });
 
   useEffect(() => {
     setPage(1);
@@ -67,9 +57,83 @@ export default function MyPayout() {
     };
   }, [data]);
 
+  const handleExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Binary Payout");
+
+    worksheet.columns = [
+      { header: "#", key: "index", width: 5 },
+      { header: "Payout Date", key: "PayoutDate", width: 15 },
+
+      { header: "Cur ORG 1", key: "CurrentLeft", width: 12 },
+      { header: "Cur ORG 2", key: "CurrentRight", width: 12 },
+
+      { header: "Old Cur ORG 1", key: "OldLeftCarry", width: 15 },
+      { header: "Old Cur ORG 2", key: "OldRightCarry", width: 15 },
+
+      { header: "Rep ORG 1", key: "PurCurrentLeft", width: 12 },
+      { header: "Rep ORG 2", key: "PurCurrentRight", width: 12 },
+
+      { header: "Rep Self", key: "Flag", width: 12 },
+      { header: "Pair", key: "Pair", width: 10 },
+
+      { header: "Amount", key: "Amount", width: 12 },
+      { header: "TDS", key: "TDS", width: 10 },
+      { header: "Processing Charge", key: "AdminCharge", width: 18 },
+
+      { header: "Voucher", key: "Vouchur", width: 12 },
+      { header: "Payable", key: "Payable", width: 12 },
+
+      { header: "Bonus", key: "Bonus", width: 12 },
+      { header: "Status", key: "Status", width: 12 },
+    ];
+
+    worksheet.getRow(1).font = { bold: true };
+
+    data.forEach((item, i) => {
+      worksheet.addRow({
+        index: i + 1,
+
+        PayoutDate: item.PayoutDate
+          ? item.PayoutDate.split("T")[0].split("-").reverse().join("/")
+          : "",
+
+        CurrentLeft: item.CurrentLeft,
+        CurrentRight: item.CurrentRight,
+
+        OldLeftCarry: item.OldLeftCarry,
+        OldRightCarry: item.OldRightCarry,
+
+        PurCurrentLeft: item.PurCurrentLeft,
+        PurCurrentRight: item.PurCurrentRight,
+
+        Flag: item.Flag,
+        Pair: item.Pair,
+
+        Amount: item.Amount,
+        TDS: item.TDS,
+        AdminCharge: item.AdminCharge,
+
+        Vouchur: item.Vouchur,
+        Payable: item.Payable,
+
+        Bonus: item.Bonus,
+        Status: item.Status,
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "Binary_Payout.xlsx");
+  };
+
   return (
     <div className="space-y-6 max-w-350 mx-auto">
-      <PageHeader title="Old Income" subtitle="Payout history with summary" />
+      <PageHeader title="My Payout" subtitle="Payout history with summary" />
 
       {/* ================= SUMMARY + STAT CARD ================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -99,7 +163,7 @@ export default function MyPayout() {
       </div>
 
       <div className="rounded-2xl border bg-card shadow-sm p-4">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
           {/* From Date */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">
@@ -146,15 +210,18 @@ export default function MyPayout() {
             </Select>
           </div>
 
-          {/* Spacer for alignment */}
-          <div className="hidden md:block" />
-
-          {/* Info badge / optional button */}
-          <div className="flex items-center justify-end">
-            <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded-xl">
-              Filter applied automatically
-            </div>
-          </div>
+          <Button
+            onClick={() => {
+              setFromDate("");
+              setToDate("");
+              setPageSize(10);
+            }}
+          >
+            Reset
+          </Button>
+          <Button onClick={handleExcel}>
+            <Download className="h-4 w-4" /> Excel
+          </Button>
         </div>
       </div>
 
@@ -171,14 +238,14 @@ export default function MyPayout() {
                 <th className="px-5 py-3 text-left">Cur ORG 1</th>
                 <th className="px-5 py-3 text-left">Cur ORG 2</th>
 
-                <th className="px-5 py-3 text-left">Old Cur ORG 1</th>
-                <th className="px-5 py-3 text-left">Old Cur ORG 2</th>
+                <th className="px-5 py-3 text-left">Old Carry Fwd ORG 1</th>
+                <th className="px-5 py-3 text-left">Old Carry Fwd ORG 2</th>
 
                 <th className="px-5 py-3 text-left">Rep ORG 1</th>
                 <th className="px-5 py-3 text-left">Rep ORG 2</th>
                 <th className="px-5 py-3 text-left">Rep Self</th>
 
-                <th className="px-5 py-3 text-left">Pair</th>
+                <th className="px-5 py-3 text-left">Matching</th>
 
                 <th className="px-5 py-3 text-left">Amount</th>
                 <th className="px-5 py-3 text-left">TDS</th>
@@ -195,7 +262,7 @@ export default function MyPayout() {
 
             {/* BODY */}
             <tbody>
-              {loading ? (
+              {isLoading ? (
                 <tr>
                   <td
                     colSpan={18}

@@ -30,7 +30,7 @@ export function StatCard({
   icon,
 }: {
   label: string;
-  value: string;
+  value: string | number;
   delta?: string;
   tone?: "emerald" | "brass" | "blue" | "red";
   icon?: React.ReactNode;

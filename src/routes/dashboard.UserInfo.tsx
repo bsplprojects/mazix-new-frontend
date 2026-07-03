@@ -74,6 +74,7 @@ export default function UserInfo() {
     Email: "",
   });
   const memberId = sessionStorage.getItem("memberID");
+  const mId = sessionStorage.getItem("MID");
   const [checkingSponsor, setCheckingSponsor] = useState(false);
   const [sponsorValid, setSponsorValid] = useState<boolean | null>(null);
   const [sponsorName, setSponsorName] = useState("");
@@ -141,10 +142,13 @@ export default function UserInfo() {
 
     const loadDashboard = async () => {
       try {
-        const MID = "MAZ094982";
-        const MemberID = "MAZ094982";
+        const MID = mId;
+        const MemberID = memberId;
 
-        const data = await joiningApi.getMemberDashboard(MID, MemberID);
+        const data = await joiningApi.getMemberDashboard(
+          MID as string,
+          MemberID as string,
+        );
 
         if (isMounted) {
           setDashboard(data);
@@ -382,8 +386,8 @@ export default function UserInfo() {
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Left">Position 1</SelectItem>
-                    <SelectItem value="Right">Position 2</SelectItem>
+                    <SelectItem value="Left">ORG 1</SelectItem>
+                    <SelectItem value="Right">ORG 2</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
@@ -698,7 +702,7 @@ export default function UserInfo() {
 
                 <p className="text-xl font-semibold text-primary">
                   ₹{dashboard?.CurrentWallet ?? 0}
-                </p>
+                </p>  
 
                 <span className="text-[11px] text-emerald-600">
                   Available Balance

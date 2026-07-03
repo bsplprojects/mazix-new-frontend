@@ -5,25 +5,48 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { rewardApi } from "@/services/rewardsApi";
 
+interface RewardType {
+  tier: string;
+  target: string;
+  reward: string;
+  achieved: boolean;
+  progress: number;
+}
+
 export default function Rewards() {
-  const [rewards, setRewards] = useState([]);
+  const [rewards, setRewards] = useState<RewardType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [achPV, setAchPV] = useState(0);
+  const [reqPV, setReqPV] = useState(0);
 
   const loadRewards = async () => {
+    let achievedPVStat = 0;
+    let requiredPVStat = 0;
+    let index = 0;
     try {
       const MemberID = sessionStorage.getItem("memberID");
 
       const res = await rewardApi.rewards(MemberID as string);
-
       const apiData = res || [];
 
+      let totalRequired = 0;
       const formatted = apiData.map((r) => {
         const requiredPair = Number(r.RequiredPV || 0);
         const achievedPair = Number(r.AchivePV || 0);
+        achievedPVStat = achievedPair;
+
+        if (requiredPair > 0) {
+          totalRequired += requiredPair;
+        }
+
+        if (r.Status === "Achieved") {
+          requiredPVStat += requiredPair;
+          index++;
+        }
 
         const progress =
           requiredPair > 0
-            ? Math.min(Math.round((achievedPair / requiredPair) * 100), 100)
+            ? Math.min(Math.round((achievedPair / totalRequired) * 100), 100)
             : 0;
 
         return {
@@ -37,6 +60,9 @@ export default function Rewards() {
         };
       });
 
+      requiredPVStat += Number(apiData[index]?.RequiredPV || 0);
+      setReqPV(requiredPVStat);
+      setAchPV(achievedPVStat);
       setRewards(formatted);
     } catch (err) {
       console.error(err);
@@ -66,7 +92,7 @@ export default function Rewards() {
 
   if (loading)
     return (
-      <div className="space-y-8 max-w-[1400px] mx-auto animate-pulse">
+      <div className="space-y-8 max-w-350 mx-auto animate-pulse">
         {/* HEADER */}
         <div className="space-y-2">
           <div className="h-8 w-64 bg-muted rounded-md" />
@@ -130,7 +156,7 @@ export default function Rewards() {
         <div className="rounded-2xl bg-gradient-hero border border-border/60 p-8 shadow-elegant relative overflow-hidden">
           <div className="absolute inset-0 bg-radial-emerald opacity-50" />
 
-          <div className="relative grid md:grid-cols-3 gap-6">
+          <div className="relative grid md:grid-cols-4 gap-6">
             {/* CURRENT */}
             <div>
               <div className="text-xs uppercase tracking-wider text-brass mb-2">
@@ -143,6 +169,25 @@ export default function Rewards() {
 
               <div className="text-sm text-muted-foreground mt-2">
                 {currentReward.reward}
+              </div>
+            </div>
+
+            {/* CURRENT ACHIEVED PV */}
+            <div>
+              <div className="text-xs uppercase tracking-wider text-brass ">
+                ACHIEVED PAIR
+              </div>
+
+              <div className="font-display text-xl text-gradient-emerald mb-2">
+                {achPV}
+              </div>
+
+              <div className="text-xs text-nowrap uppercase tracking-wider text-brass ">
+                Reward PV Required
+              </div>
+
+              <div className="font-display text-xl text-gradient-emerald">
+                {reqPV - achPV}
               </div>
             </div>
 
@@ -223,9 +268,10 @@ export default function Rewards() {
                 <div className="font-display text-xl">{r.tier}</div>
               </div>
 
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Target Bonus
+              <div className="w-fit">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex justify-between">
+                  <span>Target</span>
+                  <span>Bonus</span>
                 </div>
                 <div className="text-sm font-mono">{r.target}</div>
               </div>

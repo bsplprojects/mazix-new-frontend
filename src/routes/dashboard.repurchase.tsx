@@ -14,10 +14,21 @@ import {
 
 import { useRepurchase } from "@/hooks/useRepurchase";
 import Loader from "@/components/Loader";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { AxiosError } from "axios";
 
 // fDate and tDate be 1 month
 const fDate = new Date("1900-01-01");
@@ -25,6 +36,10 @@ const tDate = new Date();
 
 export default function Repurchase() {
   const state = useCart();
+  const [selectedWallet, setSelectedWallet] = useState<
+    "Repurchase" | "Voucher"
+  >("Repurchase");
+
   const memberId = sessionStorage.getItem("memberID");
   const [search, setSearch] = useState("");
 
@@ -36,17 +51,18 @@ export default function Repurchase() {
     },
   });
 
-  const { data: wallet } = useQuery({
-    queryKey: ["wallet"],
+  const { data: walletAmount } = useQuery({
+    queryKey: ["wallet-amount", selectedWallet],
     queryFn: async () => {
       const res = await axiosInstance.get(
-        `/member/dashboard?MemberID=${memberId}`,
+        `/repurchase/rep-voucher?Prefix=${selectedWallet}&memberID=${memberId}`,
       );
       return res.data;
     },
   });
 
   const products = data;
+
   const filteredProducts = products?.filter((product: any) => {
     return product?.name?.toLowerCase()?.includes(search.toLowerCase());
   });
@@ -57,9 +73,9 @@ export default function Repurchase() {
     limit: 5,
   });
 
-  const quickAdd = (id: string, name: string) => {
-    cartStore.add("repurchase", id);
-    toast.success(`${name} added to cart`);
+  const quickAdd = (p: any) => {
+    cartStore.add("repurchase", p);
+    toast.success(`${p?.name} added to cart`);
   };
 
   return (
@@ -68,20 +84,6 @@ export default function Repurchase() {
         title="Repurchase"
         subtitle="Maintain monthly BV to stay active and continue earning bonuses"
       />
-
-      <div className="my-6 p-4 flex items-center gap-10">
-        <div>
-          <h3 className="text-zinc-300">Rep. Wallet</h3>
-          <p className="text-2xl text-primary">
-            ₹{wallet?.data?.CurrentRepWallet ?? 0}
-          </p>
-        </div>
-
-        <div>
-          <h3 className="text-zinc-300">Voucher Wallet</h3>
-          <p className="text-2xl text-primary">₹{wallet?.data?.Voucher ?? 0}</p>
-        </div>
-      </div>
 
       <div className="grid lg:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-6">
@@ -175,7 +177,7 @@ export default function Repurchase() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => quickAdd(p?.id, p?.name)}
+                        onClick={() => quickAdd(p)}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -212,7 +214,7 @@ export default function Repurchase() {
                 {isLoading ? (
                   <Loader />
                 ) : repurchaseHistory?.length > 0 ? (
-                  repurchaseHistory?.map((r, index: number) => (
+                  repurchaseHistory?.map((r: any, index: number) => (
                     <tr key={index} className="hover:bg-accent/30">
                       <td className="px-6 py-4 font-mono text-xs">
                         {r?.OrderNo}
@@ -254,17 +256,94 @@ export default function Repurchase() {
         </div>
 
         {/* RIGHT CART SUMMARY */}
-        <CartSummary kind="repurchase" products={products} />
+        <CartSummary
+          kind="repurchase"
+          products={products}
+          walletAmount={walletAmount}
+          selectedWallet={selectedWallet}
+          setSelectedWallet={setSelectedWallet}
+        />
       </div>
     </div>
   );
 }
 
-function CartSummary({ kind, products }: { kind: OrderType; products: any[] }) {
-  const state = useCart();
+function CartSummary({
+  kind,
+  products,
+  selectedWallet,
+  walletAmount,
+  setSelectedWallet,
+}: {
+  kind: OrderType;
+  products: any[];
+  selectedWallet: "Repurchase" | "Voucher";
+  walletAmount: {
+    Repurchase: number;
+    Voucher: number;
+  };
+  setSelectedWallet: (w: "Repurchase" | "Voucher") => void;
+}) {
+  type Items = {
+    BV: string;
+    Flag: "Voucher" | "Repurchase";
+    MRP: string;
+    NetAmount: string;
+    Qty: string;
+    TotalAmount: string;
+    pCatID: string;
+    pID: string;
+  };
 
+  const state = useCart();
   const cart = state[kind].cart;
   const totals = cartTotals(cart, products);
+
+  const [items, setItems] = useState<Items[]>([]);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/repurchase/insert-rep`, {
+        kotbills: items,
+      });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success(data?.message);
+      cartStore.clear(kind);
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+
+    const mappedItems = cart.map((c) => ({
+      BV: String(c.bv),
+      Flag: selectedWallet,
+      MRP: String(c.price),
+      NetAmount: String(Number(c.bv) * Number(c.qty)),
+      Qty: String(c.qty),
+      TotalAmount: String(Number(c.price) * Number(c.qty)),
+      pCatID: String(c.catId),
+      pID: String(c.productId),
+    }));
+
+    setItems(mappedItems);
+
+    // alert(`This feature is work in progress.`);
+
+    mutation.mutate();
+  };
 
   return (
     <div className="rounded-2xl bg-gradient-card border p-6 shadow-card h-fit lg:sticky lg:top-20">
@@ -291,7 +370,7 @@ function CartSummary({ kind, products }: { kind: OrderType; products: any[] }) {
               >
                 <div className="text-2xl">
                   <img
-                    src={`https://new.mazix.co.in/${i?.image.split("../../")[1]}`}
+                    src={`https://new.mazix.co.in/${i?.image?.split("../../")[1]}`}
                     alt={i?.name}
                     width={50}
                   />
@@ -301,7 +380,7 @@ function CartSummary({ kind, products }: { kind: OrderType; products: any[] }) {
                   <div className="text-sm font-medium">{i.name}</div>
 
                   <div className="text-xs">
-                    ₹{i.price.toLocaleString("en-IN")} × {i.qty}
+                    ₹{i?.price?.toLocaleString("en-IN")} × {i.qty}
                   </div>
                 </div>
 
@@ -341,13 +420,47 @@ function CartSummary({ kind, products }: { kind: OrderType; products: any[] }) {
                 ₹{totals.total.toLocaleString("en-IN")}
               </span>
             </div>
+
+            <Separator />
+
+            <Select value={selectedWallet} onValueChange={setSelectedWallet}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Wallet" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Wallet</SelectLabel>
+                  <SelectItem value="Repurchase">Repurchase</SelectItem>
+                  <SelectItem value="Voucher">Voucher</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {walletAmount?.Repurchase > 0 && (
+              <div className="flex justify-between text-yellow-500 text-sm">
+                <span>Repurchase Wallet</span>
+                <span className="font-semibold">
+                  ₹{walletAmount?.Repurchase?.toLocaleString("en-IN")}
+                </span>
+              </div>
+            )}
+
+            {walletAmount?.Voucher > 0 && (
+              <div className="flex justify-between text-yellow-500 text-sm">
+                <span>Voucher Wallet</span>
+                <span className="font-semibold">
+                  ₹{walletAmount?.Voucher?.toLocaleString("en-IN")}
+                </span>
+              </div>
+            )}
           </div>
 
           <Button
-            onClick={() => alert("This feature is not available yet")}
+            onClick={handleCheckout}
             className="w-full mt-5 bg-gradient-emerald"
           >
-            Proceed to Checkout
+            Purchase
           </Button>
         </>
       )}

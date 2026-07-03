@@ -7,15 +7,15 @@ import { teamApi } from "@/services/teamApi";
 export default function DirectTeam() {
   const [search, setSearch] = useState("");
   const [members, setMembers] = useState<any[]>([]);
+  const memberId = sessionStorage.getItem("memberID");
 
   /* ✅ API CALL */
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await teamApi.direct("MAZ094982");
-        console.log("Direct:", data);
+        const data = await teamApi.direct(memberId as string);
 
-        setMembers(data); // 👈 STORE IN STATE
+        setMembers(data?.members);
       } catch (err) {
         console.error(err);
       }
@@ -24,8 +24,10 @@ export default function DirectTeam() {
     load();
   }, []);
 
+  console.log(members);
+
   const filtered = members
-    .filter((m) =>
+    ?.filter((m) =>
       `${m.name} ${m.id} ${m.rank}`
         .toLowerCase()
         .includes(search.toLowerCase()),

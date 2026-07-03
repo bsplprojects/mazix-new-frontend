@@ -5,8 +5,15 @@ export type OrderType = "purchase" | "repurchase" | "joining";
 export type OrderStatus = "Pending" | "Confirmed" | "Shipped" | "Delivered";
 
 export type CartItem = {
-  productId: string;
-  qty: number;
+  productId: string | number;
+  qty: number | number;
+  catId: string | number;
+  gst?: number | string;
+  MRP?: number | string;
+  image?: string;
+  name?: string;
+  price?: number | string;
+  bv?: number | string;
 };
 
 export type Address = {
@@ -119,11 +126,11 @@ export const cartStore = {
   get() {
     return state;
   },
-  add(type: OrderType, productId: string, qty = 1) {
+  add(type: OrderType, p: any, qty = 1) {
     const ch = state[type];
-    const ex = ch.cart.find((c) => c.productId === productId);
+    const ex = ch.cart.find((c) => c.productId === p.id);
     if (ex) ex.qty += qty;
-    else ch.cart.push({ productId, qty });
+    else ch.cart.push({ productId: p.id, qty, ...p });
     emit();
   },
   remove(type: OrderType, productId: string) {

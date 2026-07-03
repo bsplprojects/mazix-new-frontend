@@ -179,6 +179,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
+  @keyframes rotateYSlow {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+  .rotate-y-slow {
+    animation: rotateYSlow 6s ease-in-out infinite;
+    transform-style: preserve-3d;
+    display: inline-block;
+  }
 }
 
 @layer utilities {

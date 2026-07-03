@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 const Product = () => {
   const [search, setSearch] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [data, setData] = useState({
     pID: 0,
     pCatID: 0,
@@ -32,6 +33,7 @@ const Product = () => {
     BV: 0,
     Repurchase: 0,
     seqOnline: 0,
+    Image: "",
   });
 
   const client = useQueryClient();
@@ -59,13 +61,17 @@ const Product = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(`/admin/product/new`, data);
+    mutationFn: async (formData: FormData) => {
+      const res = await axiosInstance.post(`/admin/product/new`, formData);
       return res.data;
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Product added successfully");
+      toast.success(
+        data.pID
+          ? "Product updated successfully"
+          : "Product added successfully",
+      );
       setData({
         pID: 0,
         pCatID: 0,
@@ -80,7 +86,9 @@ const Product = () => {
         BV: 0,
         Repurchase: 0,
         seqOnline: 0,
+        Image: "",
       });
+      setFile(null);
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -114,7 +122,28 @@ const Product = () => {
       return;
     }
 
-    mutation.mutate();
+    const formData = new FormData();
+
+    formData.append("pID", data.pID.toString());
+    formData.append("Product", data.Product);
+    formData.append("pCatID", data.pCatID.toString());
+    formData.append("Description", data.Description);
+    formData.append("MRP", data.MRP.toString());
+    formData.append("MemberMRP", data.MemberMRP.toString());
+    formData.append("StockistMRP", data.StockistMRP.toString());
+    formData.append("GST", data.GST.toString());
+    formData.append("Discount", data.Discount.toString());
+    formData.append("BV", data.BV.toString());
+    formData.append("Repurchase", data.Repurchase.toString());
+    formData.append("seqOnline", data.seqOnline.toString());
+    formData.append("Status", data.Status);
+    formData.append("Image", data.Image || "");
+
+    if (file) {
+      formData.append("Image", file);
+    }
+
+    mutation.mutate(formData);
   };
   // ----------------------------------------
 
@@ -140,6 +169,7 @@ const Product = () => {
     const confirm = window.confirm(
       "Are you sure you want to delete this product?",
     );
+    setFile(null);
     if (!confirm) return;
 
     delMutation.mutate(Number(id));
@@ -148,6 +178,7 @@ const Product = () => {
   // --------------------------------------------------
 
   const handleEdit = (product: any) => {
+    setFile(null);
     setData({
       pID: product.pID,
       pCatID: product.pCatID,
@@ -161,9 +192,9 @@ const Product = () => {
       Discount: product.Discount,
       BV: product.BV,
       Repurchase: product.Repurchase,
-      seqOnline: product.seqOnline,
+      seqOnline: product?.seqOnline ?? 0,
+      Image: product.Image,
     });
-
     window.scrollTo(0, 0);
   };
 
@@ -349,6 +380,22 @@ const Product = () => {
             className="mt-1 "
           />
         </div>
+
+        <div className="col-span-2">
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            Image
+          </Label>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setFile(file);
+              }
+            }}
+          />
+        </div>
       </div>
       <div className="mt-5">
         <Button
@@ -382,7 +429,7 @@ const Product = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -443,92 +490,100 @@ const Product = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {filteredProducts?.map((user: any, index: number) => (
-                <tr key={index} className="transition hover:bg-white/3">
-                  {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
-                    {index + 1}
-                  </td>
-                  {/* DATE */}
+              {filteredProducts?.length > 0 ? (
+                filteredProducts?.map((user: any, index: number) => (
+                  <tr key={index} className="transition hover:bg-white/3">
+                    {/* SR NO */}
+                    <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                      {index + 1}
+                    </td>
+                    {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.Joining}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.Joining}
+                    </td>
 
-                  {/* MEMBER ID */}
+                    {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400 text-nowrap">
-                    {user.Product || "-"}
-                  </td>
+                    <td className="px-6 py-5 text-sm font-medium text-yellow-400 text-nowrap">
+                      {user.Product || "-"}
+                    </td>
 
-                  {/* MEMBER */}
+                    {/* MEMBER */}
 
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="text-white font-medium line-clamp-2">
-                        {user.Description || "-"}
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="text-white font-medium line-clamp-2">
+                          {user.Description || "-"}
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.MRP || "-"}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.MRP || "-"}
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.MemberMRP || "-"}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.MemberMRP || "-"}
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.StockistMRP || "-"}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.StockistMRP || "-"}
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
-                    {user.GST || "0"}%
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
+                      {user.GST || "0"}%
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.Repurchase || "-"}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.Repurchase || "-"}
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.BV || "-"}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.BV || "-"}
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.Discount || "0"}%
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.Discount || "0"}%
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.Status || ""}
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      {user.Status || ""}
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    <img
-                      src={`https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`}
-                      alt="image"
-                      width={50}
-                    />
-                  </td>
+                    <td className="px-6 py-5 text-sm text-zinc-300">
+                      <img
+                        src={`https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`}
+                        alt="image"
+                        width={50}
+                      />
+                    </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300 flex items-center gap-1">
-                    <Button
-                      onClick={() => handleEdit(user)}
-                      size={"icon"}
-                      variant={"outline"}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      onClick={() => handleDelete(user?.pID)}
-                      size={"icon"}
-                      variant={"destructive"}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
+                    <td className="px-6 py-5 text-sm text-zinc-300 flex items-center gap-1">
+                      <Button
+                        onClick={() => handleEdit(user)}
+                        size={"icon"}
+                        variant={"outline"}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(user?.pID)}
+                        size={"icon"}
+                        variant={"destructive"}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={15} className="text-center py-10">
+                    No Products Found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         )}

@@ -11,8 +11,10 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import * as joiningApi from "@/services/joiningApi";
 
 const DatewiseDownline = () => {
+  const mid = sessionStorage.getItem("MID");
   const memberId = sessionStorage.getItem("memberID");
   const [position, setPosition] = useState("Left");
   const [fromDate, setFromDate] = useState("");
@@ -32,6 +34,18 @@ const DatewiseDownline = () => {
       return data;
     },
     enabled: false,
+  });
+
+  const { data: dash } = useQuery({
+    queryKey: ["dashboard", memberId, mid],
+    queryFn: async () => {
+      const res = await joiningApi.getMemberDashboard(
+        mid as string,
+        memberId as string,
+      );
+
+      return res;
+    },
   });
 
   const reports = data?.data || [];
@@ -72,7 +86,7 @@ const DatewiseDownline = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   disabled
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -87,7 +101,7 @@ const DatewiseDownline = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -101,7 +115,7 @@ const DatewiseDownline = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -116,8 +130,8 @@ const DatewiseDownline = () => {
                   <SelectValue placeholder="Select Position" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Left">Left</SelectItem>
-                  <SelectItem value="Right">Right</SelectItem>
+                  <SelectItem value="Left">ORG 1</SelectItem>
+                  <SelectItem value="Right">ORG 2</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -130,7 +144,7 @@ const DatewiseDownline = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -142,7 +156,7 @@ const DatewiseDownline = () => {
                   setToDate("");
                   setPosition("Left");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
@@ -249,7 +263,9 @@ const DatewiseDownline = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">No Downline Found</h3>
+            <h3 className="text-xl font-semibold text-white">
+              No Downline Found
+            </h3>
 
             <p className="mt-2 text-sm text-zinc-500">
               Try searching with another keyword or dates.

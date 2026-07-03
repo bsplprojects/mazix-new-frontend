@@ -5,6 +5,7 @@ import {
   IndianRupee,
   ShieldCheck,
   ArrowRight,
+  Package,
 } from "lucide-react";
 
 import {
@@ -126,21 +127,30 @@ export default function AdminDashboardHome() {
           </h2>
 
           <div style={{ width: "100%", height: 300 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={c?.pieChart || []}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={100}
-                  label
-                >
-                  {(c?.pieChart || []).map((_, index) => (
-                    <Cell key={index} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+            {c?.pieChart?.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={c?.pieChart || []}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius={100}
+                    label
+                  >
+                    {(c?.pieChart || []).map((_, index) => (
+                      <Cell key={index} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full grid place-items-center">
+                <p className="text-sm text-muted-foreground flex flex-col gap-1 items-center ">
+                  <Package className="w-20 h-20 text-yellow-500 rotate-y-slow" />
+                  No data available
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

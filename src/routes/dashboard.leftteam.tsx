@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { Users, UserPlus, ArrowLeftRight } from "lucide-react";
+import { Users, ArrowLeftRight, UserPlus } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "use-debounce";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Member = {
   id: string;
@@ -20,6 +21,11 @@ export default function Team() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    totalBV: 0,
+  });
   const [debouncedSearch] = useDebounce(search, 500);
 
   const userId = sessionStorage.getItem("memberID");
@@ -34,6 +40,15 @@ export default function Team() {
     },
   });
 
+  const { isLoading: statsLoading } = useQuery({
+    queryKey: ["team", userId],
+    queryFn: async () => {
+      const res = await teamApi.stats(userId as string, "left");
+      setStats(res?.stats);
+      return res;
+    },
+  });
+
   const loadMore = async () => {
     if (!cursor) return;
     setLoading(true);
@@ -43,25 +58,6 @@ export default function Team() {
     setCursor(res.nextCursor);
     setLoading(false);
   };
-
-  const filteredMembers = useMemo(() => {
-    if (!search.trim()) return members;
-
-    const q = search.toLowerCase();
-
-    return members.filter(
-      (m) =>
-        m.name?.toLowerCase().includes(q) || m.id?.toLowerCase().includes(q),
-    );
-  }, [members, search]);
-
-  const stats = useMemo(() => {
-    const total = filteredMembers.length;
-    const active = filteredMembers.filter((m) => m.active).length;
-    const totalBV = filteredMembers.reduce((s, m) => s + (m.bv || 0), 0);
-
-    return { total, active, totalBV };
-  }, [filteredMembers]);
 
   if (isLoading) {
     return (
@@ -79,19 +75,32 @@ export default function Team() {
       />
 
       {/* STATS */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <StatCard
-          label="Members"
-          value={stats.total.toLocaleString("en-IN")}
-          icon={<Users />}
-        />
-        <StatCard
-          label="Leg BV"
-          value={stats.totalBV.toLocaleString("en-IN")}
-          icon={<ArrowLeftRight />}
-        />
-        {/* <StatCard label="New" value="26" icon={<UserPlus />} /> */}
-      </div>
+
+      {statsLoading ? (
+        <div className="grid md:grid-cols-3 gap-4">
+          {[1, 2, 3].map((n: number) => (
+            <Skeleton key={n} className="h-28" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-3 gap-4">
+          <StatCard
+            label="Total"
+            value={stats.total.toLocaleString("en-IN")}
+            icon={<Users />}
+          />
+          <StatCard
+            label="Total BV"
+            value={stats.totalBV.toLocaleString("en-IN")}
+            icon={<ArrowLeftRight />}
+          />
+          <StatCard
+            label="Active"
+            value={stats.active.toLocaleString("en-IN")}
+            icon={<UserPlus />}
+          />
+        </div>
+      )}
 
       {/* SEARCH */}
       <div className="flex items-center gap-3">
@@ -112,6 +121,7 @@ export default function Team() {
         <table className="min-w-175 w-full border">
           <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40">
             <tr>
+              <th className="text-left px-6 py-3">#</th>
               <th className="text-left px-6 py-3">Member Name</th>
               <th className="text-left px-6 py-3">Member ID</th>
               <th className="text-left px-6 py-3">joiningDate</th>
@@ -127,25 +137,31 @@ export default function Team() {
                 </td>
               </tr>
             ) : (
-              members.map((m) => (
-                <tr key={m.id} className="hover:bg-accent/30 transition-smooth">
-                  <td className="p-3 flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold bg-amber-600 text-white">
+              members.map((m, index: number) => (
+                <tr
+                  key={m.id}
+                  className="hover:bg-accent/30 transition-smooth text-xs"
+                >
+                  <td className="text-left px-6 py-3">{index + 1}</td>
+                  <td className="text-left px-6 py-3 flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-full flex items-center justify-center text-xs font-semibold bg-amber-600 text-white">
                       {m.name
                         ?.split(" ")
                         .map((n) => n?.[0] || "")
                         .join("")
                         .slice(0, 2)}
                     </div>
-                    {m.name}
+                    <span className="text-xs">{m.name}</span>
                   </td>
 
-                  <td className="p-3 font-mono text-xs">{m.id}</td>
-                  <td className="p-3 font-mono text-xs ">
-                    {new Date(m.joinDate).toLocaleDateString("en-IN")}
+                  <td className="text-left px-6 py-3">{m.id}</td>
+                  <td className="text-left px-6 py-3">
+                    {new Date(m?.joinDate).toLocaleDateString("en-IN")}
                   </td>
 
-                  <td className="p-3 ">{m.bv?.toLocaleString("en-IN")}</td>
+                  <td className="text-left px-6 py-3">
+                    {m.bv?.toLocaleString("en-IN")}
+                  </td>
                 </tr>
               ))
             )}

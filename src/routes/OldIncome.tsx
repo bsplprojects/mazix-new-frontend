@@ -31,7 +31,7 @@ export default function OldIncome() {
         const res = await teamApi.oldincome({
           fromDate,
           toDate,
-          id: memberId,
+          id: memberId as string,
           page,
           pageSize,
         });
@@ -165,6 +165,10 @@ export default function OldIncome() {
               <tr>
                 <th className="px-5 py-3 text-left">#</th>
                 <th className="px-5 py-3 text-left">Payout Date</th>
+                <th className="px-5 py-3 text-left">Member ID</th>
+                <th className="px-5 py-3 text-left">Name</th>
+                <th className="px-5 py-3 text-left">Curr ORG 1</th>
+                <th className="px-5 py-3 text-left">Curr ORG 2</th>
                 <th className="px-5 py-3 text-left">Pair</th>
                 <th className="px-5 py-3 text-left">Income</th>
                 <th className="px-5 py-3 text-left">TDS</th>

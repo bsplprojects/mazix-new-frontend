@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,7 +14,6 @@ import {
   ShieldCheck,
   Trash2,
 } from "lucide-react";
-import { z } from "zod";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
@@ -31,23 +30,19 @@ import {
   type OrderType,
 } from "@/lib/cart-store";
 import { member } from "@/lib/mock-data";
-
-const searchSchema = z.object({
-  kind: z.enum(["purchase", "repurchase", "joining"]).catch("purchase"),
-});
-
-export const Route = createFileRoute("/dashboard/checkout")({
-  validateSearch: searchSchema,
-  component: Checkout,
-});
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const STEPS = ["Cart", "Address", "Payment", "Review"] as const;
 type Step = (typeof STEPS)[number];
 
-function Checkout() {
-  const { kind } = Route.useSearch();
+export function Checkout() {
+  const [params] = useSearchParams();
+  const kind = params.get("kind");
   const state = useCart();
-  const channel = state[kind];
+  const channel = state[kind as OrderType];
+
+  console.log(channel);
+
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("Cart");
   const [addr, setAddr] = useState<Address>(channel.address);
@@ -61,19 +56,34 @@ function Checkout() {
     return (
       <div className="max-w-md mx-auto text-center py-20">
         <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground/40 mb-4" />
-        <h2 className="font-display text-2xl mb-2">Your {kind} cart is empty</h2>
-        <p className="text-sm text-muted-foreground mb-6">Add a product to start a {kind}.</p>
+        <h2 className="font-display text-2xl mb-2">
+          Your {kind} cart is empty
+        </h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Add a product to start a {kind}.
+        </p>
         <div className="flex flex-col gap-2">
-          <Button asChild className="bg-gradient-emerald text-primary-foreground shadow-glow">
-            <Link to={kind === "purchase" ? "/dashboard/purchase" : "/dashboard/repurchase"}>
+          <Button
+            asChild
+            className="bg-gradient-emerald text-primary-foreground shadow-glow"
+          >
+            <Link
+              to={
+                kind === "purchase"
+                  ? "/dashboard/purchase"
+                  : "/dashboard/repurchase"
+              }
+            >
               Browse {kind === "purchase" ? "Purchase" : "Repurchase"} Products
             </Link>
           </Button>
           {otherCount > 0 && (
-            <Button asChild variant="outline">
-              <Link to="/dashboard/checkout" search={{ kind: otherKind }}>
-                Switch to {otherKind} cart ({otherCount})
-              </Link>
+            <Button
+              onClick={() => navigate(`/dashboard/checkout?kind=${otherKind}`)}
+              asChild
+              variant="outline"
+            >
+              Switch to {otherKind} cart ({otherCount})
             </Button>
           )}
         </div>
@@ -95,9 +105,9 @@ function Checkout() {
         toast.error("Please fill all required address fields");
         return;
       }
-      cartStore.setAddress(kind, addr);
+      cartStore.setAddress(kind as OrderType, addr);
     }
-    if (step === "Payment") cartStore.setPayment(kind, payment);
+    if (step === "Payment") cartStore.setPayment(kind as OrderType, payment);
     setStep(STEPS[stepIdx + 1]);
   };
   const back = () => stepIdx > 0 && setStep(STEPS[stepIdx - 1]);
@@ -109,16 +119,16 @@ function Checkout() {
     }
     setPlacing(true);
     await new Promise((r) => setTimeout(r, 900));
-    const order = cartStore.placeOrder(kind);
+    const order = cartStore.placeOrder(kind as OrderType);
     setPlacing(false);
     toast.success("Order placed successfully");
-    navigate({ to: "/dashboard/orders/$id", params: { id: order.id } });
+    navigate(`/dashboard/orders/${order.id}`);
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto space-y-6">
+    <div className="max-w-300 mx-auto space-y-6">
       <PageHeader
-      title={
+        title={
           kind === "purchase"
             ? "Checkout · Purchase"
             : kind === "repurchase"
@@ -128,10 +138,14 @@ function Checkout() {
         subtitle="Complete your order in 4 quick steps"
         action={
           otherCount > 0 ? (
-            <Button asChild variant="outline" size="sm">
-              <Link to="/dashboard/checkout" search={{ kind: otherKind }}>
-                {otherKind === "purchase" ? "Purchase" : "Repurchase"} cart ({otherCount})
-              </Link>
+            <Button
+              onClick={() => navigate(`/dashboard/checkout?kind=${otherKind}`)}
+              asChild
+              variant="outline"
+              size="sm"
+            >
+              {otherKind === "purchase" ? "Purchase" : "Repurchase"} cart (
+              {otherCount})
             </Button>
           ) : null
         }
@@ -150,7 +164,9 @@ function Checkout() {
                     done &&
                       "bg-gradient-emerald text-primary-foreground border-transparent shadow-glow",
                     active && "bg-brass/15 text-brass border-brass/40",
-                    !done && !active && "bg-secondary/40 text-muted-foreground border-border",
+                    !done &&
+                      !active &&
+                      "bg-secondary/40 text-muted-foreground border-border",
                   )}
                 >
                   {done ? <Check className="h-4 w-4" /> : i + 1}
@@ -164,10 +180,22 @@ function Checkout() {
                   >
                     Step {i + 1}
                   </div>
-                  <div className={cn("text-sm font-medium", active && "text-foreground")}>{s}</div>
+                  <div
+                    className={cn(
+                      "text-sm font-medium",
+                      active && "text-foreground",
+                    )}
+                  >
+                    {s}
+                  </div>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={cn("h-px flex-1", done ? "bg-primary/50" : "bg-border")} />
+                  <div
+                    className={cn(
+                      "h-px flex-1",
+                      done ? "bg-primary/50" : "bg-border",
+                    )}
+                  />
                 )}
               </div>
             );
@@ -177,12 +205,22 @@ function Checkout() {
 
       <div className="grid lg:grid-cols-[1fr_380px] gap-6">
         <div className="rounded-2xl bg-gradient-card border border-border/60 p-6 shadow-card">
-          {step === "Cart" && <StepCart kind={kind} />}
+          {step === "Cart" && <StepCart kind={kind as OrderType} />}
           {step === "Address" && <StepAddress addr={addr} setAddr={setAddr} />}
           {step === "Payment" && (
-            <StepPayment payment={payment} setPayment={setPayment} total={totals.total} />
+            <StepPayment
+              payment={payment}
+              setPayment={setPayment}
+              total={totals.total}
+            />
           )}
-          {step === "Review" && <StepReview kind={kind} addr={addr} payment={payment} />}
+          {step === "Review" && (
+            <StepReview
+              kind={kind as OrderType}
+              addr={addr}
+              payment={payment}
+            />
+          )}
 
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
             <Button variant="outline" onClick={back} disabled={stepIdx === 0}>
@@ -211,7 +249,7 @@ function Checkout() {
           </div>
         </div>
 
-        <OrderSummary kind={kind} />
+        <OrderSummary kind={kind as OrderType} />
       </div>
     </div>
   );
@@ -259,8 +297,12 @@ function StepCart({ kind }: { kind: OrderType }) {
               </Button>
             </div>
             <div className="text-right min-w-[80px]">
-              <div className="font-mono text-sm">₹{i.lineTotal.toLocaleString("en-IN")}</div>
-              <div className="font-mono text-xs text-primary">{i.lineBV} BV</div>
+              <div className="font-mono text-sm">
+                ₹{i.lineTotal.toLocaleString("en-IN")}
+              </div>
+              <div className="font-mono text-xs text-primary">
+                {i.lineBV} BV
+              </div>
             </div>
             <Button
               size="icon"
@@ -283,7 +325,13 @@ function StepCart({ kind }: { kind: OrderType }) {
   );
 }
 
-function StepAddress({ addr, setAddr }: { addr: Address; setAddr: (a: Address) => void }) {
+function StepAddress({
+  addr,
+  setAddr,
+}: {
+  addr: Address;
+  setAddr: (a: Address) => void;
+}) {
   const f = (k: keyof Address) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setAddr({ ...addr, [k]: e.target.value });
   return (
@@ -292,7 +340,9 @@ function StepAddress({ addr, setAddr }: { addr: Address; setAddr: (a: Address) =
         <MapPin className="h-5 w-5 text-primary" />
         <h2 className="font-display text-2xl">Shipping address</h2>
       </div>
-      <p className="text-sm text-muted-foreground mb-6">Where should we ship your order?</p>
+      <p className="text-sm text-muted-foreground mb-6">
+        Where should we ship your order?
+      </p>
       <div className="grid sm:grid-cols-2 gap-4">
         <Field label="Full name *">
           <Input value={addr.fullName} onChange={f("fullName")} />
@@ -331,7 +381,9 @@ function Field({
 }) {
   return (
     <div className={cn("space-y-1.5", full && "sm:col-span-2")}>
-      <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
+      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </Label>
       {children}
     </div>
   );
@@ -346,7 +398,12 @@ function StepPayment({
   setPayment: (p: PaymentMethod) => void;
   total: number;
 }) {
-  const opts: { id: PaymentMethod; label: string; desc: string; icon: React.ReactNode }[] = [
+  const opts: {
+    id: PaymentMethod;
+    label: string;
+    desc: string;
+    icon: React.ReactNode;
+  }[] = [
     {
       id: "wallet",
       label: "E-Wallet",
@@ -385,7 +442,9 @@ function StepPayment({
         <CreditCard className="h-5 w-5 text-primary" />
         <h2 className="font-display text-2xl">Payment method</h2>
       </div>
-      <p className="text-sm text-muted-foreground mb-6">Choose how you'd like to pay.</p>
+      <p className="text-sm text-muted-foreground mb-6">
+        Choose how you'd like to pay.
+      </p>
       <div className="space-y-2">
         {opts.map((o) => (
           <button
@@ -415,17 +474,22 @@ function StepPayment({
             <div
               className={cn(
                 "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                payment === o.id ? "border-primary bg-primary" : "border-border",
+                payment === o.id
+                  ? "border-primary bg-primary"
+                  : "border-border",
               )}
             >
-              {payment === o.id && <Check className="h-3 w-3 text-primary-foreground" />}
+              {payment === o.id && (
+                <Check className="h-3 w-3 text-primary-foreground" />
+              )}
             </div>
           </button>
         ))}
       </div>
       {lowBal && (
         <div className="mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
-          Insufficient wallet balance for this order. Pick another payment method.
+          Insufficient wallet balance for this order. Pick another payment
+          method.
         </div>
       )}
     </div>
@@ -456,11 +520,15 @@ function StepReview({
         <ShieldCheck className="h-5 w-5 text-primary" />
         <h2 className="font-display text-2xl">Review & confirm</h2>
       </div>
-      <p className="text-sm text-muted-foreground mb-6">A final look before placing your order.</p>
+      <p className="text-sm text-muted-foreground mb-6">
+        A final look before placing your order.
+      </p>
 
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <div className="rounded-xl border border-border p-4 bg-secondary/20">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Ship to</div>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            Ship to
+          </div>
           <div className="text-sm font-medium">{addr.fullName}</div>
           <div className="text-sm text-muted-foreground">
             {addr.line1}
@@ -472,7 +540,9 @@ function StepReview({
           <div className="text-sm text-muted-foreground mt-1">{addr.phone}</div>
         </div>
         <div className="rounded-xl border border-border p-4 bg-secondary/20">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Payment</div>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            Payment
+          </div>
           <div className="text-sm font-medium">{payLabel[payment]}</div>
           <Badge
             variant="outline"
@@ -493,7 +563,9 @@ function StepReview({
                 Qty {i.qty} · {i.lineBV} BV
               </div>
             </div>
-            <div className="font-mono text-sm">₹{i.lineTotal.toLocaleString("en-IN")}</div>
+            <div className="font-mono text-sm">
+              ₹{i.lineTotal.toLocaleString("en-IN")}
+            </div>
           </div>
         ))}
       </div>
@@ -508,10 +580,22 @@ function OrderSummary({ kind }: { kind: OrderType }) {
     <div className="rounded-2xl bg-gradient-card border border-border/60 p-6 shadow-card h-fit lg:sticky lg:top-20">
       <h3 className="font-display text-lg mb-4">Order Summary</h3>
       <div className="space-y-2 text-sm">
-        <Row label="Items" value={`${totals.items.reduce((s, i) => s + i.qty, 0)}`} />
-        <Row label="Subtotal" value={`₹${totals.subtotal.toLocaleString("en-IN")}`} />
-        <Row label="GST (18%)" value={`₹${totals.gst.toLocaleString("en-IN")}`} />
-        <Row label="Shipping" value={totals.shipping === 0 ? "Free" : `₹${totals.shipping}`} />
+        <Row
+          label="Items"
+          value={`${totals.items.reduce((s, i) => s + i.qty, 0)}`}
+        />
+        <Row
+          label="Subtotal"
+          value={`₹${totals.subtotal.toLocaleString("en-IN")}`}
+        />
+        <Row
+          label="GST (18%)"
+          value={`₹${totals.gst.toLocaleString("en-IN")}`}
+        />
+        <Row
+          label="Shipping"
+          value={totals.shipping === 0 ? "Free" : `₹${totals.shipping}`}
+        />
       </div>
       <div className="border-t border-border mt-4 pt-4 space-y-2">
         <div className="flex justify-between">
@@ -527,7 +611,10 @@ function OrderSummary({ kind }: { kind: OrderType }) {
       </div>
       <div className="mt-5 p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs text-muted-foreground flex gap-2">
         <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-        <span>Secured by Mazix Commerce. Earnings credited within 24 hours of confirmation.</span>
+        <span>
+          Secured by Mazix Commerce. Earnings credited within 24 hours of
+          confirmation.
+        </span>
       </div>
     </div>
   );

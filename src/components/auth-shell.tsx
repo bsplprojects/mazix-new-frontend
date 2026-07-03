@@ -31,27 +31,10 @@ export function AuthShell({
               <span className="italic text-gradient-emerald">network</span>,
               rewards and payouts.
             </h2>
-            <div className="flex gap-6 pt-4 border-t border-border/40">
-              <div>
-                <div className="font-display text-2xl text-gradient-brass">
-                  ₹12.8L
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Avg. Diamond earnings
-                </div>
-              </div>
-              <div>
-                <div className="font-display text-2xl text-gradient-brass">
-                  99.98%
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Payout reliability
-                </div>
-              </div>
-            </div>
+            
           </div>
           <div className="text-xs text-muted-foreground">
-            "Mazix turned my downline chaos into a clear roadmap to Crown rank."
+            "Meghdoot Marketing Pvt. Ltd. turned my downline chaos into a clear roadmap to Crown rank."
             — Priya S., Platinum
           </div>
         </div>

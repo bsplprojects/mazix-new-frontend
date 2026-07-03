@@ -17,6 +17,7 @@ import {
   Package2Icon,
   Lock,
   IdCard,
+  Wallet2,
 } from "lucide-react";
 
 import {
@@ -92,6 +93,11 @@ const finance = [
     title: "Repurchase Wallet Transfer",
     url: "/admin/wallet/repurchase",
     icon: Package,
+  },
+  {
+    title: "Member Payment Transfer",
+    url: "/admin/wallet/member-payment",
+    icon: Wallet2,
   },
 ];
 

@@ -1,168 +1,407 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { teamApi } from "@/services/teamApi";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 
 export default function PayoutStatement() {
   const { id } = useParams();
   const [data, setData] = useState<any>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const { isLoading } = useQuery({
     queryKey: ["statement", id],
     queryFn: async () => {
       const res = await teamApi.statement(id as string);
       setData(res?.[0] || null);
+      return res.data;
     },
     enabled: !!id,
   });
 
-  const printPage = () => window.print();
+  const printPage = () => {
+    const html = ref.current?.innerHTML;
+
+    if (html) {
+      const printWindow = window.open("", "_blank");
+      printWindow?.document.write(html);
+      printWindow?.document.close();
+      printWindow?.print();
+    }
+  };
 
   if (isLoading) {
     return <div className="p-10 text-center">Loading...</div>;
   }
 
   return (
-    <div className="bg-white text-black max-w-4xl mx-auto p-6 print:p-0">
-      {/* HEADER */}
-      <div className="flex justify-between items-start border-b pb-4">
-        <div>
-          <h1 className="text-xl font-bold">Meghdoot Marketing Pvt. Ltd.</h1>
-          <p className="text-xs text-gray-600">
-            Email: rkrajpragati6@gmail.com <br />
-            Address: Kokar Chunna Bhatta, H.B Road Kokar,
-            Ranchi-834001[Jharkhand]
-          </p>
-        </div>
-
-        <div className="text-right">
-          <h2 className="text-2xl font-bold tracking-widest text-gray-700">
-            STATEMENT
-          </h2>
-        </div>
-      </div>
-
-      {/* TOP INFO */}
-      <div className="grid grid-cols-2 gap-6 mt-6 text-sm">
-        <div>
-          <p>
-            <b>Member ID:</b> {data.MemberID}
-          </p>
-          <p>
-            <b>Member Name:</b> {data.MemberName}
-          </p>
-        </div>
-
-        <div className="text-right">
-          <p>
-            <b>From:</b>{" "}
-            {new Date(data.PayoutFromDate).toLocaleDateString("en-IN")}
-          </p>
-          <p>
-            <b>To:</b> {new Date(data.PayoutToDate).toLocaleDateString("en-IN")}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6 border rounded-xl overflow-hidden">
-        <h3 className="font-semibold p-3 bg-gray-100 border-b">
-          Binary Details
-        </h3>
-
-        <div className="grid grid-cols-2 text-sm">
-          <div className="p-4 border-r space-y-2">
-            <p className="flex justify-between">
-              <span>Current Left</span> <b>{data.CurrentLeft}</b>
-            </p>
-            <p className="flex justify-between">
-              <span>Old Left</span> <b>{data.OldLeftCarry}</b>
-            </p>
-            <p className="flex justify-between">
-              <span>Repurchase Left</span> <b>{data.PurCurrentLeft}</b>
+    <>
+      <div
+        ref={ref}
+        style={{
+          background: "#fff",
+          color: "#000",
+          maxWidth: "89xpx",
+          marginInline: "auto",
+          padding: "24px",
+        }}
+      >
+        {/* HEADER */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "start",
+            justifyContent: "space-between",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "16px",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                fontWeight: "bold",
+                fontSize: "20px",
+              }}
+            >
+              Meghdoot Marketing Pvt. Ltd.
+            </h1>
+            <p
+              style={{
+                fontSize: "12px",
+                color: "#4a5565",
+              }}
+            >
+              Email: rkrajpragati6@gmail.com <br />
+              Address: Kokar Chunna Bhatta, H.B Road Kokar,
+              Ranchi-834001[Jharkhand]
             </p>
           </div>
 
-          <div className="p-4 space-y-2">
-            <p className="flex justify-between">
-              <span>Current Right</span> <b>{data.CurrentRight}</b>
-            </p>
-            <p className="flex justify-between">
-              <span>Old Right</span> <b>{data.OldRightCarry}</b>
-            </p>
-            <p className="flex justify-between">
-              <span>Repurchase Right</span> <b>{data.PurCurrentRight}</b>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* SUMMARY */}
-        <div className="border rounded-xl p-5 bg-gray-50 shadow-sm">
-          <h3 className="font-semibold mb-4 text-gray-700">Income Summary</h3>
-
-          <div className="grid grid-cols-3 text-sm gap-4">
-            <div>
-              <p className="text-gray-500">Total Income</p>
-              <p className="font-bold">₹ {data.Amount}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">TDS</p>
-              <p className="font-bold text-red-500">₹ {data.TDS}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Net Payable</p>
-              <p className="font-bold text-green-600">₹ {data.Payable}</p>
-            </div>
+          <div
+            style={{
+              textAlign: "right",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                letterSpacing: "0.1em",
+                color: "#364153",
+              }}
+            >
+              STATEMENT
+            </h2>
           </div>
         </div>
 
-        {/* EXTRA DETAILS */}
-        <div className="border rounded-xl overflow-hidden shadow-sm">
-          <h3 className="font-semibold p-3 bg-gray-100 border-b">
-            Bonus Details
+        {/* TOP INFO */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2",
+            gap: "24px",
+            marginTop: "24px",
+            fontSize: "14px",
+          }}
+        >
+          <div>
+            <p>
+              <b>Member ID:</b> {data?.MemberID}
+            </p>
+            <p>
+              <b>Member Name:</b> {data?.MemberName}
+            </p>
+          </div>
+
+          <div style={{ textAlign: "right" }}>
+            <p>
+              <b>From:</b>{" "}
+              {new Date(data?.PayoutFromDate).toLocaleDateString("en-IN")}
+            </p>
+            <p>
+              <b>To:</b>{" "}
+              {new Date(data?.PayoutToDate).toLocaleDateString("en-IN")}
+            </p>
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "24px",
+            border: "1px solid #ccc",
+            borderRadius: "0.25rem",
+            overflow: "hidden",
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "600",
+              padding: "0.75rem",
+              background: "#f3f4f6 ",
+              borderBottom: "1px solid #ccc",
+            }}
+          >
+            Binary Details
           </h3>
 
-          <div className="grid grid-cols-4 text-sm p-3">
-            <div>
-              <p className="text-gray-500">Pair</p>
-              <p className="font-bold">{data.Pair}</p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              fontSize: "14px",
+            }}
+          >
+            <div
+              style={{
+                padding: "16px",
+                borderRight: "1px solid #ccc",
+              }}
+            >
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Current Left</span> <b>{data?.CurrentLeft}</b>
+              </p>
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Old Left</span> <b>{data?.OldLeftCarry}</b>
+              </p>
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Repurchase Left</span> <b>{data?.PurCurrentLeft}</b>
+              </p>
             </div>
 
-            <div>
-              <p className="text-gray-500">Admin</p>
-              <p className="font-bold">{data.AdminCharge}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Voucher</p>
-              <p className="font-bold">{data.Vouchur}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Bonus</p>
-              <p className="font-bold text-purple-600">{data.Bonus}</p>
+            <div
+              style={{
+                padding: "16px",
+              }}
+            >
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Current Right</span> <b>{data?.CurrentRight}</b>
+              </p>
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Old Right</span> <b>{data?.OldRightCarry}</b>
+              </p>
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Repurchase Right</span> <b>{data?.PurCurrentRight}</b>
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* FOOTER */}
-      <div className="text-center mt-10 text-xs text-gray-500">
-        Thank you for your business
-      </div>
-
-      {/* PRINT BUTTON */}
-      <div className="text-center mt-6 print:hidden">
-        <button
-          onClick={printPage}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+        <div
+          style={{
+            marginTop: "24px",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "24px",
+          }}
         >
-          Print Statement
-        </button>
+          {/* SUMMARY */}
+          <div
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: "0.25rem",
+              padding: "20px",
+              background: "#f9fafb",
+            }}
+          >
+            <h3
+              style={{
+                fontWeight: "600",
+                marginBottom: "16px",
+                color: "#364153",
+              }}
+            >
+              Income Summary
+            </h3>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                fontSize: "14px",
+                gap: "16px",
+              }}
+            >
+              <div>
+                <p
+                  style={{
+                    color: " #6a7282",
+                  }}
+                >
+                  Total Income
+                </p>
+                <p
+                  style={{
+                    color: "#0077B6",
+                    fontWeight: "700",
+                  }}
+                >
+                  ₹ {data?.Amount}
+                </p>
+              </div>
+
+              <div>
+                <p
+                  style={{
+                    color: " #6a7282",
+                  }}
+                >
+                  TDS
+                </p>
+                <p
+                  style={{
+                    fontWeight: "700",
+                    color: "#fb2c36",
+                  }}
+                >
+                  ₹ {data?.TDS}
+                </p>
+              </div>
+
+              <div>
+                <p
+                  style={{
+                    color: " #6a7282",
+                  }}
+                >
+                  Net Payable
+                </p>
+                <p
+                  style={{
+                    fontWeight: "700",
+                    color: "#00a63e",
+                  }}
+                >
+                  ₹ {data?.Payable}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* EXTRA DETAILS */}
+          <div
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: "0.25rem",
+              overflow: "hidden",
+            }}
+          >
+            <h3
+              style={{
+                fontWeight: "600",
+                padding: "12px",
+                background: "#f3f4f6",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              Bonus Details
+            </h3>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                fontSize: "14px",
+                padding: "12px",
+              }}
+            >
+              <div>
+                <p
+                  style={{
+                    color: "#6a7282",
+                  }}
+                >
+                  Pair
+                </p>
+                <p style={{ fontWeight: "700" }}>{data?.Pair}</p>
+              </div>
+
+              <div>
+                <p
+                  style={{
+                    color: "#6a7282",
+                  }}
+                >
+                  Admin
+                </p>
+                <p style={{ fontWeight: "700" }}>{data?.AdminCharge}</p>
+              </div>
+
+              <div>
+                <p
+                  style={{
+                    color: "#6a7282",
+                  }}
+                >
+                  Voucher
+                </p>
+                <p style={{ fontWeight: "700" }}>{data?.Vouchur}</p>
+              </div>
+
+              <div>
+                <p style={{ color: "#6a7282" }}>Bonus</p>
+                <p
+                  style={{
+                    fontWeight: "700",
+                    color: "#9810fa",
+                  }}
+                >
+                  {data?.Bonus}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FOOTER */}
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "40px",
+            fontSize: "12px",
+            color: "#6a7282",
+          }}
+        >
+          Thank you for your business
+        </div>
+
+        {/* PRINT BUTTON */}
       </div>
-    </div>
+      <div style={{ textAlign: "center", marginTop: "24px" }}>
+        <Button onClick={printPage} variant="destructive">
+          Print Statement
+        </Button>
+      </div>
+    </>
   );
 }

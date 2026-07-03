@@ -66,7 +66,9 @@ const Tree = () => {
   });
 
   const members = useMemo(() => {
-    const merged = [...left, ...right];
+    const leftMembers = left?.members || [];
+    const rightMembers = right?.members || [];
+    const merged = [...leftMembers, ...rightMembers];
 
     return Array.from(new Map(merged.map((m) => [m.id, m])).values());
   }, [left, right]);

@@ -286,7 +286,7 @@ const SaleReport = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
-                    {user.Leaf || "-"}
+                    {user.Leaf === "Left" ? "ORG 1" : "ORG 2"}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
