@@ -156,7 +156,6 @@ const SaleReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -168,16 +167,11 @@ const SaleReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
 
-              <Button
-                variant={"default"}
-                onClick={handleExcel}
-                className="rounded-2xl "
-              >
+              <Button variant={"default"} onClick={handleExcel}>
                 <Download /> Excel
               </Button>
             </div>

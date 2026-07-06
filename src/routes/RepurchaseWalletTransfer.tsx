@@ -65,7 +65,7 @@ const RepurchaseWalletTransfer = () => {
               <Input
                 defaultValue={"admin"}
                 disabled
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
               />
             </div>
           </div>
@@ -83,7 +83,7 @@ const RepurchaseWalletTransfer = () => {
                 placeholder="MAZ1001"
                 value={transferID}
                 onChange={(e) => setTransferID(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
               />
             </div>
           </div>
@@ -102,7 +102,7 @@ const RepurchaseWalletTransfer = () => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 type="number"
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
               />
             </div>
           </div>
@@ -110,7 +110,7 @@ const RepurchaseWalletTransfer = () => {
           <Button
             onClick={handleTransfer}
             disabled={!transferID || !amount}
-            className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-full"
+            className="w-full"
           >
             Transfer
           </Button>
@@ -128,7 +128,6 @@ const RepurchaseWalletTransfer = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -142,7 +141,6 @@ const RepurchaseWalletTransfer = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -154,7 +152,6 @@ const RepurchaseWalletTransfer = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -167,7 +164,7 @@ const RepurchaseWalletTransfer = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+              
               >
                 Reset
               </Button>
@@ -193,7 +190,7 @@ const RepurchaseWalletTransfer = () => {
         ) : (
           <table className="w-full min-w-250">
             <thead className="border-b border-white/10 bg-white/3">
-              <tr className="text-left">
+              <tr className="text-left text-sm">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Sr.

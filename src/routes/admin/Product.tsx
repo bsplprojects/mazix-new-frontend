@@ -204,6 +204,8 @@ const Product = () => {
     window.scrollTo(0, 0);
   };
 
+  console.log(filteredProducts);
+
   return (
     <main>
       <h2 className="text-2xl font-bold tracking-tight text-white">
@@ -605,10 +607,10 @@ const Product = () => {
                         <img
                           onClick={() =>
                             window.open(
-                              `https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`,
+                              `https://app.mymazix.com/${user?.Image?.replace("../../", "")}`,
                             )
                           }
-                          src={`https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`}
+                          src={`https://app.mymazix.com/${user?.Image?.replace("../../", "")}`}
                           alt={user?.name}
                           width={50}
                         />

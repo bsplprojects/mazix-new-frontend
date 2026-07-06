@@ -37,7 +37,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { AxiosError } from "axios";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // fDate and tDate be 1 month
 const fDate = new Date("1900-01-01");
@@ -209,7 +208,7 @@ export default function Repurchase() {
               <h2 className="font-display text-xl">Repurchase History</h2>
 
               <Button asChild variant="default" size="sm">
-                <Link to="/dashboard/orders">View all</Link>
+                <Link to="/dashboard/repurchase/history">View all</Link>
               </Button>
             </div>
 

@@ -123,12 +123,7 @@ const SendToken = () => {
           </Select>
         </div>
         <div>
-          <Button
-            onClick={handleSubmit}
-            className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-full"
-          >
-            Send
-          </Button>
+          <Button onClick={handleSubmit}>Send</Button>
         </div>
       </div>
     </main>

@@ -161,7 +161,7 @@ const PaymentTransferDetail = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="w-full rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="w-full"
               >
                 {isFetching ? "Loading..." : "Display "}
               </Button>
@@ -202,7 +202,7 @@ const PaymentTransferDetail = () => {
                     refetch();
                   }}
                   disabled={isFetching}
-                  className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                  className="w-full"
                 >
                   {isFetching ? "Loading..." : "Display"}
                 </Button>

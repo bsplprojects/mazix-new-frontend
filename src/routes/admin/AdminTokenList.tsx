@@ -153,7 +153,7 @@ const AdminTokenList = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
+                className="flex-1"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -165,7 +165,7 @@ const AdminTokenList = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
+                className="flex-1"
               >
                 Reset
               </Button>

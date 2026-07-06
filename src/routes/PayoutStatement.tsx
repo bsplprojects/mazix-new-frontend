@@ -77,11 +77,7 @@ export default function PayoutStatement() {
             </p>
           </div>
 
-          <div
-            style={{
-              textAlign: "right",
-            }}
-          >
+          <div>
             <h2
               style={{
                 fontSize: "24px",
@@ -99,12 +95,13 @@ export default function PayoutStatement() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "2",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
             gap: "24px",
             marginTop: "24px",
             fontSize: "14px",
           }}
         >
+          {/* LEFT */}
           <div>
             <p>
               <b>Member ID:</b> {data?.MemberID}
@@ -114,7 +111,8 @@ export default function PayoutStatement() {
             </p>
           </div>
 
-          <div style={{ textAlign: "right" }}>
+          {/* RIGHT */}
+          <div >
             <p>
               <b>From:</b>{" "}
               {new Date(data?.PayoutFromDate).toLocaleDateString("en-IN")}
@@ -136,9 +134,9 @@ export default function PayoutStatement() {
         >
           <h3
             style={{
-              fontSize: "600",
+              fontWeight: 600,
               padding: "0.75rem",
-              background: "#f3f4f6 ",
+              background: "#f3f4f6",
               borderBottom: "1px solid #ccc",
             }}
           >
@@ -148,80 +146,56 @@ export default function PayoutStatement() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
               fontSize: "14px",
             }}
           >
+            {/* LEFT */}
             <div
               style={{
                 padding: "16px",
                 borderRight: "1px solid #ccc",
               }}
             >
-              <p
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Current Left</span> <b>{data?.CurrentLeft}</b>
+              <p style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Current ORG 1</span> <b>{data?.CurrentLeft}</b>
               </p>
-              <p
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Old Left</span> <b>{data?.OldLeftCarry}</b>
+
+              <p style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Old ORG 1</span> <b>{data?.OldLeftCarry}</b>
               </p>
-              <p
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Repurchase Left</span> <b>{data?.PurCurrentLeft}</b>
+
+              <p style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Repurchase ORG 1</span> <b>{data?.PurCurrentLeft}</b>
               </p>
             </div>
 
+            {/* RIGHT */}
             <div
               style={{
                 padding: "16px",
               }}
             >
-              <p
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Current Right</span> <b>{data?.CurrentRight}</b>
+              <p style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Current ORG 2</span> <b>{data?.CurrentRight}</b>
               </p>
-              <p
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Old Right</span> <b>{data?.OldRightCarry}</b>
+
+              <p style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Old ORG 2</span> <b>{data?.OldRightCarry}</b>
               </p>
-              <p
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Repurchase Right</span> <b>{data?.PurCurrentRight}</b>
+
+              <p style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>Repurchase ORG 2</span> <b>{data?.PurCurrentRight}</b>
               </p>
             </div>
           </div>
         </div>
 
+        {/* Income Summary */}
         <div
           style={{
             marginTop: "24px",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+
             gap: "24px",
           }}
         >
@@ -247,11 +221,21 @@ export default function PayoutStatement() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
                 fontSize: "14px",
                 gap: "16px",
               }}
             >
+              <div>
+                <p
+                  style={{
+                    color: "#6a7282",
+                  }}
+                >
+                  Matching
+                </p>
+                <p style={{ fontWeight: "700" }}>{data?.Pair}</p>
+              </div>
               <div>
                 <p
                   style={{
@@ -271,6 +255,18 @@ export default function PayoutStatement() {
               </div>
 
               <div>
+                <p style={{ color: "#6a7282" }}>Bonus</p>
+                <p
+                  style={{
+                    fontWeight: "700",
+                    color: "#9810fa",
+                  }}
+                >
+                  {data?.Bonus}
+                </p>
+              </div>
+
+              <div>
                 <p
                   style={{
                     color: " #6a7282",
@@ -286,6 +282,27 @@ export default function PayoutStatement() {
                 >
                   ₹ {data?.TDS}
                 </p>
+              </div>
+              <div>
+                <p
+                  style={{
+                    color: "#6a7282",
+                  }}
+                >
+                  Processing Charge
+                </p>
+                <p style={{ fontWeight: "700" }}>{data?.AdminCharge}</p>
+              </div>
+
+              <div>
+                <p
+                  style={{
+                    color: "#6a7282",
+                  }}
+                >
+                  Voucher
+                </p>
+                <p style={{ fontWeight: "700" }}>{data?.Vouchur}</p>
               </div>
 
               <div>
@@ -307,80 +324,6 @@ export default function PayoutStatement() {
               </div>
             </div>
           </div>
-
-          {/* EXTRA DETAILS */}
-          <div
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "0.25rem",
-              overflow: "hidden",
-            }}
-          >
-            <h3
-              style={{
-                fontWeight: "600",
-                padding: "12px",
-                background: "#f3f4f6",
-                borderBottom: "1px solid #ccc",
-              }}
-            >
-              Bonus Details
-            </h3>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                fontSize: "14px",
-                padding: "12px",
-              }}
-            >
-              <div>
-                <p
-                  style={{
-                    color: "#6a7282",
-                  }}
-                >
-                  Pair
-                </p>
-                <p style={{ fontWeight: "700" }}>{data?.Pair}</p>
-              </div>
-
-              <div>
-                <p
-                  style={{
-                    color: "#6a7282",
-                  }}
-                >
-                  Admin
-                </p>
-                <p style={{ fontWeight: "700" }}>{data?.AdminCharge}</p>
-              </div>
-
-              <div>
-                <p
-                  style={{
-                    color: "#6a7282",
-                  }}
-                >
-                  Voucher
-                </p>
-                <p style={{ fontWeight: "700" }}>{data?.Vouchur}</p>
-              </div>
-
-              <div>
-                <p style={{ color: "#6a7282" }}>Bonus</p>
-                <p
-                  style={{
-                    fontWeight: "700",
-                    color: "#9810fa",
-                  }}
-                >
-                  {data?.Bonus}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* FOOTER */}
@@ -397,8 +340,8 @@ export default function PayoutStatement() {
 
         {/* PRINT BUTTON */}
       </div>
-      <div style={{ textAlign: "center", marginTop: "24px" }}>
-        <Button onClick={printPage} variant="destructive">
+      <div style={{ textAlign: "center", margin: "24px 0px" }}>
+        <Button onClick={printPage} >
           Print Statement
         </Button>
       </div>

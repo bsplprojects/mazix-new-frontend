@@ -44,6 +44,8 @@ export default function RepHistory() {
     return filteredHistory;
   }, [q, repurchaseHistory]);
 
+  console.log(filtered);
+
   return (
     <div className="max-w-350 mx-auto space-y-6">
       <PageHeader
@@ -51,7 +53,7 @@ export default function RepHistory() {
         subtitle="All your purchase and repurchase orders"
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Field className="mx-auto ">
           <Popover>
             <PopoverTrigger asChild>
@@ -75,7 +77,7 @@ export default function RepHistory() {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-full" align="start">
               <Calendar
                 mode="range"
                 defaultMonth={date?.from}
@@ -98,9 +100,9 @@ export default function RepHistory() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-gradient-card border border-border/60 shadow-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40">
+      <div className="rounded-2xl bg-gradient-card border border-border/60 shadow-card overflow-x-auto">
+        <table className="w-full text-sm ">
+          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40 text-nowrap">
             <tr>
               <th className="text-left px-6 py-3">Order No.</th>
               <th className="text-left px-6 py-3">Order Date</th>
@@ -111,7 +113,7 @@ export default function RepHistory() {
               <th className="text-right px-6 py-3">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-border ">
             {isLoading ? (
               <Loader />
             ) : filtered.length > 0 ? (
@@ -122,27 +124,30 @@ export default function RepHistory() {
                 >
                   <td className="px-6 py-4 font-mono text-xs">
                     <Link
-                      to={`/dashboard/orders/${o?.RepOrderID}`}
+                      to={`/dashboard/repurchase/invoice?id=${o?.RepOrderID}&memberId=${o?.MemberID}`}
                       className="text-primary hover:underline"
                     >
                       {o?.OrderNo}
                     </Link>
                   </td>
-                  
+
                   <td className="px-6 py-4 font-mono text-xs">
-                    {o?.OrderDate?.split("T")[0]?.split("-").reverse().join("/")}
+                    {o?.OrderDate?.split("T")[0]
+                      ?.split("-")
+                      .reverse()
+                      .join("/")}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs">
-                    ₹{o?.TotalAmount?.toLocaleString("en-IN")}
+                    ₹{o?.TotalAmount?.toLocaleString("en-IN") ?? 0}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs">
-                    ₹{o?.TotalBV?.toLocaleString("en-IN")}
+                    ₹{o?.TotalBV?.toLocaleString("en-IN") ?? 0}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs">
-                    ₹{o?.RepCurrentWallet?.toLocaleString("en-IN")}
+                    ₹{o?.RepCurrentWallet?.toLocaleString("en-IN") ?? 0}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs">
-                    ₹{o?.RepPrevWallet?.toLocaleString("en-IN")}
+                    ₹{o?.RepPrevWallet?.toLocaleString("en-IN") ?? 0}
                   </td>
                   <td className="px-6 py-4 capitalize">
                     <Badge variant="outline">{o?.OrderStatus}</Badge>

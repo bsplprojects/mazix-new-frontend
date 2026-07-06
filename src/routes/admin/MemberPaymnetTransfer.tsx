@@ -231,17 +231,17 @@ const MemberPaymentTransfer = () => {
 
           <Button
             onClick={() => refetch()}
-            className=" flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-full"
+            className="w-full"
           >
             Display
           </Button>
           <Button
             onClick={() => alert("This feature is not available yet.")}
-            className=" flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-full"
+            className=" w-full"
           >
             Paid
           </Button>
-          <Button onClick={handleExcel} className="w-full rounded-full">
+          <Button onClick={handleExcel} className="w-full ">
             <Download /> Excel
           </Button>
         </div>
