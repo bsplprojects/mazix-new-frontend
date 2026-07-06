@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { Users, UserPlus, ArrowLeftRight } from "lucide-react";
+import { Users, UserPlus, ArrowLeftRight, Coins } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import * as joiningApi from "@/services/joiningApi";
 
 type Member = {
   id: string;
@@ -17,6 +18,8 @@ type Member = {
 };
 
 export default function Team() {
+  const mid = sessionStorage.getItem("MID");
+  const memberId = sessionStorage.getItem("memberID");
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -46,6 +49,18 @@ export default function Team() {
     queryFn: async () => {
       const res = await teamApi.stats(userId as string, "right");
       setStats(res?.stats);
+      return res;
+    },
+  });
+
+  const { data: dash } = useQuery({
+    queryKey: ["dashboard", memberId, mid],
+    queryFn: async () => {
+      const res = await joiningApi.getMemberDashboard(
+        mid as string,
+        memberId as string,
+      );
+
       return res;
     },
   });
@@ -83,24 +98,40 @@ export default function Team() {
           ))}
         </div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-4">
-          <StatCard
-            label="Total"
-            value={stats.total.toLocaleString("en-IN") ?? 0}
-            icon={<Users />}
-          />
-          <StatCard
-            label="Total BV"
-            value={stats.totalBV.toLocaleString("en-IN") ?? 0}
-            icon={<ArrowLeftRight />}
-          />
-          <StatCard
-            label="Active"
-            value={stats.active.toLocaleString("en-IN") ?? 0}
-            icon={<UserPlus />}
-          />
-        </div>
+        <>
+          <div className="grid md:grid-cols-3 gap-4">
+            <StatCard
+              label="Total"
+              value={stats.total.toLocaleString("en-IN") ?? 0}
+              icon={<Users />}
+            />
+            <StatCard
+              label="Total BV"
+              value={stats.totalBV.toLocaleString("en-IN") ?? 0}
+              icon={<ArrowLeftRight />}
+            />
+            <StatCard
+              label="Active"
+              value={stats.active.toLocaleString("en-IN") ?? 0}
+              icon={<UserPlus />}
+            />
+          </div>
+        </>
       )}
+      <div className="grid md:grid-cols-3 gap-4">
+        <StatCard
+          label="Joining BV"
+          value={dash?.CurrentWallet ?? "0"}
+          tone="emerald"
+          icon={<Coins className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Repurchase BV"
+          value={Math.floor(dash?.CurrentWallet / 5)}
+          tone="brass"
+          icon={<Coins className="h-4 w-4" />}
+        />
+      </div>
 
       <div className="flex items-center gap-3">
         <Input

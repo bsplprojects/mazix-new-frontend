@@ -15,7 +15,7 @@ export default function DirectTeam() {
       try {
         const data = await teamApi.direct(memberId as string);
 
-        setMembers(data?.members);
+        setMembers(data);
       } catch (err) {
         console.error(err);
       }
@@ -23,8 +23,6 @@ export default function DirectTeam() {
 
     load();
   }, []);
-
-  console.log(members);
 
   const filtered = members
     ?.filter((m) =>
@@ -67,7 +65,7 @@ export default function DirectTeam() {
           </thead>
 
           <tbody className="divide-y divide-border">
-            {filtered.map((m) => (
+            {filtered?.map((m) => (
               <tr key={m.id} className="hover:bg-accent/30 transition">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">

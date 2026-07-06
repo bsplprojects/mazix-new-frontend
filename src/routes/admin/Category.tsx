@@ -179,7 +179,7 @@ const Category = () => {
         <Button
           onClick={handleSubmit}
           disabled={mutation.isPending}
-          className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-1/6"
+          className=" w-1/9"
         >
           {mutation.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

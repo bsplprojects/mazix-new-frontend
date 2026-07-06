@@ -106,10 +106,7 @@ const NewsFeed = () => {
         </div>
       </div>
       <div>
-        <Button
-          onClick={handleSubmit}
-          className="flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black mt-4 w-1/6"
-        >
+        <Button onClick={handleSubmit} className=" mt-4 w-1/9">
           Save
         </Button>
       </div>

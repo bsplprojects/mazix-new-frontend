@@ -32,8 +32,6 @@ const ChangePassword = () => {
     mutation.mutate();
   };
 
-  console.log(mutation.data);
-
   return (
     <div>
       <h2 className="text-2xl font-bold tracking-tight text-white">
@@ -53,7 +51,7 @@ const ChangePassword = () => {
               placeholder="RMG1001"
               value={memberId}
               onChange={(e) => setMemberId(e.target.value)}
-              className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+              className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
             />
           </div>
         </div>
@@ -63,7 +61,6 @@ const ChangePassword = () => {
           <Button
             onClick={handleSearch}
             disabled={mutation.isPending || !memberId}
-            className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
           >
             {mutation.isPending ? (
               <Loader2 className="animate-spin" />

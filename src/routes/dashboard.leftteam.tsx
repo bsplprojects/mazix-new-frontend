@@ -1,12 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { Users, ArrowLeftRight, UserPlus } from "lucide-react";
+import { Users, ArrowLeftRight, UserPlus, Coins } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
+import * as joiningApi from "@/services/joiningApi";
 
 type Member = {
   id: string;
@@ -17,6 +18,8 @@ type Member = {
 };
 
 export default function Team() {
+  const mid = sessionStorage.getItem("MID");
+  const memberId = sessionStorage.getItem("memberID");
   const [members, setMembers] = useState<Member[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +48,18 @@ export default function Team() {
     queryFn: async () => {
       const res = await teamApi.stats(userId as string, "left");
       setStats(res?.stats);
+      return res;
+    },
+  });
+
+  const { data: dash } = useQuery({
+    queryKey: ["dashboard", memberId, mid],
+    queryFn: async () => {
+      const res = await joiningApi.getMemberDashboard(
+        mid as string,
+        memberId as string,
+      );
+
       return res;
     },
   });
@@ -101,6 +116,20 @@ export default function Team() {
           />
         </div>
       )}
+      <div className="grid md:grid-cols-3 gap-4">
+        <StatCard
+          label="Joining BV"
+          value={dash?.CurrentWallet ?? "0"}
+          tone="emerald"
+          icon={<Coins className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Repurchase BV"
+          value={Math.floor(dash?.CurrentWallet / 5)}
+          tone="brass"
+          icon={<Coins className="h-4 w-4" />}
+        />
+      </div>
 
       {/* SEARCH */}
       <div className="flex items-center gap-3">

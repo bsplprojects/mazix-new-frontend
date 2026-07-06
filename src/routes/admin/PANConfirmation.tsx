@@ -9,7 +9,6 @@ import { toast } from "sonner";
 
 const PANConfirmation = () => {
   const [checkLists, setCheckLists] = useState<string[]>([]);
-  
 
   const { data, isLoading } = useQuery({
     queryKey: ["pan"],
@@ -64,10 +63,7 @@ const PANConfirmation = () => {
         <h2 className="text-2xl font-bold tracking-tight text-white">
           PAN Records ({data?.length})
         </h2>
-        <Button
-          onClick={handleVerification}
-          className="h-11 w-1/8 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
-        >
+        <Button onClick={handleVerification} className="w-1/8 ">
           {mutation.isPending ? <Loader2 className="animate-spin" /> : "Verify"}
         </Button>
       </div>
@@ -78,7 +74,7 @@ const PANConfirmation = () => {
             <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
           </div>
         ) : (
-          <table className="w-full min-w-250">
+          <table className="w-full min-w-250 ">
             <thead className="border-b border-white/10 bg-white/3">
               <tr className="text-left">
                 {/* TABLE HEADER */}
@@ -109,9 +105,9 @@ const PANConfirmation = () => {
 
             <tbody className="divide-y divide-white/5">
               {data?.map((user: any, index: number) => (
-                <tr key={index} className="transition hover:bg-white/3">
+                <tr key={index} className="transition hover:bg-white/3 ">
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-xs font-semibold text-zinc-300">
                     <Input
                       type="checkbox"
                       className="h-4 w-4"
@@ -119,18 +115,18 @@ const PANConfirmation = () => {
                     />
                   </td>
 
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-xs font-semibold text-zinc-300">
                     {index + 1}
                   </td>
                   {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-xs text-zinc-300">
                     {new Date(user.ModifyDate).toLocaleDateString()}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-xs font-medium text-yellow-400">
                     {user.MemberID || "-"}
                   </td>
 
@@ -144,7 +140,7 @@ const PANConfirmation = () => {
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-xs text-zinc-300">
                     {user.PAN || "-"}
                   </td>
                 </tr>

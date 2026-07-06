@@ -1,27 +1,28 @@
 import Loader from "@/components/Loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Users, UserCheck, UserPlus, Network } from "lucide-react";
 
 const cards = [
   {
-    title: "Position 1",
+    title: "ORG 1",
     value: "0",
     icon: Users,
   },
   {
-    title: "Position 2",
+    title: "ORG 2",
     value: "0",
     icon: UserCheck,
   },
   {
-    title: "Position 1 (Repurchase BV)",
+    title: "ORG 1 (Repurchase BV)",
     value: "0",
     icon: UserPlus,
   },
   {
-    title: "Position 2 (Repurchase BV)",
+    title: "ORG 2 (Repurchase BV)",
     value: "0",
     icon: Network,
   },
@@ -39,37 +40,43 @@ const TeamDashboard = () => {
   });
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+        {[1, 2, 3, 4].map(() => (
+          <Skeleton className="h-28 w-full" />
+        ))}
+      </div>
+    );
   }
 
   return (
-    <main className="grid grid-cols-4 gap-2">
+    <main className="grid grid-cols-1 md:grid-cols-4 gap-2">
       <Card className="transition-shadow hover:shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Position 1</CardTitle>
+          <CardTitle className="text-sm font-medium">ORG 1</CardTitle>
           <Users className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
 
         <CardContent>
-          <div className="text-3xl font-bold">{data?.Pos1}</div>
+          <div className="text-3xl font-bold">{data?.Pos1 ?? 0}</div>
         </CardContent>
       </Card>
 
       <Card className="transition-shadow hover:shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Position 2</CardTitle>
+          <CardTitle className="text-sm font-medium">ORG 2</CardTitle>
           <Users className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
 
         <CardContent>
-          <div className="text-3xl font-bold">{data?.Pos2}</div>
+          <div className="text-3xl font-bold">{data?.Pos2 ?? 0}</div>
         </CardContent>
       </Card>
 
       <Card className="transition-shadow hover:shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Position 1 (Repurchase BV)
+            ORG 1 (Repurchase BV)
           </CardTitle>
           <Users className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
@@ -82,7 +89,7 @@ const TeamDashboard = () => {
       <Card className="transition-shadow hover:shadow-lg">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Position 2 (Repurchase BV)
+            ORG 2 (Repurchase BV)
           </CardTitle>
           <Users className="h-5 w-5 text-muted-foreground" />
         </CardHeader>

@@ -1,5 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Minus, Trash2, ShoppingCart } from "lucide-react";
+import {
+  Plus,
+  Minus,
+  Trash2,
+  ShoppingCart,
+  ShoppingCartIcon,
+  GalleryHorizontal,
+  Images,
+} from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
@@ -29,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { AxiosError } from "axios";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // fDate and tDate be 1 month
 const fDate = new Date("1900-01-01");
@@ -113,11 +122,17 @@ export default function Repurchase() {
                   >
                     <div className="flex gap-3">
                       <div className="text-2xl">
-                        <img
-                          src={`https://new.mazix.co.in/${p?.image.split("../../")[1]}`}
-                          alt={p?.name}
-                          width={50}
-                        />
+                        {p?.image === "📦" ? (
+                          <div className="h-12 w-12 border flex items-center justify-center">
+                            <Images className="text-primary/60" />
+                          </div>
+                        ) : (
+                          <img
+                            src={`https://new.mazix.co.in/${p?.image.split("../../")[1]}`}
+                            alt={p?.name}
+                            width={50}
+                          />
+                        )}
                       </div>
 
                       <div>
@@ -298,14 +313,17 @@ function CartSummary({
   const state = useCart();
   const cart = state[kind].cart;
   const totals = cartTotals(cart, products);
-
-  const [items, setItems] = useState<Items[]>([]);
+  const memberID = sessionStorage.getItem("memberID");
+  const mid = sessionStorage.getItem("MID");
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(`/repurchase/insert-rep`, {
-        kotbills: items,
-      });
+    mutationFn: async (mappedItems: Items[]) => {
+      const res = await axiosInstance.post(
+        `/repurchase/insert-rep?memberID=${memberID}&mid=${mid}`,
+        {
+          kotbills: mappedItems,
+        },
+      );
       return res.data;
     },
     onSuccess: (data) => {
@@ -338,11 +356,9 @@ function CartSummary({
       pID: String(c.productId),
     }));
 
-    setItems(mappedItems);
+    // console.log(mappedItems);
 
-    // alert(`This feature is work in progress.`);
-
-    mutation.mutate();
+    mutation.mutate(mappedItems);
   };
 
   return (
@@ -369,11 +385,15 @@ function CartSummary({
                 className="flex items-center gap-3 p-2 rounded-lg bg-secondary/30"
               >
                 <div className="text-2xl">
-                  <img
-                    src={`https://new.mazix.co.in/${i?.image?.split("../../")[1]}`}
-                    alt={i?.name}
-                    width={50}
-                  />
+                  {i?.image ? (
+                    <img
+                      src={`https://new.mazix.co.in/${i?.image?.split("../../")[1]}`}
+                      alt={i?.name}
+                      width={50}
+                    />
+                  ) : (
+                    <ShoppingCartIcon className="h-10 w-10 mx-auto mb-3 opacity-30" />
+                  )}
                 </div>
 
                 <div className="flex-1">

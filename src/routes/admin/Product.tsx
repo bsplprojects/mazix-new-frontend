@@ -12,12 +12,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { axiosInstance } from "@/config/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { Loader2, Package2, Pencil, Trash } from "lucide-react";
+import { Images, Loader2, Package2, Pencil, Trash } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const Product = () => {
   const [search, setSearch] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [data, setData] = useState({
     pID: 0,
@@ -89,6 +90,7 @@ const Product = () => {
         Image: "",
       });
       setFile(null);
+      setPreview(null);
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -195,6 +197,10 @@ const Product = () => {
       seqOnline: product?.seqOnline ?? 0,
       Image: product.Image,
     });
+    // for displaying the image in editing mode.
+    setPreview(
+      `https://new.mazix.co.in/${product?.Image?.replace("../../", "")}`,
+    );
     window.scrollTo(0, 0);
   };
 
@@ -393,15 +399,54 @@ const Product = () => {
               if (file) {
                 setFile(file);
               }
+              const reader = new FileReader();
+              reader.onload = () => {
+                setPreview(reader.result as string);
+              };
+              reader.readAsDataURL(file!);
             }}
           />
+          {preview && (
+            <div className="col-span-2 mt-3">
+              <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                Image Preview
+              </Label>
+              {<img src={preview} className="mt-1 w-20 h-20" />}
+            </div>
+          )}
         </div>
       </div>
-      <div className="mt-5">
+      <div className="mt-5 flex items-center gap-3">
+        <Button
+          onClick={() => {
+            setData({
+              pID: 0,
+              pCatID: 0,
+              Status: "",
+              Product: "",
+              Description: "",
+              MRP: 0,
+              MemberMRP: 0,
+              StockistMRP: 0,
+              GST: 0,
+              Discount: 0,
+              BV: 0,
+              Repurchase: 0,
+              seqOnline: 0,
+              Image: "",
+            });
+            setFile(null);
+            setPreview(null);
+          }}
+          variant={"outline"}
+          className="w-1/9"
+        >
+          Reset
+        </Button>
         <Button
           onClick={handleSubmit}
           disabled={mutation.isPending}
-          className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black w-1/6"
+          className="w-1/9"
         >
           {mutation.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -552,11 +597,22 @@ const Product = () => {
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      <img
-                        src={`https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`}
-                        alt="image"
-                        width={50}
-                      />
+                      {user?.Image === null ? (
+                        <div className="h-12 w-12 border flex items-center justify-center">
+                          <Images className="text-primary/60" />
+                        </div>
+                      ) : (
+                        <img
+                          onClick={() =>
+                            window.open(
+                              `https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`,
+                            )
+                          }
+                          src={`https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`}
+                          alt={user?.name}
+                          width={50}
+                        />
+                      )}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300 flex items-center gap-1">

@@ -156,7 +156,7 @@ export default function AllUsersPage() {
                     placeholder="RMG1001"
                     value={memberId}
                     onChange={(e) => setMemberId(e.target.value)}
-                    className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                    className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                   />
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function AllUsersPage() {
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                  className=" rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
                 />
               </div>
 
@@ -185,7 +185,7 @@ export default function AllUsersPage() {
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                  className=" rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
                 />
               </div>
 
@@ -202,7 +202,7 @@ export default function AllUsersPage() {
                     placeholder="Name / Mobile"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                    className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                   />
                 </div>
               </div>
@@ -215,7 +215,6 @@ export default function AllUsersPage() {
                     refetch();
                   }}
                   disabled={isFetching}
-                  className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
                 >
                   {isFetching ? "Loading..." : "Search"}
                 </Button>
@@ -228,7 +227,6 @@ export default function AllUsersPage() {
                     setToDate("");
                     setSearch("");
                   }}
-                  className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
                 >
                   Reset
                 </Button>
@@ -322,7 +320,10 @@ export default function AllUsersPage() {
 
               <tbody className="divide-y divide-white/5">
                 {filteredUsers.map((user: any, index) => (
-                  <tr key={index} className="transition hover:bg-white/3 text-nowrap">
+                  <tr
+                    key={index}
+                    className="transition hover:bg-white/3 text-nowrap"
+                  >
                     {/* SR NO */}
                     <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                       {index + 1}
