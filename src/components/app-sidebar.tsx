@@ -33,6 +33,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
+import { useAuth } from "@/context/AuthContext";
 
 const main = [
   { title: "Overview", url: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -124,6 +125,7 @@ function MenuSection({
   type?: string;
 }) {
   const { state, setOpenMobile } = useSidebar();
+
   const collapsed = state === "collapsed";
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -232,6 +234,7 @@ export function AppSidebar() {
   const memberId = sessionStorage.getItem("memberID");
   const navigate = useNavigate();
   const MID = sessionStorage.getItem("MID");
+  const { logout } = useAuth();
 
   const { data: member } = useQuery({
     queryKey: ["member", MID],
@@ -286,13 +289,7 @@ export function AppSidebar() {
                 {memberId}
               </div>
             </div>
-            <Button
-              className="hover:bg-yellow-500"
-              onClick={() => {
-                sessionStorage.clear();
-                navigate("/");
-              }}
-            >
+            <Button className="hover:bg-yellow-500" onClick={logout}>
               <LogOut />
               Logout
             </Button>

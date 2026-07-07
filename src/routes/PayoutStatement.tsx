@@ -35,7 +35,10 @@ export default function PayoutStatement() {
   }
 
   return (
-    <>
+    <main className="md:w-4xl mx-auto">
+      <div style={{ textAlign: "center", margin: "24px 0px" }}>
+        <Button onClick={printPage}>Print Statement</Button>
+      </div>
       <div
         ref={ref}
         style={{
@@ -112,7 +115,7 @@ export default function PayoutStatement() {
           </div>
 
           {/* RIGHT */}
-          <div >
+          <div>
             <p>
               <b>From:</b>{" "}
               {new Date(data?.PayoutFromDate).toLocaleDateString("en-IN")}
@@ -340,11 +343,6 @@ export default function PayoutStatement() {
 
         {/* PRINT BUTTON */}
       </div>
-      <div style={{ textAlign: "center", margin: "24px 0px" }}>
-        <Button onClick={printPage} >
-          Print Statement
-        </Button>
-      </div>
-    </>
+    </main>
   );
 }

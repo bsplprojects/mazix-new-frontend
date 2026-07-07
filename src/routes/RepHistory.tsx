@@ -37,14 +37,12 @@ export default function RepHistory() {
   const filtered = useMemo(() => {
     if (!q || q.length <= 0) return repurchaseHistory;
 
-    const filteredHistory = repurchaseHistory.filter((order) => {
+    const filteredHistory = repurchaseHistory.filter((order: any) => {
       return order?.OrderNo.toLowerCase().includes(q.toLowerCase());
     });
 
     return filteredHistory;
   }, [q, repurchaseHistory]);
-
-  console.log(filtered);
 
   return (
     <div className="max-w-350 mx-auto space-y-6">

@@ -127,13 +127,13 @@ const SaleInvoiceReport = () => {
           <div className="flex items-center gap-3">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">
-                Sales Invoice List
+              Sales Invoice List
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                  {reports.length}
                 </span>{" "}
                 results
               </p>

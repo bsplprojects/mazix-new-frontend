@@ -1,11 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Plus,
   Minus,
   Trash2,
   ShoppingCart,
   ShoppingCartIcon,
-  GalleryHorizontal,
   Images,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -127,7 +126,7 @@ export default function Repurchase() {
                           </div>
                         ) : (
                           <img
-                            src={`https://new.mazix.co.in/${p?.image.split("../../")[1]}`}
+                            src={`https://app.mymazix.com/${p?.image.split("../../")[1]}`}
                             alt={p?.name}
                             width={50}
                           />
@@ -386,7 +385,7 @@ function CartSummary({
                 <div className="text-2xl">
                   {i?.image ? (
                     <img
-                      src={`https://new.mazix.co.in/${i?.image?.split("../../")[1]}`}
+                      src={`https://app.mymazix.com/${i?.image?.split("../../")[1]}`}
                       alt={i?.name}
                       width={50}
                     />

@@ -323,7 +323,7 @@ export default function MyPayout() {
 
                     <td className="px-5 py-3">
                       <a
-                        href={`/statement/${item.BinaryPayoutID}`}
+                        href={`/dashboard/statement/${item.BinaryPayoutID}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:underline"

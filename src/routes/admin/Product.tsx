@@ -199,12 +199,10 @@ const Product = () => {
     });
     // for displaying the image in editing mode.
     setPreview(
-      `https://new.mazix.co.in/${product?.Image?.replace("../../", "")}`,
+      `https://app.mymazix.com/${product?.Image?.replace("../../", "")}`,
     );
     window.scrollTo(0, 0);
   };
-
-  console.log(filteredProducts);
 
   return (
     <main>
@@ -536,7 +534,7 @@ const Product = () => {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-white/5 text-sm">
               {filteredProducts?.length > 0 ? (
                 filteredProducts?.map((user: any, index: number) => (
                   <tr key={index} className="transition hover:bg-white/3">

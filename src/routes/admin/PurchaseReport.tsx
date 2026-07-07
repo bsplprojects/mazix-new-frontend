@@ -109,9 +109,9 @@ const PurchaseReport = () => {
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                  {reports.length}
                 </span>{" "}
-                registered members
+                results
               </p>
             </div>
           </div>

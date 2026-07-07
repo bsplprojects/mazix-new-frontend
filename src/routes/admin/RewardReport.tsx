@@ -154,7 +154,7 @@ const RewardReport = () => {
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                  {reports.length}
                 </span>{" "}
                 results
               </p>
@@ -258,7 +258,6 @@ const RewardReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -270,16 +269,11 @@ const RewardReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                
               >
                 Reset
               </Button>
 
-              <Button
-                variant={"default"}
-                onClick={handleExcel}
-                
-              >
+              <Button variant={"default"} onClick={handleExcel}>
                 <Download /> Excel
               </Button>
             </div>
@@ -345,8 +339,11 @@ const RewardReport = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index:number) => (
-                <tr key={index} className="transition hover:bg-white/3 text-nowrap">
+              {reports?.map((user: any, index: number) => (
+                <tr
+                  key={index}
+                  className="transition hover:bg-white/3 text-nowrap"
+                >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}

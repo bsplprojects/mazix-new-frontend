@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthShell } from "@/components/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,11 @@ import { loginMember } from "@/services/authApi";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignIn() {
   const navigate = useNavigate();
-
+  const { mId, memberId, login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
@@ -25,10 +26,8 @@ export default function SignIn() {
       return res.user;
     },
     onSuccess: (user: any) => {
-      sessionStorage.setItem("MID", user?.MID);
-      sessionStorage.setItem("memberID", user?.MemberID);
+      login(user.MID, user.MemberID);
       toast.success("Login successful");
-
       navigate("/dashboard");
     },
     onError: (error: any) => {
@@ -51,6 +50,12 @@ export default function SignIn() {
 
     loginMutation.mutate();
   };
+
+  useEffect(() => {
+    if (mId && memberId) {
+      navigate("/dashboard");
+    }
+  }, [mId, memberId, navigate]);
 
   return (
     <AuthShell

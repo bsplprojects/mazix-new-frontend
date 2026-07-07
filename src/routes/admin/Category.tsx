@@ -17,11 +17,14 @@ import { toast } from "sonner";
 
 const Category = () => {
   const [search, setSearch] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [data, setData] = useState({
     pCatID: 0,
     Status: "",
     Category: "",
     seqOnline: "",
+    image: "",
   });
 
   const client = useQueryClient();
@@ -41,19 +44,25 @@ const Category = () => {
   }, [categories, search]);
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(`/admin/category/new`, data);
+    mutationFn: async (formData: FormData) => {
+      const res = await axiosInstance.post(`/admin/category/new`, formData);
       return res.data;
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["categories"] });
-      toast.success("Category added successfully");
+      toast.success(
+        data?.pCatID > 0
+          ? "Category updated successfully"
+          : "Category added successfully",
+      );
       setData({
         pCatID: 0,
         Status: "",
         Category: "",
         seqOnline: "",
+        image: "",
       });
+      setFile(null);
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -80,8 +89,21 @@ const Category = () => {
       return;
     }
 
-    mutation.mutate();
+    const formData = new FormData();
+
+    formData.append("pCatID", data.pCatID.toString());
+    formData.append("Status", data.Status);
+    formData.append("Category", data.Category);
+    formData.append("seqOnline", data.seqOnline.toString());
+    formData.append("Image", data.image || "");
+
+    if (file) {
+      formData.append("Image", file);
+    }
+
+    mutation.mutate(formData);
   };
+
   // ----------------------------------------
 
   const delMutation = useMutation({
@@ -119,8 +141,11 @@ const Category = () => {
       Status: product.Status,
       Category: product.Category,
       seqOnline: product.seqOnline,
+      image: product.Image,
     });
-
+    setPreview(
+      `https://app.mymazix.com/${product?.Image?.replace("../../", "")}`,
+    );
     window.scrollTo(0, 0);
   };
 
@@ -174,6 +199,36 @@ const Category = () => {
             className="mt-1 "
           />
         </div>
+
+        <div>
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            Image
+          </Label>
+          <Input
+            type="file"
+            accept="image/*"
+            className="mt-1"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setFile(file);
+              }
+              const reader = new FileReader();
+              reader.onload = () => {
+                setPreview(reader.result as string);
+              };
+              reader.readAsDataURL(file!);
+            }}
+          />
+        </div>
+        {preview && (
+          <div className="col-span-2 mt-3">
+            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              Image Preview
+            </Label>
+            {<img src={preview} className="mt-1 w-20 h-20" />}
+          </div>
+        )}
       </div>
       <div className="mt-5">
         <Button
@@ -256,7 +311,7 @@ const Category = () => {
 
                   <td className="px-6 py-5 text-sm font-medium text-yellow-400 text-nowrap">
                     <img
-                      src={`https://new.mazix.co.in/${user?.Image?.replace("../../", "")}`}
+                      src={`https://app.mymazix.com/${user?.Image?.replace("../../", "")}`}
                       alt="img"
                       width={50}
                     />

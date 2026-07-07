@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { loginAdmin } from "@/services/authApi";
 import { ShieldCheck, Eye, EyeOff, LockKeyhole, UserCog } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { loginAdmin } from "@/services/authApi";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const adminToken = sessionStorage.getItem("adminToken");
 
@@ -19,13 +20,34 @@ export default function AdminLogin() {
     Password: "",
   });
 
+  // Redirect to admin dashboard if already logged in
   useEffect(() => {
     if (adminToken) {
       navigate("/admin");
     }
-  }, [adminToken]);
+  }, [adminToken, navigate]);
 
-  const handleSubmit = async (e: any) => {
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await loginAdmin(form.Username, form.Password);
+      return res;
+    },
+    onSuccess: (data) => {
+      sessionStorage.setItem("adminToken", data.token);
+      sessionStorage.setItem("role", "admin");
+      navigate("/admin");
+    },
+    onError: (err) => {
+      console.log(err);
+      if (err instanceof AxiosError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.Username || !form.Password) {
@@ -33,36 +55,15 @@ export default function AdminLogin() {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const data = await loginAdmin(form.Username, form.Password);
-
-      if (!data.success) {
-        toast.error(data.message || "Admin login failed");
-        return;
-      }
-
-      sessionStorage.setItem("adminToken", data.token);
-      sessionStorage.setItem("role", "admin");
-
-      toast.success("Welcome Admin");
-
-      navigate("/admin");
-    } catch (err) {
-      console.log(err);
-      toast.error("Server error");
-    } finally {
-      setLoading(false);
-    }
+    mutation.mutate();
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-zinc-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-linear-to-br from-black via-zinc-900 to-zinc-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Top Logo / Heading */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mx-auto shadow-2xl shadow-yellow-500/20">
+          <div className="w-20 h-20 rounded-3xl bg-linear-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mx-auto shadow-2xl shadow-yellow-500/20">
             <ShieldCheck className="w-10 h-10 text-black" />
           </div>
 
@@ -128,10 +129,10 @@ export default function AdminLogin() {
             {/* Button */}
             <Button
               type="submit"
-              disabled={loading}
+              disabled={mutation.isPending}
               className="w-full h-12 rounded-xl text-base font-semibold bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:opacity-90 transition-all duration-300 shadow-lg shadow-yellow-500/20"
             >
-              {loading ? "Signing in..." : "Admin Login"}
+              {mutation.isPending ? "Signing in..." : "Admin Login"}
             </Button>
           </form>
 

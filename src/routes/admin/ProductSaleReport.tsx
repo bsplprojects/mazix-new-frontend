@@ -199,7 +199,7 @@ const ProductSaleReport = () => {
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                  {reports.length}
                 </span>{" "}
                 results
               </p>
@@ -263,7 +263,6 @@ const ProductSaleReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -275,16 +274,11 @@ const ProductSaleReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                
               >
                 Reset
               </Button>
 
-              <Button
-                variant={"default"}
-                onClick={handleExcel}
-                
-              >
+              <Button variant={"default"} onClick={handleExcel}>
                 <Download /> Excel
               </Button>
             </div>

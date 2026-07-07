@@ -18,6 +18,16 @@ import {
   Lock,
   IdCard,
   Wallet2,
+  FileChartColumn,
+  ScanBarcode,
+  Gift,
+  TicketCheck,
+  ShoppingBag,
+  WalletCards,
+  BadgeIndianRupee,
+  ShoppingBasket,
+  FileInput,
+  CalendarSync,
 } from "lucide-react";
 
 import {
@@ -105,46 +115,59 @@ const reports = [
   {
     title: "Transferred Payments",
     url: "/admin/transfer-payment",
-    icon: BarChart3,
+    icon: CalendarSync ,
   },
-  { title: "Sale Reports", url: "/admin/sale-reports", icon: BarChart3 },
+  { title: "Sale Reports", url: "/admin/sale-reports", icon: FileInput },
   {
     title: "Purchase Reports",
     url: "/admin/purchase-report",
-    icon: BarChart3,
+    icon: ShoppingBasket,
   },
-  { title: "TDS Details", url: "/admin/tds-reports", icon: BarChart3 },
-  { title: "Admin Charge", url: "/admin/admin-charge", icon: BarChart3 },
+  {
+    title: "TDS Details",
+    url: "/admin/tds-reports",
+    icon: BadgeIndianRupee,
+  },
+  {
+    title: "Admin Charge",
+    url: "/admin/admin-charge",
+    icon: BadgeIndianRupee,
+  },
+  {
+    title: "GST Report",
+    url: "/admin/gst-report",
+    icon: FileText,
+  },
   {
     title: "Wallet Transfer Report",
     url: "/admin/wallet-transfer",
-    icon: BarChart3,
+    icon: WalletCards,
   },
   {
     title: "Repurchase Report",
     url: "/admin/repurchase-report",
-    icon: BarChart3,
+    icon: ShoppingBag,
   },
 
   {
     title: "Repurchase (Voucher)",
     url: "/admin/repurchase-voucher",
-    icon: BarChart3,
+    icon: TicketCheck,
   },
   {
     title: "Reward Report",
     url: "/admin/reward-report",
-    icon: BarChart3,
+    icon: Gift,
   },
   {
     title: "Product Sale Report",
     url: "/admin/product-sale-report",
-    icon: BarChart3,
+    icon: ScanBarcode,
   },
   {
     title: "Sale Invoice",
     url: "/admin/sale-invoice-report",
-    icon: BarChart3,
+    icon: FileChartColumn,
   },
   // { title: "Statements", url: "/admin/statements", icon: FileText },
 ];

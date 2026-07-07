@@ -19,6 +19,9 @@ import MemberPaymentTransfer from "./routes/admin/MemberPaymnetTransfer";
 import { Checkout } from "./routes/dashboard.checkout";
 import RepurchaseInvoice from "./routes/RepurchaseInvoice";
 
+import Protected from "./components/Protected";
+import GSTReport from "./routes/admin/GSTReport";
+
 // Auth
 const Signin = lazy(() => import("./routes/signin"));
 
@@ -100,69 +103,81 @@ export default function App() {
         <Routes>
           {/* Auth */}
           <Route path="/" element={<Signin />} />
-          <Route path="/statement/:id" element={<PayoutStatement />} />
+
           <Route path="/admin-login" element={<AdminLogin />} />
 
           {/* Dashboard */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardHome />} />
-            <Route
-              path="/dashboard/team/dashboard"
-              element={<TeamDashboard />}
-            />
-            <Route path="/dashboard/team/updown" element={<UpdownTeam />} />
-            <Route path="/dashboard/team/binary" element={<BinaryTreePage />} />
-            <Route path="/dashboard/team/direct" element={<DirectTeam />} />
-            <Route path="/dashboard/team/left-right" element={<Team />} />
-            <Route path="/dashboard/team/right-team" element={<RightTeam />} />
-            <Route path="/dashboard/team/left-team" element={<LeftTeam />} />
-            <Route
-              path="/dashboard/team/datewise"
-              element={<DatewiseDownline />}
-            />
-            <Route path="/dashboard/team/tree" element={<Tree />} />
-            <Route
-              path="/dashboard/wallet/repurchase-wallet"
-              element={<RepurchaseWallet />}
-            />
-            <Route
-              path="/dashboard/wallet/joining-wallet"
-              element={<JoiningWallet />}
-            />
-            <Route path="/dashboard/userinfo" element={<UserInfo />} />
-            <Route path="/dashboard/profile" element={<Profile />} />
-            <Route path="/dashboard/repurchase" element={<Repurchase />} />
-            <Route path="/dashboard/checkout" element={<Checkout />} />
+          <Route element={<Protected />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route
+                path="/dashboard/team/dashboard"
+                element={<TeamDashboard />}
+              />
+              <Route path="/dashboard/team/updown" element={<UpdownTeam />} />
+              <Route
+                path="/dashboard/team/binary"
+                element={<BinaryTreePage />}
+              />
+              <Route path="/dashboard/team/direct" element={<DirectTeam />} />
+              <Route path="/dashboard/team/left-right" element={<Team />} />
+              <Route
+                path="/dashboard/team/right-team"
+                element={<RightTeam />}
+              />
+              <Route path="/dashboard/team/left-team" element={<LeftTeam />} />
+              <Route
+                path="/dashboard/statement/:id"
+                element={<PayoutStatement />}
+              />
+              <Route
+                path="/dashboard/team/datewise"
+                element={<DatewiseDownline />}
+              />
+              <Route path="/dashboard/team/tree" element={<Tree />} />
+              <Route
+                path="/dashboard/wallet/repurchase-wallet"
+                element={<RepurchaseWallet />}
+              />
+              <Route
+                path="/dashboard/wallet/joining-wallet"
+                element={<JoiningWallet />}
+              />
+              <Route path="/dashboard/userinfo" element={<UserInfo />} />
+              <Route path="/dashboard/profile" element={<Profile />} />
+              <Route path="/dashboard/repurchase" element={<Repurchase />} />
+              <Route path="/dashboard/checkout" element={<Checkout />} />
 
-            <Route
-              path="/dashboard/repurchase/history"
-              element={<RepHistory />}
-            />
-            <Route path="/dashboard/rewards" element={<Rewards />} />
-            <Route path="/dashboard/rank" element={<RankPage />} />
-            <Route path="/dashboard/support" element={<Support />} />
-            <Route
-              path="/dashboard/welcome-letter"
-              element={<WelcomeLetter />}
-            />
-            <Route
-              path="/dashboard/member-id-card"
-              element={<MemberIDCard />}
-            />
-            <Route
-              path="/dashboard/landing-reward"
-              element={<LandingReward />}
-            />
-            <Route
-              path="/dashboard/inv-joining"
-              element={<InvoiceAtJoining />}
-            />
-            <Route path="/dashboard/old-income" element={<OldIncome />} />
-            <Route path="/dashboard/my-payout" element={<MyPayout />} />
-            <Route
-              path="/dashboard/repurchase/invoice"
-              element={<RepurchaseInvoice />}
-            />
+              <Route
+                path="/dashboard/repurchase/history"
+                element={<RepHistory />}
+              />
+              <Route path="/dashboard/rewards" element={<Rewards />} />
+              <Route path="/dashboard/rank" element={<RankPage />} />
+              <Route path="/dashboard/support" element={<Support />} />
+              <Route
+                path="/dashboard/welcome-letter"
+                element={<WelcomeLetter />}
+              />
+              <Route
+                path="/dashboard/member-id-card"
+                element={<MemberIDCard />}
+              />
+              <Route
+                path="/dashboard/landing-reward"
+                element={<LandingReward />}
+              />
+              <Route
+                path="/dashboard/inv-joining"
+                element={<InvoiceAtJoining />}
+              />
+              <Route path="/dashboard/old-income" element={<OldIncome />} />
+              <Route path="/dashboard/my-payout" element={<MyPayout />} />
+              <Route
+                path="/dashboard/repurchase/invoice"
+                element={<RepurchaseInvoice />}
+              />
+            </Route>
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
@@ -196,6 +211,10 @@ export default function App() {
             <Route
               path="/admin/sale-invoice-report"
               element={<SaleInvoiceReport />}
+            />
+            <Route
+              path="/admin/gst-report"
+              element={<GSTReport />}
             />
             <Route path="/admin/franchise" element={<Franchise />} />
             <Route path="/admin/invoice" element={<PrintInvoice />} />
