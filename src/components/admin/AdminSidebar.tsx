@@ -28,6 +28,7 @@ import {
   ShoppingBasket,
   FileInput,
   CalendarSync,
+  Key,
 } from "lucide-react";
 
 import {
@@ -57,6 +58,7 @@ const adminMain = [
 
 const userManagement = [
   { title: "All Users", url: "/admin/all-users", icon: Users },
+  { title: "Member Credentials", url: "/admin/credentials", icon: Key },
   // { title: "Add User", url: "/admin/add-user", icon: UserPlus },
   { title: "Change Password", url: "/admin/password", icon: Lock },
   { title: "KYC Requests", url: "/admin/kyc", icon: CreditCard },
@@ -115,7 +117,7 @@ const reports = [
   {
     title: "Transferred Payments",
     url: "/admin/transfer-payment",
-    icon: CalendarSync ,
+    icon: CalendarSync,
   },
   { title: "Sale Reports", url: "/admin/sale-reports", icon: FileInput },
   {
@@ -146,6 +148,11 @@ const reports = [
   {
     title: "Repurchase Report",
     url: "/admin/repurchase-report",
+    icon: ShoppingBag,
+  },
+  {
+    title: "Repurchase Wallet Transfer Report",
+    url: "/admin/rep-wallet-transfer-report",
     icon: ShoppingBag,
   },
 

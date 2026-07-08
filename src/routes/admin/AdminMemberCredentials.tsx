@@ -7,10 +7,8 @@ import { Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const ChangePassword = () => {
+const AdminMemberPassword = () => {
   const [memberId, setMemberId] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
-  const [password, setPassword] = useState("");
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -24,8 +22,8 @@ const ChangePassword = () => {
         toast.error(err.message);
       }
     },
-    onSuccess: (data) => {
-      setOldPassword(data?.[1]);
+    onSuccess: () => {
+      setMemberId("");
     },
   });
 
@@ -34,44 +32,10 @@ const ChangePassword = () => {
     mutation.mutate();
   };
 
-  const updateMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(
-        `/admin/new-password?id=${memberId}`,
-        {
-          oldPassword,
-          password,
-        },
-      );
-      return res.data;
-    },
-    onError: (err) => {
-      if (err instanceof AxiosError) {
-        toast.error(err.message);
-      } else {
-        toast.error(err.message);
-      }
-    },
-    onSuccess: () => {
-      setMemberId("");
-      setPassword("");
-      setOldPassword("");
-      toast.success("Password updated successfully");
-    },
-  });
-
-  const handlePasswordUpdate = () => {
-    if (!password) {
-      toast.error("Please enter password");
-      return;
-    }
-    updateMutation.mutate();
-  };
-
   return (
     <div>
       <h2 className="text-2xl font-bold tracking-tight text-white">
-        Change Password
+        Member Credentials
       </h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 mt-5">
         {/* MEMBER ID */}
@@ -106,29 +70,17 @@ const ChangePassword = () => {
           </Button>
         </div>
       </div>
-      {mutation.data && (
-        <>
-          <div className="my-5">
-            <h1 className="font-semibold text-primary">Member ID</h1>
-            <span>{mutation.data?.[0]}</span>
-          </div>
-          <div className="my-5">
-            <h1 className="font-semibold text-primary">Old Password</h1>
-            <Input value={oldPassword} className="w-fit" disabled />
-          </div>
-          <div className="my-5">
-            <h1 className="font-semibold text-primary">New Password</h1>
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-fit"
-            />
-          </div>
-          <Button onClick={handlePasswordUpdate}>Update</Button>
-        </>
-      )}
+
+      <div className="my-5">
+        <h1 className="font-semibold text-primary">Member ID</h1>
+        <span>{mutation.data?.[0]}</span>
+      </div>
+      <div>
+        <h1 className="font-semibold text-primary">Password</h1>
+        <span>{mutation.data?.[1]}</span>
+      </div>
     </div>
   );
 };
 
-export default ChangePassword;
+export default AdminMemberPassword;

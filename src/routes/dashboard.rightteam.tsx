@@ -75,6 +75,8 @@ export default function Team() {
     setLoading(false);
   };
 
+  console.log(members);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
@@ -156,6 +158,7 @@ export default function Team() {
               <th className="text-left px-6 py-3">Member ID</th>
               <th className="text-left px-6 py-3">joiningDate</th>
               <th className="text-left px-6 py-3">BV</th>
+              <th className="text-left px-6 py-3">Rank</th>
             </tr>
           </thead>
 
@@ -192,6 +195,8 @@ export default function Team() {
                   <td className="text-left px-6 py-3 ">
                     {m.bv?.toLocaleString("en-IN")}
                   </td>
+
+                  <td className="text-left px-6 py-3 ">{m.rank ?? "-"}</td>
                 </tr>
               ))
             )}

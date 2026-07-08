@@ -1,7 +1,6 @@
 import { AlertCircle, Plus, Minus, Trash2, ShoppingCart } from "lucide-react";
 
 import { toast } from "sonner";
-
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +14,28 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+
+interface Product {
+  MRP: number | string;
+  bv: number | string;
+  catId: string;
+  gst: number | string;
+  id: string;
+  image: string;
+  name: string;
+  price: number | string;
+  qty?: number | string;
+}
+
+interface StatesAndCities {
+  id: number;
+  name: string;
+}
+
+interface Dashboard {
+  CurrentRepWallet: number;
+  CurrentWallet: number;
+}
 
 function SectionCard({
   title,
@@ -50,8 +71,8 @@ function Field({
 }
 
 export default function UserInfo() {
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
+  const [states, setStates] = useState<StatesAndCities[]>([]);
+  const [cities, setCities] = useState<StatesAndCities[]>([]);
   const [form, setForm] = useState({
     SponsorID: "",
     Placement: "",
@@ -79,10 +100,13 @@ export default function UserInfo() {
   const [sponsorValid, setSponsorValid] = useState<boolean | null>(null);
   const [sponsorName, setSponsorName] = useState("");
   const [search, setSearch] = useState("");
-  const [cart, setCart] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dashboard, setDashboard] = useState(null);
+  const [dashboard, setDashboard] = useState<Dashboard>({
+    CurrentRepWallet: 0,
+    CurrentWallet: 0,
+  });
 
   const loadCities = async (stateId: number) => {
     const data = await joiningApi.getCities(stateId);
@@ -149,7 +173,6 @@ export default function UserInfo() {
           MID as string,
           MemberID as string,
         );
-
         if (isMounted) {
           setDashboard(data);
         }
@@ -165,13 +188,15 @@ export default function UserInfo() {
     };
   }, []);
 
-  const addToCart = (product: any) => {
-    setCart((prev: any) => {
-      const exist = prev.find((x: any) => x.id === product.id);
+  const addToCart = (product: Product) => {
+    setCart((prev: Product[]) => {
+      const exist = prev.find((x: Product) => x.id === product.id);
 
       if (exist) {
-        return prev.map((x: any) =>
-          x.id === product.id ? { ...x, qty: x.qty + 1 } : x,
+        return prev.map((x: Product) =>
+          x.id === product.id
+            ? { ...x, qty: x.qty ? Number(x.qty) + 1 : 1 }
+            : x,
         );
       }
 
@@ -181,24 +206,25 @@ export default function UserInfo() {
     toast.success(`${product.name} added`);
   };
 
-  const setQty = (id, qty: number) => {
+  const setQty = (id: string, qty: number) => {
     if (qty <= 0) {
       removeItem(id);
       return;
     }
 
-    setCart((prev: any) =>
-      prev.map((x: any) => (x.id === id ? { ...x, qty } : x)),
+    setCart((prev: Product[]) =>
+      prev.map((x: Product) => (x.id === id ? { ...x, qty } : x)),
     );
   };
 
-  const removeItem = (id: any) => {
+  const removeItem = (id: string) => {
     setCart((prev) => prev.filter((x) => x.id !== id));
   };
 
   const totals = {
     items: cart,
-
+    shipping: 0,
+    total: 0,
     // GST INCLUDED PRICE
     subtotal: cart.reduce(
       (a, b) => a + (Number(b.price) || 0) * (Number(b.qty) || 0),
@@ -468,7 +494,7 @@ export default function UserInfo() {
                   value={form.StateID}
                   onValueChange={(v) => {
                     setForm({ ...form, StateID: v });
-                    loadCities(v);
+                    loadCities(Number(v));
                   }}
                 >
                   <SelectTrigger className="w-full">
@@ -476,7 +502,7 @@ export default function UserInfo() {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {states.map((s) => (
+                    {states.map((s: StatesAndCities) => (
                       <SelectItem key={s.id} value={String(s.id)}>
                         {s.name}
                       </SelectItem>
@@ -496,7 +522,7 @@ export default function UserInfo() {
                   </SelectTrigger>
 
                   <SelectContent>
-                    {cities.map((c) => (
+                    {cities.map((c: StatesAndCities) => (
                       <SelectItem key={c.id} value={String(c.id)}>
                         {c.name}
                       </SelectItem>
@@ -606,7 +632,7 @@ export default function UserInfo() {
                         <div className="text-xl">
                           <img
                             width={50}
-                            src={`https://new.mazix.co.in/${p.image.split("../../")[1]}`}
+                            src={`https://app.mymazix.com/${p.image.split("../../")[1]}`}
                           />
                         </div>
 
@@ -625,7 +651,7 @@ export default function UserInfo() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => setQty(p.id, inCart.qty - 1)}
+                            onClick={() => setQty(p.id, Number(inCart.qty) - 1)}
                           >
                             <Minus size={14} />
                           </Button>
@@ -635,7 +661,7 @@ export default function UserInfo() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() => setQty(p.id, inCart.qty + 1)}
+                            onClick={() => setQty(p.id, Number(inCart.qty) + 1)}
                           >
                             <Plus size={14} />
                           </Button>
@@ -689,7 +715,7 @@ export default function UserInfo() {
                 className="
                   relative overflow-hidden
                   rounded-xl border border-primary/20
-                  bg-gradient-to-br from-primary/10 to-primary/5
+                  bg-linear-to-br from-primary/10 to-primary/5
                   p-4
                   transition-all
                   hover:shadow-lg
@@ -702,7 +728,7 @@ export default function UserInfo() {
 
                 <p className="text-xl font-semibold text-primary">
                   ₹{dashboard?.CurrentWallet ?? 0}
-                </p>  
+                </p>
 
                 <span className="text-[11px] text-emerald-600">
                   Available Balance
@@ -712,14 +738,14 @@ export default function UserInfo() {
               {/* BV CARD */}
               <div
                 className="
-      relative overflow-hidden
-      rounded-xl border
-      bg-gradient-to-br from-emerald-500/10 to-emerald-500/5
-      p-4
-      transition-all
-      hover:shadow-lg
-      hover:scale-[1.02]
-    "
+                            relative overflow-hidden
+                            rounded-xl border
+                            bg-linear-to-br from-emerald-500/10 to-emerald-500/5
+                            p-4
+                            transition-all
+                            hover:shadow-lg
+                            hover:scale-[1.02]
+                          "
               >
                 <p className="text-xs text-muted-foreground mb-1">Total BV</p>
 
@@ -762,7 +788,7 @@ export default function UserInfo() {
                             size="icon"
                             variant="ghost"
                             className="h-5 w-5"
-                            onClick={() => setQty(i.id, i.qty - 1)}
+                            onClick={() => setQty(i.id, Number(i.qty) - 1)}
                           >
                             <Minus className="h-2.5 w-2.5" />
                           </Button>
@@ -773,7 +799,7 @@ export default function UserInfo() {
                             size="icon"
                             variant="ghost"
                             className="h-5 w-5"
-                            onClick={() => setQty(i.id, i.qty + 1)}
+                            onClick={() => setQty(i.id, Number(i.qty) + 1)}
                           >
                             <Plus className="h-2.5 w-2.5" />
                           </Button>

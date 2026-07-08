@@ -204,6 +204,8 @@ const Product = () => {
     window.scrollTo(0, 0);
   };
 
+  console.log(products);
+
   return (
     <main>
       <h2 className="text-2xl font-bold tracking-tight text-white">

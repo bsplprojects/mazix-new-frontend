@@ -116,20 +116,7 @@ export default function Team() {
           />
         </div>
       )}
-      <div className="grid md:grid-cols-3 gap-4">
-        <StatCard
-          label="Joining BV"
-          value={dash?.CurrentWallet ?? "0"}
-          tone="emerald"
-          icon={<Coins className="h-4 w-4" />}
-        />
-        <StatCard
-          label="Repurchase BV"
-          value={Math.floor(dash?.CurrentWallet / 5)}
-          tone="brass"
-          icon={<Coins className="h-4 w-4" />}
-        />
-      </div>
+     
 
       {/* SEARCH */}
       <div className="flex items-center gap-3">
@@ -155,6 +142,7 @@ export default function Team() {
               <th className="text-left px-6 py-3">Member ID</th>
               <th className="text-left px-6 py-3">joiningDate</th>
               <th className="text-left px-6 py-3">BV</th>
+              <th className="text-left px-6 py-3">Rank</th>
             </tr>
           </thead>
 
@@ -191,6 +179,8 @@ export default function Team() {
                   <td className="text-left px-6 py-3">
                     {m.bv?.toLocaleString("en-IN")}
                   </td>
+
+                  <td className="text-left px-6 py-3">{m.rank || "-"}</td>
                 </tr>
               ))
             )}

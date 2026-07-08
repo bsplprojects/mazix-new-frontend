@@ -2,25 +2,34 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { lazy } from "react";
-import KYC from "./routes/admin/KYC";
-import AddUser from "./routes/admin/AddUser";
-import ChangePassword from "./routes/admin/ChangePassword";
-import PANConfirmation from "./routes/admin/PANConfirmation";
-import OldPANConfirmation from "./routes/admin/OldPANConfirmation";
-import DatewiseDownline from "./routes/DatewiseDownline";
-import RepHistory from "./routes/RepHistory";
-import InvoiceAtJoining from "./routes/admin/InvoiceAtJoining";
-import Tree from "./routes/Tree";
-import Franchise from "./routes/admin/Franchise";
-import PurchaseInvoice from "./routes/admin/PurchaseInvoice";
-import AdminSupport from "./routes/admin/AdminSupport";
-import Settings from "./routes/admin/Settings";
-import MemberPaymentTransfer from "./routes/admin/MemberPaymnetTransfer";
-import { Checkout } from "./routes/dashboard.checkout";
-import RepurchaseInvoice from "./routes/RepurchaseInvoice";
 
-import Protected from "./components/Protected";
-import GSTReport from "./routes/admin/GSTReport";
+import { Checkout } from "./routes/dashboard.checkout";
+import TeamBV from "./routes/dashboard.teamBV";
+import AdminRepWalletTransferReport from "./routes/admin/AdminRepWalletTransferReport";
+const KYC = lazy(() => import("./routes/admin/KYC"));
+const AddUser = lazy(() => import("./routes/admin/AddUser"));
+const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
+const PANConfirmation = lazy(() => import("./routes/admin/PANConfirmation"));
+const OldPANConfirmation = lazy(
+  () => import("./routes/admin/OldPANConfirmation"),
+);
+const DatewiseDownline = lazy(() => import("./routes/DatewiseDownline"));
+const RepHistory = lazy(() => import("./routes/RepHistory"));
+const InvoiceAtJoining = lazy(() => import("./routes/admin/InvoiceAtJoining"));
+const Tree = lazy(() => import("./routes/Tree"));
+const Franchise = lazy(() => import("./routes/admin/Franchise"));
+const PurchaseInvoice = lazy(() => import("./routes/admin/PurchaseInvoice"));
+const AdminSupport = lazy(() => import("./routes/admin/AdminSupport"));
+const Settings = lazy(() => import("./routes/admin/Settings"));
+const MemberPaymentTransfer = lazy(
+  () => import("./routes/admin/MemberPaymnetTransfer"),
+);
+const RepurchaseInvoice = lazy(() => import("./routes/RepurchaseInvoice"));
+const Protected = lazy(() => import("./components/Protected"));
+const GSTReport = lazy(() => import("./routes/admin/GSTReport"));
+const AdminMemberCredentials = lazy(
+  () => import("./routes/admin/AdminMemberCredentials"),
+);
 
 // Auth
 const Signin = lazy(() => import("./routes/signin"));
@@ -114,6 +123,7 @@ export default function App() {
                 path="/dashboard/team/dashboard"
                 element={<TeamDashboard />}
               />
+              <Route path="/dashboard/team/bv" element={<TeamBV />} />
               <Route path="/dashboard/team/updown" element={<UpdownTeam />} />
               <Route
                 path="/dashboard/team/binary"
@@ -198,6 +208,10 @@ export default function App() {
               path="/admin/repurchase-report"
               element={<RepurchaseReport />}
             />
+            <Route
+              path="/admin/rep-wallet-transfer-report"
+              element={<AdminRepWalletTransferReport />}
+            />
 
             <Route
               path="/admin/repurchase-voucher"
@@ -212,10 +226,7 @@ export default function App() {
               path="/admin/sale-invoice-report"
               element={<SaleInvoiceReport />}
             />
-            <Route
-              path="/admin/gst-report"
-              element={<GSTReport />}
-            />
+            <Route path="/admin/gst-report" element={<GSTReport />} />
             <Route path="/admin/franchise" element={<Franchise />} />
             <Route path="/admin/invoice" element={<PrintInvoice />} />
 
@@ -246,6 +257,10 @@ export default function App() {
             <Route path="/admin/package-master" element={<PackageMaster />} />
             <Route path="/admin/news-feed" element={<NewsFeed />} />
             <Route path="/admin/events-master" element={<EventMaster />} />
+            <Route
+              path="/admin/credentials"
+              element={<AdminMemberCredentials />}
+            />
 
             <Route path="/admin/product" element={<Product />} />
             <Route path="/admin/category" element={<Category />} />

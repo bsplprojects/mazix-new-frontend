@@ -6,22 +6,25 @@ import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
 
-const WalletTransferReport = () => {
+const AdminRepWalletTransferReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["sale-reports"],
+    queryKey: ["rep-wallet-transfer-reports"],
     queryFn: async () => {
-      const { data } = await axiosInstance.get("/reports/wallet-transfer", {
-        params: {
-          FromDate: fromDate,
-          MemberId: memberId,
-          Todate: toDate,
+      const { data } = await axiosInstance.get(
+        "/reports/repurchase-wallet-transfer",
+        {
+          params: {
+            FromDate: fromDate,
+            MemberId: memberId,
+            Todate: toDate,
+          },
         },
-      });
+      );
       return data;
     },
     enabled: false,
@@ -36,74 +39,53 @@ const WalletTransferReport = () => {
     }
 
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = "Buck Softech";
-    workbook.created = new Date();
-
     const worksheet = workbook.addWorksheet("Member Report");
 
     worksheet.columns = [
       { header: "Sr.", key: "sr", width: 8 },
-      { header: "DOJ", key: "doj", width: 15 },
       { header: "Member ID", key: "memberId", width: 18 },
-      { header: "Member", key: "memberName", width: 28 },
-      { header: "Contact No.", key: "contactNo", width: 18 },
-      { header: "Sponsor ID", key: "sponsorId", width: 18 },
-      { header: "Placement ID", key: "placementId", width: 18 },
-      { header: "Leaf", key: "leaf", width: 12 },
-      { header: "State", key: "state", width: 20 },
-      { header: "District", key: "district", width: 20 },
-      { header: "BV", key: "bv", width: 12 },
+      { header: "From Member ID", key: "fromMemberId", width: 30 },
+      { header: "Amount", key: "amount", width: 18 },
+      { header: "Date", key: "date", width: 18 },
+      { header: "Status", key: "status", width: 18 },
     ];
 
-    // Header Styling
-    const headerRow = worksheet.getRow(1);
+    // Header Style
+    const header = worksheet.getRow(1);
 
-    headerRow.height = 24;
+    header.font = {
+      bold: true,
+      color: { argb: "FFFFFFFF" },
+    };
 
-    headerRow.eachCell((cell) => {
-      cell.font = {
-        bold: true,
-        color: { argb: "FFFFFFFF" },
-      };
+    header.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "1E40AF" },
+    };
 
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "1E40AF" },
-      };
+    header.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+    };
 
-      cell.alignment = {
-        vertical: "middle",
-        horizontal: "center",
-      };
-
-      cell.border = {
-        top: { style: "thin" },
-        bottom: { style: "thin" },
-        left: { style: "thin" },
-        right: { style: "thin" },
-      };
+    // Data
+    reports.forEach((user: any, index: number) => {
+      worksheet.addRow({
+        sr: index + 1,
+        memberId: user.MemberID || "-",
+        fromMemberId: user.FromMemberID || "-",
+        amount: user.Amount || "-",
+        date: user.Date || "-",
+        status: user.Flag || "-",
+      });
     });
 
-    // Add Data
-    reports.forEach((user: any, index: number) => {
-      const row = worksheet.addRow({
-        sr: index + 1,
-        doj: user.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
-        memberId: user.MemberID || "-",
-        memberName: user.MemberName || "-",
-        contactNo: user.ContactNo || "-",
-        sponsorId: user.SponserID || "-",
-        placementId: user.PlacementID || "-",
-        leaf: user.Leaf || "-",
-        state: user.StateName || "-",
-        district: user.CityName || "-",
-        bv: Number(user.BV || 0),
-      });
-
+    // Styling
+    worksheet.eachRow((row, rowNumber) => {
       row.height = 22;
 
-      row.eachCell((cell, colNumber) => {
+      row.eachCell((cell) => {
         cell.border = {
           top: { style: "thin" },
           bottom: { style: "thin" },
@@ -113,13 +95,10 @@ const WalletTransferReport = () => {
 
         cell.alignment = {
           vertical: "middle",
-          horizontal: colNumber === 1 || colNumber === 11 ? "center" : "left",
+          horizontal: rowNumber === 1 ? "center" : "left",
         };
       });
     });
-
-    // Format BV Column
-    worksheet.getColumn("bv").numFmt = "0.00";
 
     // Freeze Header
     worksheet.views = [
@@ -129,36 +108,36 @@ const WalletTransferReport = () => {
       },
     ];
 
-    // Generate Excel
+    // Download
     const buffer = await workbook.xlsx.writeBuffer();
 
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    const url = window.URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Member_Report_${new Date()
-      .toISOString()
-      .slice(0, 10)}.xlsx`;
+    link.download = `Repurchase-Wallet-Transfer_${
+      new Date().toISOString().split("T")[0]
+    }.xlsx`;
 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    window.URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
   };
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10  lg:flex-col lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-white/10 lg:flex-col  lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">
-                Wallet Transfer List
+                Repurchase Wallet Transfer Report
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
@@ -259,7 +238,7 @@ const WalletTransferReport = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-white/10 bg-white/3 text-nowrap ">
               <tr className="text-left">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -271,23 +250,15 @@ const WalletTransferReport = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Member
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   From Member ID
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  From Member
+                  Amount
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Date
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Amount
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -300,7 +271,7 @@ const WalletTransferReport = () => {
               {reports?.map((user: any, index: number) => (
                 <tr
                   key={index}
-                  className="transition hover:bg-white/3 text-nowrap"
+                  className="transition hover:bg-white/3 text-nowrap text-sm"
                 >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
@@ -310,7 +281,7 @@ const WalletTransferReport = () => {
                   {/* MEMBER ID */}
 
                   <td className="px-6 py-5 text-sm font-medium text-yellow-400">
-                    {user?.MemberID || "-"}
+                    {user.MemberID || "-"}
                   </td>
 
                   {/* MEMBER */}
@@ -318,28 +289,22 @@ const WalletTransferReport = () => {
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
                       <div className="text-white font-medium">
-                        {user?.MemberName || "-"}
+                        {user.FromMemberID || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
-                    {user?.FromMemberID || "-"}
-                  </td>
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user?.FromMemberName || "-"}
+                    {user.Amount || "-"}
+                  </td>
+
+                  {/* DATE */}
+                  <td className="px-6 py-5 text-sm text-zinc-300">
+                    {new Date(user.Date).toLocaleDateString()}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {new Date(user.Date).toLocaleDateString() || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user?.Amount || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user?.Flag || "-"}
+                    {user.Flag || "-"}
                   </td>
                 </tr>
               ))}
@@ -352,7 +317,7 @@ const WalletTransferReport = () => {
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
             <h3 className="text-xl font-semibold text-white">
-              No Wallet Transfer Records Found
+              No Repurchase Wallet Transfer Records Found
             </h3>
 
             <p className="mt-2 text-sm text-zinc-500">
@@ -365,4 +330,4 @@ const WalletTransferReport = () => {
   );
 };
 
-export default WalletTransferReport;
+export default AdminRepWalletTransferReport;

@@ -61,19 +61,10 @@ export default function AllUsersPage() {
     }
   }, [page]);
 
-  const handleView = (user: any) => {
-    console.log("View User", user);
-    // navigate(`/admin/user/${user.MemberID}`)
-  };
-
   const navigate = useNavigate();
 
   const handleEdit = (user: any) => {
     navigate(`/admin/edit-user/${user.MID}`);
-  };
-  const handlePassword = (user: any) => {
-    console.log("Password View", user);
-    // open password modal
   };
 
   return (
@@ -443,14 +434,6 @@ export default function AllUsersPage() {
                     <td className="px-6 py-5">
                       <div className="flex items-center justify-center gap-2">
                         {/* VIEW USER */}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleView(user)}
-                          className="text-zinc-400 hover:bg-blue-500/10 hover:text-blue-400"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
 
                         {/* EDIT USER */}
                         <Button
@@ -460,16 +443,6 @@ export default function AllUsersPage() {
                           className="text-zinc-400 hover:bg-yellow-500/10 hover:text-yellow-400"
                         >
                           <Edit className="h-4 w-4" />
-                        </Button>
-
-                        {/* PASSWORD */}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handlePassword(user)}
-                          className="text-zinc-400 hover:bg-green-500/10 hover:text-green-400"
-                        >
-                          <KeyRound className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>

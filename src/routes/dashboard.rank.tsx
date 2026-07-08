@@ -25,10 +25,6 @@ export default function RankPage() {
     }
   };
 
-  /* ============================
-        CALCULATIONS
-  ============================ */
-
   const achievedIndex = useMemo(() => {
     return rewards.findLastIndex((r) => r.Status === "Achieved");
   }, [rewards]);
@@ -37,13 +33,9 @@ export default function RankPage() {
 
   const nextRank = achievedIndex >= 0 ? rewards[achievedIndex + 1] : rewards[0];
 
-  /* ============================
-        LOADING
-  ============================ */
-
   if (loading)
     return (
-      <div className="space-y-8 max-w-[1400px] mx-auto animate-pulse">
+      <div className="space-y-8 max-w-350 mx-auto animate-pulse">
         {/* HEADER */}
         <div className="space-y-2">
           <div className="h-8 w-64 bg-muted rounded-md" />
@@ -85,25 +77,15 @@ export default function RankPage() {
       </div>
     );
 
-  /* ============================
-        EMPTY DATA
-  ============================ */
-
   if (!rewards.length)
     return <div className="p-6 text-muted-foreground">No rewards found</div>;
 
-  /* ============================
-        UI
-  ============================ */
-
   return (
-    <div className="space-y-8 max-w-[1400px] mx-auto">
+    <div className="space-y-8 max-w-350 mx-auto">
       <PageHeader
         title="Rank Advancement"
         subtitle="Your achievement journey"
       />
-
-      {/* ================= TOP CARD ================= */}
 
       <div className="rounded-2xl bg-gradient-hero border border-border/60 p-8 shadow-elegant">
         <div className="grid md:grid-cols-3 gap-6">
@@ -135,13 +117,7 @@ export default function RankPage() {
             />
 
             <Row
-              label="Required PV"
-              value={currentRank?.RequiredPV ?? "0"}
-              pass
-            />
-
-            <Row
-              label="Achieved BV"
+              label="Achieved Bonus"
               value={currentRank?.AchiveBV ?? "0"}
               pass
             />
@@ -155,6 +131,11 @@ export default function RankPage() {
 
             {nextRank ? (
               <>
+                <Row
+                  label="Required BV"
+                  value={currentRank?.RequiredPV ?? "0"}
+                  pass
+                />
                 <Row label="Required PV" value={nextRank.RequiredPV} />
 
                 <Row label="Reward" value={nextRank.Reward} />

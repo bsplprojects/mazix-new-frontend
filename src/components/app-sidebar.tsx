@@ -47,6 +47,7 @@ const main = [
       { title: "Dashboard", url: "/dashboard/team/dashboard" },
       { title: "Updown Team", url: "/dashboard/team/updown" },
       { title: "Direct Team", url: "/dashboard/team/direct" },
+      { title: "Team BV", url: "/dashboard/team/bv" },
       // { title: "Binary Genealogy", url: "/dashboard/team/binary" },
       // { title: "Left/Right Team", url: "/dashboard/team/left-right" },
       { title: "ORG 1", url: "/dashboard/team/left-team" },
