@@ -58,6 +58,7 @@ const main = [
   },
   { title: "New User", url: "/dashboard/userinfo", icon: User },
 ];
+
 const earn = [
   {
     title: "Repurchase",
@@ -75,6 +76,7 @@ const earn = [
   { title: "Rewards", url: "/dashboard/rewards", icon: Trophy },
   { title: "Rank", url: "/dashboard/rank", icon: TrendingUp },
 ];
+
 const acct = [
   {
     title: "Wallet",
@@ -146,9 +148,9 @@ function MenuSection({
       <SidebarGroupContent>
         <SidebarMenu>
           {items
-            .filter(
-              (item) => item?.visibility?.toLowerCase() === type?.toLowerCase(),
-            )
+            // .filter(
+            //   (item) => item?.visibility?.toLowerCase() === type?.toLowerCase(),
+            // )
             .map((item) => {
               /* DROPDOWN MENU */
               if (item.children) {

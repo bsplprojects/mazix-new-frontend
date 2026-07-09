@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,30 +9,74 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { Loader2, Users } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationEllipsis,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from "@/components/ui/pagination";
+
+const PAGE_SIZE = 10;
 
 const KYC = () => {
+  const client = useQueryClient();
   const [memberId, setMemberId] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["kycs"],
+    queryKey: ["kycs", memberId, status, page],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/kyc-list", {
         params: {
           MemberID: memberId,
           Status: status,
+          page,
+          pageSize: PAGE_SIZE,
         },
       });
       return data;
     },
     enabled: false,
   });
+  const reports = data || [];
 
-  const reports = data?.data || [];
+  const mutation = useMutation({
+    mutationFn: async (memberId: string) => {
+      const res = await axiosInstance.post(`/admin/verify/${memberId}`);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      client.invalidateQueries({ queryKey: ["kycs", memberId, status, page] });
+      setMemberId("");
+      setStatus("");
+      toast.success(data?.message);
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleVerification = (memberId: string) => {
+    if (!memberId) return;
+    mutation.mutate(memberId);
+  };
+
+  const getDocURL = (doc: string) => {
+    return `https://app.mymazix.com/${doc?.replace("../../", "")}`;
+  };
 
   return (
     <main>
@@ -46,7 +91,7 @@ const KYC = () => {
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                  {reports.length}
                 </span>{" "}
                 registered members
               </p>
@@ -80,7 +125,7 @@ const KYC = () => {
                   <SelectValue placeholder="Select Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="verified">Verified</SelectItem>
+                  <SelectItem value="Verify">Verified</SelectItem>
                   <SelectItem value="Not Verified">Not verified</SelectItem>
                 </SelectContent>
               </Select>
@@ -110,14 +155,12 @@ const KYC = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-white/10 bg-white/3 text-xs">
               <tr className="text-left">
                 {/* TABLE HEADER */}
+
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Sr.
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  DOJ
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -125,56 +168,47 @@ const KYC = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Member
+                  Name
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Contact No.
+                  Photo
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Sponsor ID
+                  PAN
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Placement ID
+                  Aadhar
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Leaf
+                  Passbook
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  State
+                  Status
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  District
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  BV
+                  Action
                 </th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index) => (
-                <tr key={index} className="transition hover:bg-white/3">
+              {reports?.map((user: any, index: number) => (
+                <tr key={index} className="transition hover:bg-white/3 text-xs">
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}
-                  </td>
-                  {/* DATE */}
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {new Date(user.DOJ).toLocaleDateString()}
                   </td>
 
                   {/* MEMBER ID */}
 
                   <td className="px-6 py-5 text-sm font-medium text-yellow-400">
-                    {user.MemberID || "-"}
+                    {user.KYCMemberID || "-"}
                   </td>
 
                   {/* MEMBER */}
@@ -188,31 +222,72 @@ const KYC = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.ContactNo || "-"}
+                    <img
+                      onClick={() =>
+                        window.open(
+                          `https://app.mymazix.com/${user?.PHOTO?.replace("../../", "")}`,
+                        )
+                      }
+                      src={getDocURL(user?.PHOTO)}
+                      alt="photo"
+                      width={40}
+                    />
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.SponserID || "-"}
+                    <img
+                      onClick={() =>
+                        window.open(
+                          `https://app.mymazix.com/${user?.PAN?.replace("../../", "")}`,
+                        )
+                      }
+                      src={getDocURL(user?.PAN)}
+                      alt="PAN"
+                      width={40}
+                    />
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.PlacementID || "-"}
+                    <img
+                      onClick={() =>
+                        window.open(
+                          `https://app.mymazix.com/${user?.AADHAR?.replace("../../", "")}`,
+                        )
+                      }
+                      src={getDocURL(user?.AADHAR)}
+                      alt="AADHAR"
+                      width={40}
+                    />
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
-                    {user.Leaf || "-"}
+                    <img
+                      onClick={() =>
+                        window.open(
+                          `https://app.mymazix.com/${user?.PASSBOOK?.replace("../../", "")}`,
+                        )
+                      }
+                      src={getDocURL(user?.PASSBOOK)}
+                      alt="PASSBOOK"
+                      width={40}
+                    />
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.StateName || "-"}
+                    {user.KYCStatus || "-"}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.CityName || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.BV || "-"}
+                    <Button
+                      disabled={
+                        mutation.isPending ||
+                        user.KYCStatus?.toLowerCase() === "verify"
+                      }
+                      onClick={() => handleVerification(user.KYCMemberID)}
+                      size={"sm"}
+                    >
+                      Verify
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -233,6 +308,33 @@ const KYC = () => {
             </p>
           </div>
         )}
+
+        {/* <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">1</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#" isActive>
+                2
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">3</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination> */}
       </div>
     </main>
   );

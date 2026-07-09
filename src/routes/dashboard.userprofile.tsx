@@ -26,9 +26,12 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useDashboard } from "@/hooks/useDashboard";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
 import Loader from "@/components/Loader";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const tabs = [
   { value: "personal", label: "Personal Info", icon: User },
@@ -376,16 +379,58 @@ function BankInfo() {
 }
 
 function KycInfo() {
-  const mid = sessionStorage.getItem("MID");
-  const { data, isLoading } = useQuery({
+  const client = useQueryClient();
+  const [aadhar, setAadhar] = useState<File | null>(null);
+  const [pan, setPan] = useState<File | null>(null);
+  const [passbook, setPassbook] = useState<File | null>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+
+  const { memberId, mId } = useAuth();
+  const { data } = useQuery({
     queryKey: ["kyc"],
     queryFn: async () => {
-      const res = await axiosInstance.get(`/member/kyc/${mid}`);
+      const res = await axiosInstance.get(`/member/kyc/${mId}`);
       return res.data?.data;
     },
   });
 
-  const BASE_URL = "https://new.mazix.co.in/";
+  const BASE_URL = "https://app.mymazix.com/";
+
+  const mutation = useMutation({
+    mutationFn: async (formdata: FormData) => {
+      const res = await axiosInstance.post(
+        `/member/kyc/docs?mid=${mId}&memberID=${memberId}`,
+        formdata,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["kyc"] });
+      setAadhar(null);
+      setPan(null);
+      setPassbook(null);
+      setPhoto(null);
+      toast.success("Document uploaded successfully");
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleSubmit = () => {
+    const formdata = new FormData();
+
+    if (aadhar) formdata.append("Aadhar", aadhar);
+    if (pan) formdata.append("Pan", pan);
+    if (passbook) formdata.append("Passbook", passbook);
+    if (photo) formdata.append("Photo", photo);
+
+    mutation.mutate(formdata);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -401,6 +446,12 @@ function KycInfo() {
             {/* Image Preview */}
             {doc.DocPath ? (
               <img
+                loading="lazy"
+                onClick={() =>
+                  window.open(
+                    `https://app.mymazix.com/${doc?.DocPath?.replace("../../", "")}`,
+                  )
+                }
                 src={`${BASE_URL}${doc.DocPath.replace("../", "")}`}
                 alt={doc.DocName}
                 className="w-full h-40 object-cover rounded-lg border"
@@ -430,18 +481,22 @@ function KycInfo() {
           title="KYC Verification"
           description="Upload your Aadhaar, PAN and a recent photograph"
         >
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <UploadTile
               icon={<FileText className="h-6 w-6" />}
               title="Aadhaar Card"
               hint="PDF, JPG or PNG · max 5 MB"
-              status="verified"
+              status="pending"
+              file={aadhar as File}
+              setFile={setAadhar}
             />
             <UploadTile
               icon={<FileText className="h-6 w-6" />}
               title="PAN Card"
               hint="PDF, JPG or PNG · max 5 MB"
-              status="verified"
+              status="pending"
+              file={pan as File}
+              setFile={setPan}
             />
             <UploadTile
               icon={<Camera className="h-6 w-6" />}
@@ -449,6 +504,17 @@ function KycInfo() {
               hint="JPG or PNG · max 2 MB"
               status="pending"
               accept="image/*"
+              file={photo as File}
+              setFile={setPhoto}
+            />
+            <UploadTile
+              icon={<Camera className="h-6 w-6" />}
+              title="Passbook"
+              hint="JPG or PNG · max 2 MB"
+              status="pending"
+              accept="image/*"
+              file={passbook as File}
+              setFile={setPassbook}
             />
           </div>
 
@@ -465,7 +531,10 @@ function KycInfo() {
             <Button variant="outline" className="border-border">
               Save Draft
             </Button>
-            <Button className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90">
+            <Button
+              onClick={handleSubmit}
+              className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
+            >
               Submit for Verification
             </Button>
           </div>
@@ -480,6 +549,8 @@ function UploadTile({
   title,
   hint,
   status,
+  file,
+  setFile,
   accept = ".pdf,image/*",
 }: {
   icon: React.ReactNode;
@@ -487,8 +558,9 @@ function UploadTile({
   hint: string;
   status: "verified" | "pending" | "none";
   accept?: string;
+  file?: File;
+  setFile?: React.Dispatch<React.SetStateAction<File | undefined>>;
 }) {
-  const [fileName, setFileName] = useState<string | null>(null);
   const inputId = `upload-${title.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
@@ -522,7 +594,7 @@ function UploadTile({
       <div className="mt-4 flex items-center gap-2 text-xs">
         <Upload className="h-3.5 w-3.5 text-primary" />
         <span className="text-primary">
-          {fileName ?? "Click to upload or drag & drop"}
+          {file?.name ?? "Click to upload or drag & drop"}
         </span>
       </div>
 
@@ -531,7 +603,7 @@ function UploadTile({
         type="file"
         accept={accept}
         className="hidden"
-        onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
+        onChange={(e) => setFile?.((e.target.files?.[0] as File) ?? null)}
       />
     </label>
   );
