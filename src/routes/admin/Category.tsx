@@ -63,6 +63,7 @@ const Category = () => {
         image: "",
       });
       setFile(null);
+      setPreview(null);
     },
     onError: (err) => {
       if (err instanceof AxiosError) {

@@ -91,6 +91,7 @@ const Product = () => {
       });
       setFile(null);
       setPreview(null);
+      setSearch("");
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -125,6 +126,8 @@ const Product = () => {
     }
 
     const formData = new FormData();
+
+    console.log(data);
 
     formData.append("pID", data.pID.toString());
     formData.append("Product", data.Product);
@@ -181,18 +184,19 @@ const Product = () => {
 
   const handleEdit = (product: any) => {
     setFile(null);
+
     setData({
       pID: product.pID,
       pCatID: product.pCatID,
       Status: product.Status,
       Product: product.Product,
       Description: product.Description,
-      MRP: product.MRP,
-      MemberMRP: product.MemberMRP,
-      StockistMRP: product.StockistMRP,
-      GST: product.GST,
-      Discount: product.Discount,
-      BV: product.BV,
+      MRP: product.MRP ?? 0,
+      MemberMRP: product.MemberMRP ?? 0,
+      StockistMRP: product.StockistMRP ?? 0,
+      GST: product.GST ?? 0,
+      Discount: product.Discount ? product.Discount : 0,
+      BV: product.BV ?? 0,
       Repurchase: product.Repurchase,
       seqOnline: product?.seqOnline ?? 0,
       Image: product.Image,
@@ -203,8 +207,6 @@ const Product = () => {
     );
     window.scrollTo(0, 0);
   };
-
-  console.log(products);
 
   return (
     <main>

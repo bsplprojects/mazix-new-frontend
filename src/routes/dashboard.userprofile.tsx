@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Mail,
   Calendar,
@@ -12,6 +12,7 @@ import {
   FileText,
   Camera,
 } from "lucide-react";
+import * as joiningApi from "@/services/joiningApi";
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -157,6 +158,90 @@ function Field({
 }
 
 function PersonalInfo({ m }: { m: any }) {
+  const { memberId } = useAuth();
+  const [personalInfo, setPersonalInfo] = useState({
+    MemberName: "",
+    MemberID: "",
+    EmailID: "",
+    ContactNo: "",
+    Gender: "",
+    Address: "",
+    District: "",
+    StateID: 0,
+    Pincode: "",
+    Country: "",
+  });
+
+  const { data: states } = useQuery({
+    queryKey: ["states"],
+    queryFn: async () => {
+      const res = await joiningApi.getStates();
+      return res;
+    },
+  });
+
+  const { data: cities } = useQuery({
+    queryKey: ["cities"],
+    queryFn: async () => {
+      const res = await joiningApi.getCities(personalInfo.StateID);
+      return res;
+    },
+    enabled: personalInfo.StateID > 0,
+  });
+
+  useEffect(() => {
+    if (!m) return;
+
+    setPersonalInfo({
+      MemberName: m.MemberName ?? "",
+      MemberID: m.MemberID ?? "",
+      EmailID: m.EmailID ?? "",
+      ContactNo: m.ContactNo ?? "",
+      Gender: m.Gender ?? "",
+      Address: m.Address ?? "",
+      District: m.District ?? "",
+      StateID: m.StateID ?? 0,
+      Pincode: m.Pincode ?? "",
+      Country: m.Country ?? "",
+    });
+  }, [m]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setPersonalInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setPersonalInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const updatePersonalInfoMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.patch(
+        `/member/personalinfo/${memberId}`,
+        personalInfo,
+      );
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Personal information updated successfully.");
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || error.message);
+      } else {
+        toast.error("Something went wrong.");
+      }
+    },
+  });
+
   return (
     <SectionCard
       title="Personal Info"
@@ -165,34 +250,47 @@ function PersonalInfo({ m }: { m: any }) {
       <div className="grid md:grid-cols-2 gap-4">
         <Field label="Full Name">
           <Input
-            defaultValue={m?.MemberName ?? ""}
+            name="MemberName"
+            value={personalInfo.MemberName}
+            onChange={handleChange}
             className="bg-input border-border"
           />
         </Field>
+
         <Field label="Member ID">
           <Input
-            defaultValue={m?.MemberID ?? ""}
+            name="MemberID"
+            value={personalInfo.MemberID}
             disabled
             className="bg-input border-border font-mono"
           />
         </Field>
+
         <Field label="Email">
           <Input
+            name="EmailID"
             type="email"
-            defaultValue={m?.EmailID ?? ""}
+            value={personalInfo.EmailID}
+            onChange={handleChange}
             className="bg-input border-border"
           />
         </Field>
+
         <Field label="Phone">
           <Input
-            defaultValue={m?.ContactNo ?? ""}
+            name="ContactNo"
+            value={personalInfo.ContactNo}
+            onChange={handleChange}
             className="bg-input border-border"
           />
         </Field>
 
         <Field label="Gender">
-          <Select defaultValue={m?.Gender}>
-            <SelectTrigger className="bg-input border-border">
+          <Select
+            value={personalInfo.Gender}
+            onValueChange={(value) => handleSelectChange("Gender", value)}
+          >
+            <SelectTrigger className="bg-input border-border w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -202,41 +300,81 @@ function PersonalInfo({ m }: { m: any }) {
             </SelectContent>
           </Select>
         </Field>
+
         <Field label="Address Line 1">
           <Input
-            defaultValue={m?.Address ?? ""}
+            name="Address"
+            value={personalInfo.Address}
+            onChange={handleChange}
             className="bg-input border-border"
           />
         </Field>
 
-        <Field label="City">
-          <Input
-            defaultValue={m?.District ?? ""}
-            className="bg-input border-border"
-          />
-        </Field>
         <Field label="State">
-          <Input
-            defaultValue={m?.StateID ?? ""}
-            className="bg-input border-border"
-          />
+          <Select
+            value={personalInfo.StateID}
+            onValueChange={(value) => handleSelectChange("StateID", value)}
+          >
+            <SelectTrigger className="bg-input border-border w-full">
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+
+            <SelectContent>
+              {states?.map((state: { id: number; name: string }) => (
+                <SelectItem key={state.id} value={String(state.id)}>
+                  {state.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </Field>
+
+        <Field label="City">
+          <Select
+            value={personalInfo.District}
+            onValueChange={(value) => handleSelectChange("District", value)}
+          >
+            <SelectTrigger className="bg-input border-border w-full">
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+
+            <SelectContent>
+              {cities?.map((city: { id: number; name: string }) => (
+                <SelectItem key={city.id} value={String(city.id)}>
+                  {city.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+
         <Field label="Pincode">
           <Input
-            defaultValue={m?.Pincode ?? ""}
+            name="Pincode"
+            value={personalInfo.Pincode}
+            onChange={handleChange}
             className="bg-input border-border"
           />
         </Field>
+
         <Field label="Country">
           <Input
-            defaultValue={m?.Country ?? ""}
+            name="Country"
+            value={personalInfo.Country}
+            onChange={handleChange}
             className="bg-input border-border"
           />
         </Field>
       </div>
       <div className="flex justify-end mt-6">
-        <Button className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90">
-          Save Personal Info
+        <Button
+          onClick={() => updatePersonalInfoMutation.mutate()}
+          disabled={updatePersonalInfoMutation.isPending}
+          className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
+        >
+          {updatePersonalInfoMutation.isPending
+            ? "Saving..."
+            : "Save Personal Info"}
         </Button>
       </div>
     </SectionCard>
@@ -245,6 +383,13 @@ function PersonalInfo({ m }: { m: any }) {
 
 function NomineeInfo() {
   const mid = sessionStorage.getItem("MID");
+  const [formdata, setFormData] = useState({
+    name: "",
+    relation: "",
+    sex: "",
+    age: "",
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ["nominee"],
     queryFn: async () => {
@@ -254,6 +399,37 @@ function NomineeInfo() {
   });
 
   const n = data?.data[0];
+
+  useEffect(() => {
+    if (!n) return;
+
+    setFormData({
+      name: n.Nominee,
+      relation: n.Relation,
+      sex: n.Sex,
+      age: n.Age,
+    });
+  }, [n]);
+
+  const updateNomineeInfoMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.patch(
+        `/member/nomineeinfo/${n?.MNomeeID}`,
+        formdata,
+      );
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Nominee information updated successfully.");
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || error.message);
+      } else {
+        toast.error("Something went wrong.");
+      }
+    },
+  });
 
   return (
     <SectionCard
@@ -267,19 +443,37 @@ function NomineeInfo() {
           <div className="grid md:grid-cols-2 gap-4 ">
             <Field label="Nominee Full Name">
               <Input
-                defaultValue={n?.Nominee}
+                value={formdata.name}
+                onChange={(e) =>
+                  setFormData({ ...formdata, name: e.target.value })
+                }
                 className="bg-input border-border"
               />
             </Field>
             <Field label="Nominee Relation">
               <Input
-                defaultValue={n?.Relation}
+                value={formdata.relation}
+                onChange={(e) =>
+                  setFormData({ ...formdata, relation: e.target.value })
+                }
+                className="bg-input border-border"
+              />
+            </Field>
+            <Field label="Nominee age">
+              <Input
+                onChange={(e) =>
+                  setFormData({ ...formdata, age: e.target.value })
+                }
+                value={formdata.age}
                 className="bg-input border-border"
               />
             </Field>
             <Field label="Sex">
-              <Select defaultValue={n?.Sex}>
-                <SelectTrigger className="bg-input border-border">
+              <Select
+                value={formdata.sex}
+                onValueChange={(val) => setFormData({ ...formdata, sex: val })}
+              >
+                <SelectTrigger className="bg-input border-border w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -291,8 +485,14 @@ function NomineeInfo() {
             </Field>
           </div>
           <div className="flex justify-end mt-6">
-            <Button className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90">
-              Save Nominee Info
+            <Button
+              onClick={() => updateNomineeInfoMutation.mutate()}
+              disabled={updateNomineeInfoMutation.isPending}
+              className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
+            >
+              {updateNomineeInfoMutation.isPending
+                ? " Saving..."
+                : "Save Nominee Info"}
             </Button>
           </div>
         </>
@@ -303,6 +503,16 @@ function NomineeInfo() {
 
 function BankInfo() {
   const mid = sessionStorage.getItem("MID");
+
+  const [formdata, setFormData] = useState({
+    accountHolder: "",
+    bankName: "",
+    accNo: "",
+    ifsc: "",
+    branch: "",
+    accType: "",
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ["bank"],
     queryFn: async () => {
@@ -312,6 +522,39 @@ function BankInfo() {
   });
 
   const b = data?.data[0];
+
+  useEffect(() => {
+    if (!b) return;
+
+    setFormData({
+      accountHolder: b.AcName,
+      bankName: b.Bank,
+      accNo: b.AcNo,
+      ifsc: b.IFSC,
+      branch: b.Branch,
+      accType: b.AcType,
+    });
+  }, [b]);
+
+  const updateBankInfo = useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.patch(
+        `/member/bankinfo/${b?.MID}`,
+        formdata,
+      );
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Bank information updated successfully.");
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || error.message);
+      } else {
+        toast.error("Something went wrong.");
+      }
+    },
+  });
 
   return (
     <SectionCard
@@ -325,38 +568,58 @@ function BankInfo() {
           <div className="grid md:grid-cols-2 gap-4">
             <Field label="Account Holder">
               <Input
-                defaultValue={b?.AcName ?? ""}
+                value={formdata.accountHolder ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formdata, accountHolder: e.target.value })
+                }
                 className="bg-input border-border"
               />
             </Field>
             <Field label="Bank Name">
               <Input
-                defaultValue={b?.Bank ?? ""}
+                value={formdata.bankName ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formdata, bankName: e.target.value })
+                }
                 className="bg-input border-border"
               />
             </Field>
             <Field label="Account Number">
               <Input
-                defaultValue={b?.AcNo ?? ""}
+                value={formdata.accNo ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formdata, accNo: e.target.value })
+                }
                 className="bg-input border-border font-mono"
               />
             </Field>
 
             <Field label="IFSC Code">
               <Input
-                defaultValue={b?.IFSC ?? ""}
+                value={formdata.ifsc ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formdata, ifsc: e.target.value })
+                }
                 className="bg-input border-border font-mono"
               />
             </Field>
             <Field label="Branch">
               <Input
-                defaultValue={b?.Branch ?? ""}
+                value={formdata.branch ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formdata, branch: e.target.value })
+                }
                 className="bg-input border-border"
               />
             </Field>
             <Field label="Account Type">
-              <Select defaultValue={b?.AcType ?? ""}>
-                <SelectTrigger className="bg-input border-border">
+              <Select
+                value={formdata.accType ?? ""}
+                onValueChange={(val) =>
+                  setFormData({ ...formdata, accType: val })
+                }
+              >
+                <SelectTrigger className="bg-input border-border w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -368,8 +631,12 @@ function BankInfo() {
           </div>
 
           <div className="flex justify-end mt-6">
-            <Button className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90">
-              Save Bank Info
+            <Button
+              onClick={() => updateBankInfo.mutate()}
+              disabled={updateBankInfo.isPending}
+              className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
+            >
+              {updateBankInfo.isPending ? " Saving..." : "Save Bank Info"}
             </Button>
           </div>
         </>
