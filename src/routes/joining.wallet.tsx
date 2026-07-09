@@ -1,7 +1,7 @@
 import { Wallet, ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
-import { recentTransactions, member } from "@/lib/mock-data";
+import { recentTransactions } from "@/lib/mock-data";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
@@ -57,15 +57,25 @@ export default function JoiningWallet() {
   });
 
   const { data: history, isLoading: isHistoryLoading } = useQuery({
-    queryKey: ["member-wallet-history", memberID],
+    queryKey: [
+      "member-wallet-history",
+      memberID,
+      filters.fromDate,
+      filters.toDate,
+    ],
     queryFn: async () => {
-      const res = await axiosInstance.get(`/wallet/history/${memberID}`);
+      const res = await axiosInstance.get(
+        `/wallet/history/${memberID}?fdate=${filters.fromDate}&tdate=${filters.toDate}`,
+      );
+
       return res.data;
     },
+    enabled: !!memberID,
   });
 
   const w = data?.[0];
   const h = history;
+  console.log(h);
 
   const transfer = useMutation({
     mutationFn: async () => {
@@ -235,7 +245,7 @@ export default function JoiningWallet() {
           </div>
         </div>
         <table className="w-full text-sm">
-          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40">
+          <thead className="text-nowrap uppercase tracking-wider text-muted-foreground bg-secondary/40 text-xs">
             <tr>
               <th className="text-left px-6 py-3">Member ID</th>
               <th className="text-left px-6 py-3">Member</th>
@@ -248,21 +258,27 @@ export default function JoiningWallet() {
           <tbody className="divide-y divide-border">
             {h &&
               h.map((t: any, idx: number) => (
-                <tr key={idx} className="hover:bg-accent/30 transition-smooth">
-                  <td className="px-6 py-4 font-mono text-xs">{t?.id}</td>
-                  <td className="px-6 py-4">{t?.type}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{t?.date}</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 text-xs">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                      {t?.status}
-                    </span>
+                <tr
+                  key={idx}
+                  className="hover:bg-accent/30 transition-smooth text-sm text-nowrap"
+                >
+                  <td className="px-6 py-4 font-mono text-xs">{t?.MemberID}</td>
+                  <td className="px-6 py-4">{t?.MemberName}</td>
+                  <td className="px-6 py-4 text-muted-foreground">
+                    {t?.FromMemberID}
                   </td>
+
+                  <td className="px-6 py-4 text-muted-foreground">
+                    {t?.Amount}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground text-right">
+                    {t?.Flag}
+                  </td>
+
                   <td
-                    className={`px-6 py-4 text-right font-display text-base ${t?.amount > 0 ? "text-foreground" : "text-brass"}`}
+                    className={`px-6 py-4 text-right font-display text-base `}
                   >
-                    {t?.amount > 0 ? "+" : ""}₹
-                    {Math.abs(t?.amount).toLocaleString("en-IN")}
+                    {new Date(t?.Date).toLocaleDateString()}
                   </td>
                 </tr>
               ))}

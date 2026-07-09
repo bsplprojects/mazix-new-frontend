@@ -59,7 +59,7 @@ export default function RepurchaseWallet() {
     queryKey: ["member-wallet-history", memberId],
     queryFn: async () => {
       const res = await axiosInstance.get(
-        `/wallet/repurchase/history/${memberId}`,
+        `/wallet/repurchase/history/${memberId}?fdate=${filters.fromDate}&tdate=${filters.toDate}`,
       );
 
       return res.data;
@@ -175,7 +175,6 @@ export default function RepurchaseWallet() {
             >
               Send Now
             </Button>
-
           </div>
         </div>
       </div>
@@ -241,20 +240,19 @@ export default function RepurchaseWallet() {
                   key={index}
                   className="hover:bg-accent/30 transition-smooth"
                 >
-                  <td className="px-6 py-4 font-mono text-xs">{t.id}</td>
-                  <td className="px-6 py-4">{t.type}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{t.date}</td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 text-xs">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                      {t.status}
-                    </span>
+                  <td className="px-6 py-4 font-mono text-xs">
+                    {t.FromMemberID}
                   </td>
+                  <td className="px-6 py-4">{t.MemberName}</td>
+                  <td className="px-6 py-4 text-muted-foreground">
+                    {t.Amount}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground">{t.Flag}</td>
+
                   <td
-                    className={`px-6 py-4 text-right font-display text-base ${t.amount > 0 ? "text-foreground" : "text-brass"}`}
+                    className={`px-6 py-4 text-right font-display text-base `}
                   >
-                    {t.amount > 0 ? "+" : ""}₹
-                    {Math.abs(t.amount).toLocaleString("en-IN")}
+                    {new Date(t.Date).toLocaleDateString()}
                   </td>
                 </tr>
               ))}
