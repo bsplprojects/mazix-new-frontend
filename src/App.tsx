@@ -6,6 +6,8 @@ import { lazy } from "react";
 import { Checkout } from "./routes/dashboard.checkout";
 import TeamBV from "./routes/dashboard.teamBV";
 import AdminRepWalletTransferReport from "./routes/admin/AdminRepWalletTransferReport";
+import RepInvoice from "./routes/RepInvoice";
+import Stock from "./routes/admin/Stock";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -24,7 +26,7 @@ const Settings = lazy(() => import("./routes/admin/Settings"));
 const MemberPaymentTransfer = lazy(
   () => import("./routes/admin/MemberPaymnetTransfer"),
 );
-const RepurchaseInvoice = lazy(() => import("./routes/RepurchaseInvoice"));
+
 const Protected = lazy(() => import("./components/Protected"));
 const GSTReport = lazy(() => import("./routes/admin/GSTReport"));
 const AdminMemberCredentials = lazy(
@@ -156,6 +158,10 @@ export default function App() {
               <Route path="/dashboard/userinfo" element={<UserInfo />} />
               <Route path="/dashboard/profile" element={<Profile />} />
               <Route path="/dashboard/repurchase" element={<Repurchase />} />
+              <Route
+                path="/dashboard/repurchase/invoice"
+                element={<RepInvoice />}
+              />
               <Route path="/dashboard/checkout" element={<Checkout />} />
 
               <Route
@@ -183,10 +189,6 @@ export default function App() {
               />
               <Route path="/dashboard/old-income" element={<OldIncome />} />
               <Route path="/dashboard/my-payout" element={<MyPayout />} />
-              <Route
-                path="/dashboard/repurchase/invoice"
-                element={<RepurchaseInvoice />}
-              />
             </Route>
           </Route>
 
@@ -217,6 +219,7 @@ export default function App() {
               path="/admin/repurchase-voucher"
               element={<RepurchaseVoucher />}
             />
+
             <Route path="/admin/reward-report" element={<RewardReport />} />
             <Route
               path="/admin/product-sale-report"
@@ -263,6 +266,7 @@ export default function App() {
             />
 
             <Route path="/admin/product" element={<Product />} />
+            <Route path="/admin/stock" element={<Stock />} />
             <Route path="/admin/category" element={<Category />} />
             <Route path="/admin/kyc" element={<KYC />} />
             <Route path="/admin/support" element={<AdminSupport />} />

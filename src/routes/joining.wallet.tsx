@@ -269,7 +269,7 @@ export default function JoiningWallet() {
                   </td>
 
                   <td className="px-6 py-4 text-muted-foreground">
-                    {t?.Amount}
+                    {t?.Amount} 
                   </td>
                   <td className="px-6 py-4 text-muted-foreground text-right">
                     {t?.Flag}

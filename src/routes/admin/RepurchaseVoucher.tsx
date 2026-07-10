@@ -27,8 +27,7 @@ const RepurchaseVoucher = () => {
     enabled: false,
   });
 
-  const reports = data?.data || [];
-
+  const reports = data || [];
   const handleExcel = async () => {
     if (!reports?.length) {
       alert("No data available");
@@ -280,7 +279,7 @@ const RepurchaseVoucher = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-white/10 bg-white/3 text-nowrap ">
               <tr className="text-left">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -344,7 +343,10 @@ const RepurchaseVoucher = () => {
               {reports?.map((user: any, index: number) => {
                 const calc = calculateGST(user);
                 return (
-                  <tr key={index} className="transition hover:bg-white/3">
+                  <tr
+                    key={index}
+                    className="transition hover:bg-white/3 text-nowrap"
+                  >
                     {/* SR NO */}
                     <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                       {index + 1}

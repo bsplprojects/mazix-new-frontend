@@ -329,6 +329,7 @@ const PrintInvoice = () => {
               fontSize: "14px",
             }}
           >
+            
             <thead>
               <tr
                 style={{
@@ -344,11 +345,11 @@ const PrintInvoice = () => {
                 <th style={thead}>Me.MRP</th>
                 <th style={thead}>Qty</th>
                 <th style={thead}>Net Amt</th>
-                <th style={thead}>GST %</th>
+                <th style={thead}>GST</th>
                 <th style={thead}>CGST</th>
                 <th style={thead}>SGST</th>
                 <th style={thead}>IGST</th>
-                <th style={thead}>Total Amount</th>
+                <th style={thead}>Amount</th>
               </tr>
             </thead>
 

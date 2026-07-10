@@ -5,15 +5,17 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import { useNavigate } from "react-router-dom";
 
 const RepurchaseReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
+  const navigate = useNavigate("");
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["sale-reports"],
+    queryKey: ["repurchase-reports"],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/repurchase", {
         params: {
@@ -40,16 +42,21 @@ const RepurchaseReport = () => {
 
     worksheet.columns = [
       { header: "Sr.", key: "sr", width: 8 },
-      { header: "DOJ", key: "doj", width: 15 },
-      { header: "Member ID", key: "memberId", width: 18 },
-      { header: "Member", key: "memberName", width: 30 },
-      { header: "Contact No.", key: "contact", width: 18 },
-      { header: "Sponsor ID", key: "sponsorId", width: 18 },
-      { header: "Placement ID", key: "placementId", width: 18 },
-      { header: "Leaf", key: "leaf", width: 12 },
-      { header: "State", key: "state", width: 20 },
-      { header: "District", key: "district", width: 20 },
-      { header: "BV", key: "bv", width: 12 },
+      { header: "Order No", key: "orderNo", width: 15 },
+      { header: "Order Date", key: "orderDate", width: 18 },
+      { header: "Customer", key: "customerName", width: 30 },
+      { header: "Phone", key: "phone", width: 18 },
+      { header: "City", key: "city", width: 18 },
+      { header: "Total Amount", key: "totalAmount", width: 18 },
+      { header: "Pay Mode", key: "payMode", width: 12 },
+      { header: "Delivery Status", key: "deliveryStatus", width: 20 },
+      { header: "Delivery Partner", key: "deliveryPartner", width: 20 },
+      { header: "Tracker ID", key: "trackerId", width: 12 },
+      { header: "Products(Qty)", key: "products", width: 12 },
+      { header: "Total CGST", key: "totalCGST", width: 12 },
+      { header: "Total SGST", key: "totalSGST", width: 12 },
+      { header: "Total IGST", key: "totalIGST", width: 12 },
+      { header: "Total GST", key: "totalGST", width: 12 },
     ];
 
     // Header Style
@@ -75,16 +82,23 @@ const RepurchaseReport = () => {
     reports.forEach((user: any, index: number) => {
       worksheet.addRow({
         sr: index + 1,
-        doj: user.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
-        memberId: user.MemberID || "-",
-        memberName: user.MemberName || "-",
-        contact: user.ContactNo || "-",
-        sponsorId: user.SponserID || "-",
-        placementId: user.PlacementID || "-",
-        leaf: user.Leaf === "Left" ? "ORG 1" : "ORG 2",
-        state: user.StateName || "-",
-        district: user.CityName || "-",
-        bv: Number(user.BV || 0),
+        orderNo: user.OrderNo,
+        orderDate: user.OrderDate
+          ? new Date(user.OrderDate).toLocaleDateString()
+          : "-",
+        customerName: user.CustomerName || "-",
+        phone: user.any || "-",
+        city: user.City || "-",
+        totalAmount: user.TotalAmount || "-",
+        payMode: user.PayMode,
+        deliveryStatus: user.DeliveryStatus || "-",
+        deliveryPartner: user.DeliveryPartner || "-",
+        trackerId: user.TrackingID || "-",
+        products: user.ItemCount || "0",
+        totalCGST: user.TotalCGST || "0",
+        totalSGST: user.TotalSGST || "0",
+        totalIGST: user.TotalIGST || "0",
+        totalGST: user.TotalGST || "0",
       });
     });
 
@@ -107,9 +121,6 @@ const RepurchaseReport = () => {
       });
     });
 
-    // Number Formatting
-    worksheet.getColumn("bv").numFmt = "0.00";
-
     // Freeze Header
     worksheet.views = [
       {
@@ -129,7 +140,7 @@ const RepurchaseReport = () => {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Member_Report_${
+    link.download = `Repurchase_report_${
       new Date().toISOString().split("T")[0]
     }.xlsx`;
 
@@ -255,105 +266,59 @@ const RepurchaseReport = () => {
                   Sr.
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  DOJ
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Member ID
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Member
+                  Amount
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Contact No.
+                  From Member ID
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Sponsor ID
+                  Status
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Placement ID
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Leaf
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  State
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  District
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  BV
+                  Date
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-white/5 text-xs">
               {reports?.map((user: any, index: number) => (
                 <tr
                   key={index}
-                  className="transition hover:bg-white/3 text-nowrap"
+                  className="transition hover:bg-white/3 text-nowrap "
                 >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}
                   </td>
-                  {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {new Date(user.DOJ).toLocaleDateString()}
-                  </td>
-
-                  {/* MEMBER ID */}
-
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {user.MemberID || "-"}
                   </td>
 
-                  {/* MEMBER */}
+                  {/* CUSTOMER NAME */}
+                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                    {user.Amount || "-"}
+                  </td>
 
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
-                        {user.MemberName || "-"}
-                      </div>
-                    </div>
+                  {/* PHONE */}
+                  <td className="px-6 py-5 text-sm text-zinc-300 ">
+                    {user.FromMemberID || "-"}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.ContactNo || "-"}
+                    {user.Flag || "-"}
                   </td>
 
+                  {/* DATE */}
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.SponserID || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.PlacementID || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
-                    {user.Leaf === "Left" ? "ORG 1" : "ORG 2"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.StateName || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.CityName || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.BV || "-"}
+                    {new Date(user.ModifyDate).toLocaleDateString()}
                   </td>
                 </tr>
               ))}

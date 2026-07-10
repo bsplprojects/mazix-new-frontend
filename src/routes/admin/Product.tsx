@@ -35,6 +35,7 @@ const Product = () => {
     Repurchase: 0,
     seqOnline: 0,
     Image: "",
+    stock: 0,
   });
 
   const client = useQueryClient();
@@ -43,7 +44,8 @@ const Product = () => {
     queryKey: ["products"],
     queryFn: async () => {
       const res = await axiosInstance.get("/admin/products");
-      return res.data;
+
+      return res.data?.list;
     },
   });
 
@@ -88,6 +90,7 @@ const Product = () => {
         Repurchase: 0,
         seqOnline: 0,
         Image: "",
+        stock: 0,
       });
       setFile(null);
       setPreview(null);
@@ -111,6 +114,7 @@ const Product = () => {
       "GST",
       "BV",
       "Discount",
+      "stock",
     ];
 
     setData({
@@ -127,8 +131,6 @@ const Product = () => {
 
     const formData = new FormData();
 
-    console.log(data);
-
     formData.append("pID", data.pID.toString());
     formData.append("Product", data.Product);
     formData.append("pCatID", data.pCatID.toString());
@@ -143,6 +145,7 @@ const Product = () => {
     formData.append("seqOnline", data.seqOnline.toString());
     formData.append("Status", data.Status);
     formData.append("Image", data.Image || "");
+    formData.append("stock", data.stock.toString() || "");
 
     if (file) {
       formData.append("Image", file);
@@ -150,7 +153,6 @@ const Product = () => {
 
     mutation.mutate(formData);
   };
-  // ----------------------------------------
 
   const delMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -200,6 +202,7 @@ const Product = () => {
       Repurchase: product.Repurchase,
       seqOnline: product?.seqOnline ?? 0,
       Image: product.Image,
+      stock: product.stock ?? 0,
     });
     // for displaying the image in editing mode.
     setPreview(
@@ -257,6 +260,21 @@ const Product = () => {
           <Input
             value={data.MRP}
             name="MRP"
+            onChange={handleChange}
+            onFocus={(e) => e.target.select()}
+            type="number"
+            placeholder="100"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            Stock
+          </Label>
+          <Input
+            value={data.stock}
+            name="stock"
             onChange={handleChange}
             onFocus={(e) => e.target.select()}
             type="number"
@@ -438,6 +456,7 @@ const Product = () => {
               Repurchase: 0,
               seqOnline: 0,
               Image: "",
+              stock: 0,
             });
             setFile(null);
             setPreview(null);

@@ -25,36 +25,27 @@ const totals = {
   marginLeft: "10px",
 };
 
-const RepurchaseInvoice = () => {
+const RepInvoice = () => {
   const [searchParams] = useSearchParams();
-  const MID = searchParams.get("memberId");
-  const orderId = searchParams.get("id");
+  const id = searchParams.get("id");
+  const memberId = searchParams.get("memberId");
   const printRef = useRef<HTMLDivElement>(null);
 
   const { data } = useQuery({
-    queryKey: ["invoice", MID],
-    queryFn: async () => {
-      const res = await axiosInstance.get(`/member/${MID}`);
-      return res.data;
-    },
-  });
-
-  const { data: prods } = useQuery({
-    queryKey: ["rep-products", MID],
+    queryKey: ["invoice", id],
     queryFn: async () => {
       const res = await axiosInstance.get(`/repurchase/invoice`, {
         params: {
-          MemberID: MID,
-          orderId: orderId,
+          orderId: id,
+          MemberID: memberId,
         },
       });
       return res.data;
     },
   });
-  console.log(prods);
-  const header = prods?.header || {};
-  const member = data?.data || {};
-  const products = prods?.items || [];
+
+  const member = data?.header || {};
+  const products = data?.items || [];
 
   const totalTaxable = products?.reduce((acc: number, item: any) => {
     return item.TaxAbleAmnt + acc;
@@ -161,8 +152,6 @@ const RepurchaseInvoice = () => {
           </span>
         </div>
 
-        {/* header */}
-
         <div
           style={{
             display: "flex",
@@ -173,19 +162,56 @@ const RepurchaseInvoice = () => {
             paddingLeft: "1rem",
           }}
         >
-          <h1
-            style={{ color: "#3C3C3C", fontWeight: "bold", fontSize: "14px" }}
+          {/* FROM */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
           >
-            Order No. : {header?.OrderNo}
-          </h1>
-          <h1
-            style={{ color: "#3C3C3C", fontWeight: "bold", fontSize: "14px" }}
-          >
-            Order Date :{" "}
-            {new Date(header?.OrderDate).toLocaleDateString("en-IN")}
-          </h1>
+            <div>
+              <h3
+                style={{
+                  color: "#3C3C3C",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Order No:
+              </h3>
+              <span
+                style={{
+                  color: "#3C3C3C",
+                  fontSize: "12px",
+                }}
+              >
+                {member?.OrderNo}
+              </span>
+            </div>
+            <div>
+              <h3
+                style={{
+                  color: "#3C3C3C",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                }}
+              >
+                Order Date:
+              </h3>
+              <span
+                style={{
+                  color: "#3C3C3C",
+                  fontSize: "12px",
+                }}
+              >
+                {new Date(member?.OrderDate).toLocaleDateString("en-IN")}
+              </span>
+            </div>
+          </div>
         </div>
 
+        {/* header */}
         <div
           style={{
             display: "flex",
@@ -330,7 +356,6 @@ const RepurchaseInvoice = () => {
         </div>
 
         {/* Product Details*/}
-
         <div
           style={{
             marginTop: "1.5rem",
@@ -367,10 +392,12 @@ const RepurchaseInvoice = () => {
                 </th>
                 <th style={thead}>Product</th>
                 <th style={thead}>MRP</th>
+
                 <th style={thead}>Qty</th>
-                <th style={thead}>GST %</th>
-                <th style={thead}>IGST</th>
-                <th style={thead}>Total Amt</th>
+
+                <th style={thead}>GST</th>
+
+                <th style={thead}>Total Amount</th>
               </tr>
             </thead>
 
@@ -384,8 +411,6 @@ const RepurchaseInvoice = () => {
                   <td style={tbody}>{Number(item.MRP).toFixed(2)}</td>
 
                   <td style={tbody}>{item.Qty}</td>
-
-                  <td style={tbody}>{item.GST}%</td>
 
                   <td style={tbody}>{Number(item.LGST).toFixed(2)}</td>
 
@@ -416,12 +441,13 @@ const RepurchaseInvoice = () => {
                 fontSize: "15px",
               }}
             >
-              Total Amount:{" "}
+              Total GST:{" "}
               <span style={totals}>
                 {" "}
-                ₹{Number(header?.TotalAmount).toFixed(2)}
+                ₹{Number(member?.TotalGST).toFixed(2)}
               </span>
             </p>
+
             <p
               style={{
                 color: "#3C3C3C",
@@ -431,7 +457,7 @@ const RepurchaseInvoice = () => {
               Total Discount:{" "}
               <span style={totals}>
                 {" "}
-                ₹{Number(header?.TotalDiscount).toFixed(2)}
+                ₹{Number(member?.TotalDiscount).toFixed(2)}
               </span>
             </p>
             <p
@@ -440,10 +466,10 @@ const RepurchaseInvoice = () => {
                 fontSize: "15px",
               }}
             >
-              Total IGST:{" "}
+              Total Amount:
               <span style={totals}>
                 {" "}
-                ₹{Number(header?.TotalGST).toFixed(2)}
+                ₹{Number(member?.TotalAmount).toFixed(2)}
               </span>
             </p>
           </div>
@@ -453,4 +479,4 @@ const RepurchaseInvoice = () => {
   );
 };
 
-export default RepurchaseInvoice;
+export default RepInvoice;

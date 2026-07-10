@@ -127,7 +127,7 @@ const SaleInvoiceReport = () => {
           <div className="flex items-center gap-3">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">
-              Sales Invoice List
+                Sales Invoice List
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
@@ -156,7 +156,7 @@ const SaleInvoiceReport = () => {
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
                 />
               </div>
             </div>
@@ -171,7 +171,7 @@ const SaleInvoiceReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -185,7 +185,7 @@ const SaleInvoiceReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className=" rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -197,7 +197,6 @@ const SaleInvoiceReport = () => {
                   refetch();
                 }}
                 disabled={isFetching}
-                className="h-11 flex-1 rounded-2xl bg-linear-to-r from-yellow-400 to-yellow-600 font-semibold text-black"
               >
                 {isFetching ? "Loading..." : "Search"}
               </Button>
@@ -209,16 +208,11 @@ const SaleInvoiceReport = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-                className="h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-white hover:bg-white/10"
               >
                 Reset
               </Button>
 
-              <Button
-                variant={"default"}
-                onClick={handleExcel}
-                className="h-11 rounded-2xl "
-              >
+              <Button variant={"default"} onClick={handleExcel}>
                 <Download /> Excel
               </Button>
             </div>
