@@ -30,6 +30,7 @@ import {
   CalendarSync,
   Key,
   Box,
+  Receipt,
 } from "lucide-react";
 
 import {
@@ -76,7 +77,8 @@ const tokens = [
 const products = [
   { title: "Product", url: "/admin/product", icon: Package2Icon },
   { title: "Category", url: "/admin/category", icon: TicketSlash },
-  { title: "Stock", url: "/admin/stock", icon: Box },
+  { title: "Invoice", url: "/admin/stock", icon: Box },
+  { title: "Invoice List", url: "/admin/invoice-list", icon: Receipt },
 ];
 
 const setup = [

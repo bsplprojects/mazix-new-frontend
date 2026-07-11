@@ -8,6 +8,8 @@ import TeamBV from "./routes/dashboard.teamBV";
 import AdminRepWalletTransferReport from "./routes/admin/AdminRepWalletTransferReport";
 import RepInvoice from "./routes/RepInvoice";
 import Stock from "./routes/admin/Stock";
+import InvoiceList from "./routes/admin/InvoiceList";
+import StockInvoice from "./routes/admin/StockInvoice";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -267,6 +269,8 @@ export default function App() {
 
             <Route path="/admin/product" element={<Product />} />
             <Route path="/admin/stock" element={<Stock />} />
+            <Route path="/admin/invoice-list" element={<InvoiceList />} />
+            <Route path="/admin/invoice/stock" element={<StockInvoice />} />
             <Route path="/admin/category" element={<Category />} />
             <Route path="/admin/kyc" element={<KYC />} />
             <Route path="/admin/support" element={<AdminSupport />} />
