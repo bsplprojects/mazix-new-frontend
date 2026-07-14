@@ -32,7 +32,7 @@ const Product = () => {
     GST: 0,
     Discount: 0,
     BV: 0,
-    Repurchase: 0,
+    Repurchase: "0",
     seqOnline: 0,
     Image: "",
     stock: 0,
@@ -48,6 +48,8 @@ const Product = () => {
       return res.data?.list;
     },
   });
+
+  console.log();
 
   const filteredProducts = useMemo(() => {
     return products?.filter((product: any) => {
@@ -124,30 +126,47 @@ const Product = () => {
   };
 
   const handleSubmit = () => {
-    if (!data.Product) {
+    if (!data?.Product?.trim()) {
       toast.error("Please enter product name");
       return;
     }
 
     const formData = new FormData();
 
-    formData.append("pID", data.pID.toString());
-    formData.append("Product", data.Product);
-    formData.append("pCatID", data.pCatID.toString());
-    formData.append("Description", data.Description);
-    formData.append("MRP", data.MRP.toString());
-    formData.append("MemberMRP", data.MemberMRP.toString());
-    formData.append("StockistMRP", data.StockistMRP.toString());
-    formData.append("GST", data.GST.toString());
-    formData.append("Discount", data.Discount.toString());
-    formData.append("BV", data.BV.toString());
-    formData.append("Repurchase", data.Repurchase.toString());
-    formData.append("seqOnline", data.seqOnline.toString());
-    formData.append("Status", data.Status);
-    formData.append("Image", data.Image || "");
-    formData.append("stock", data.stock.toString() || "");
+    const appendValue = (key: string, value: any) => {
+      if (value === null || value === undefined) {
+        formData.append(key, "");
+        return;
+      }
 
-    if (file) {
+      formData.append(key, String(value));
+    };
+
+    appendValue("pID", Number(data?.pID) || 0);
+    appendValue("Product", data?.Product?.trim() || "");
+    appendValue("pCatID", Number(data?.pCatID) || 0);
+    appendValue("Description", data?.Description || "");
+
+    appendValue("MRP", Number(data?.MRP) || 0);
+    appendValue("MemberMRP", Number(data?.MemberMRP) || 0);
+    appendValue("StockistMRP", Number(data?.StockistMRP) || 0);
+
+    appendValue("GST", Number(data?.GST) || 0);
+    appendValue("Discount", Number(data?.Discount) || 0);
+    appendValue("BV", Number(data?.BV) || 0);
+
+    appendValue("Repurchase", Number(data?.Repurchase) || 1);
+    appendValue("seqOnline", Number(data?.seqOnline) || 0);
+
+    appendValue("Status", data?.Status || "Active");
+
+    appendValue("stock", Number(data?.stock) || 0);
+
+    if (!file && data?.Image) {
+      appendValue("Image", data.Image);
+    }
+
+    if (file instanceof File) {
       formData.append("Image", file);
     }
 
@@ -184,31 +203,47 @@ const Product = () => {
 
   // --------------------------------------------------
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: any = {}) => {
     setFile(null);
 
     setData({
-      pID: product.pID,
-      pCatID: product.pCatID,
-      Status: product.Status,
-      Product: product.Product,
-      Description: product.Description,
-      MRP: product.MRP ?? 0,
-      MemberMRP: product.MemberMRP ?? 0,
-      StockistMRP: product.StockistMRP ?? 0,
-      GST: product.GST ?? 0,
-      Discount: product.Discount ? product.Discount : 0,
-      BV: product.BV ?? 0,
-      Repurchase: product.Repurchase,
-      seqOnline: product?.seqOnline ?? 0,
-      Image: product.Image,
-      stock: product.stock ?? 0,
+      pID: Number(product?.pID) || 0,
+      pCatID: Number(product?.pCatID) || 0,
+
+      Status: product?.Status ?? "Active",
+
+      Product: product?.Product ?? "",
+
+      Description: product?.Description ?? "",
+
+      MRP: Number(product?.MRP) || 0,
+      MemberMRP: Number(product?.MemberMRP) || 0,
+      StockistMRP: Number(product?.StockistMRP) || 0,
+      GST: Number(product?.GST) || 0,
+      Discount: Number(product?.Discount) || 0,
+      BV: Number(product?.BV) || 0,
+
+      Repurchase: product?.Repurchase || "1",
+
+      seqOnline: Number(product?.seqOnline) || 0,
+
+      Image: product?.Image ?? "",
+
+      stock: Number(product?.stock) || 0,
     });
-    // for displaying the image in editing mode.
-    setPreview(
-      `https://app.mymazix.com/${product?.Image?.replace("../../", "")}`,
-    );
-    window.scrollTo(0, 0);
+
+    if (product?.Image) {
+      setPreview(
+        `https://app.mymazix.com/${String(product.Image).replace("../../", "")}`,
+      );
+    } else {
+      setPreview("");
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -390,8 +425,8 @@ const Product = () => {
               <SelectValue placeholder="Select Pay Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="deactive">Deactive</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Deactive">Deactive</SelectItem>
             </SelectContent>
           </Select>
         </div>

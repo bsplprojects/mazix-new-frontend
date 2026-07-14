@@ -6,14 +6,14 @@ import { Download, Loader2, Trash, Users } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -26,6 +26,7 @@ const PAGE_SIZE = 10;
 
 const StockReport = () => {
   const [status, setStatus] = useState<string>("");
+  const [search, setSearch] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
@@ -44,8 +45,6 @@ const StockReport = () => {
       });
       return data;
     },
-    placeholderData: (prev) => prev,
-    enabled: false,
   });
 
   const reports = data?.stocksList || [];
@@ -113,6 +112,12 @@ const StockReport = () => {
     });
   };
 
+  const filteredStocks = search.trim()
+    ? reports.filter((stock: any) =>
+        stock?.Product?.toLowerCase().includes(search.toLowerCase()),
+      )
+    : reports;
+
   return (
     <main>
       <div className="flex flex-col gap-4 border-b border-white/10 lg:flex-col lg:items-start lg:justify-between">
@@ -136,6 +141,17 @@ const StockReport = () => {
 
         <div className="border-b border-white/10 bg-white/2 p-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div>
+              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                Search
+              </label>
+              <Input
+                placeholder="Search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
             {/* STATUS */}
             <div>
               <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
@@ -196,7 +212,7 @@ const StockReport = () => {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setMemberId("");
+                  setStatus("");
                   setFromDate("");
                   setToDate("");
                 }}
@@ -240,6 +256,10 @@ const StockReport = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  Opening Stock
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Stock
                 </th>
 
@@ -250,7 +270,7 @@ const StockReport = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index: number) => (
+              {filteredStocks?.map((user: any, index: number) => (
                 <tr
                   key={user?.id}
                   className="transition hover:bg-white/3 text-nowrap"
@@ -269,6 +289,10 @@ const StockReport = () => {
 
                   <td className="px-6 py-5 text-sm  text-zinc-300">
                     {formatIST(user?.UpdatedAt) || "-"}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-zinc-300">
+                    {user.openingStock || "0"}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
@@ -298,7 +322,7 @@ const StockReport = () => {
           </div>
         )}
 
-        <Pagination className="mt-6">
+        {/* <Pagination className="mt-6">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
@@ -339,7 +363,7 @@ const StockReport = () => {
               />
             </PaginationItem>
           </PaginationContent>
-        </Pagination>
+        </Pagination> */}
       </div>
     </main>
   );

@@ -273,6 +273,10 @@ const InvoiceList = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  Due
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Payment Mode
                 </th>
 
@@ -319,7 +323,7 @@ const InvoiceList = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.totalTaxable || "-"}
+                    {user.totalTaxable}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
@@ -327,11 +331,15 @@ const InvoiceList = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.totalGST || "-"}
+                    {user.totalGST }
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {user.totalAmount || "-"}
+                    {user.totalAmount}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-zinc-300">
+                    {user.due}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-zinc-300">

@@ -8,20 +8,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+
+const PAGE_SIZE = 10;
 
 const RewardReport = () => {
+  const queryClient = useQueryClient();
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [Designation, setDesignation] = useState("");
   const [page, setPage] = useState(1);
 
+  const [ids, setIds] = useState<string[]>([]);
+
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["sale-reports"],
+    queryKey: ["reward-reports", page, Designation, fromDate, memberId],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/reward", {
         params: {
@@ -30,14 +47,18 @@ const RewardReport = () => {
           MemberId: memberId,
           Todate: toDate,
           all: "",
+          page,
+          pageSize: PAGE_SIZE,
         },
       });
       return data;
     },
-    enabled: false,
   });
 
   const reports = data?.data || [];
+  const pagination = data?.pagination;
+  const currentPage = pagination?.page || 1;
+  const totalPages = pagination?.totalPages || 1;
 
   const handleExcel = async () => {
     if (!reports?.length) {
@@ -139,6 +160,43 @@ const RewardReport = () => {
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+  };
+
+  const handleCheckbox = (id: string) => {
+    const existing = ids.includes(id);
+    if (existing) {
+      setIds(ids.filter((c) => c !== id));
+    } else {
+      setIds([...ids, id]);
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/admin/reward/paid`, { ids });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reward-reports", page, Designation, fromDate, memberId],
+      });
+      toast.success("Reward paid successfully");
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handlePaid = () => {
+    if (!ids.length) {
+      toast.error("Please select at least one member");
+      return;
+    }
+    mutation.mutate();
   };
 
   return (
@@ -279,6 +337,9 @@ const RewardReport = () => {
             </div>
           </div>
         </div>
+        <Button variant={"default"} onClick={handlePaid}>
+          Paid
+        </Button>
       </div>
 
       {/* SALES LIST */}
@@ -291,6 +352,10 @@ const RewardReport = () => {
           <table className="w-full min-w-250">
             <thead className="border-b border-white/10 bg-white/3 text-nowrap">
               <tr className="text-left">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  #
+                </th>
+
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Sr.
@@ -344,6 +409,11 @@ const RewardReport = () => {
                   key={index}
                   className="transition hover:bg-white/3 text-nowrap"
                 >
+                  {/* check */}
+                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                    <Checkbox onClick={() => handleCheckbox(user.MemberID)} />
+                  </td>
+
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}
@@ -415,6 +485,119 @@ const RewardReport = () => {
             </p>
           </div>
         )}
+
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pagination?.hasPrev) {
+                    setPage((prev) => prev - 1);
+                  }
+                }}
+                className={
+                  !pagination?.hasPrev ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
+
+            {(() => {
+              const items = [];
+
+              // First page
+              items.push(
+                <PaginationItem key={1}>
+                  <PaginationLink
+                    href="#"
+                    isActive={currentPage === 1}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage(1);
+                    }}
+                  >
+                    1
+                  </PaginationLink>
+                </PaginationItem>,
+              );
+
+              // Left ellipsis
+              if (currentPage > 3) {
+                items.push(
+                  <PaginationItem key="left-ellipsis">
+                    <PaginationEllipsis />
+                  </PaginationItem>,
+                );
+              }
+
+              // Current page -1, current, current +1
+              for (
+                let i = Math.max(2, currentPage - 1);
+                i <= Math.min(totalPages - 1, currentPage + 1);
+                i++
+              ) {
+                items.push(
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === i}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(i);
+                      }}
+                    >
+                      {i}
+                    </PaginationLink>
+                  </PaginationItem>,
+                );
+              }
+
+              // Right ellipsis
+              if (currentPage < totalPages - 2) {
+                items.push(
+                  <PaginationItem key="right-ellipsis">
+                    <PaginationEllipsis />
+                  </PaginationItem>,
+                );
+              }
+
+              // Last page
+              if (totalPages > 1) {
+                items.push(
+                  <PaginationItem key={totalPages}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === totalPages}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(totalPages);
+                      }}
+                    >
+                      {totalPages}
+                    </PaginationLink>
+                  </PaginationItem>,
+                );
+              }
+
+              return items;
+            })()}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pagination?.hasNext) {
+                    setPage((prev) => prev + 1);
+                  }
+                }}
+                className={
+                  !pagination?.hasNext ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </main>
   );

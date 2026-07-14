@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { Users, ArrowLeftRight, UserPlus, Coins } from "lucide-react";
+import { Users, ArrowLeftRight, UserPlus } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
-import * as joiningApi from "@/services/joiningApi";
 
 type Member = {
   id: string;
@@ -18,8 +17,6 @@ type Member = {
 };
 
 export default function Team() {
-  const mid = sessionStorage.getItem("MID");
-  const memberId = sessionStorage.getItem("memberID");
   const [members, setMembers] = useState<Member[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,27 +49,18 @@ export default function Team() {
     },
   });
 
-  const { data: dash } = useQuery({
-    queryKey: ["dashboard", memberId, mid],
-    queryFn: async () => {
-      const res = await joiningApi.getMemberDashboard(
-        mid as string,
-        memberId as string,
-      );
-
-      return res;
-    },
-  });
-
   const loadMore = async () => {
     if (!cursor) return;
     setLoading(true);
     const res = await teamApi.left(userId as string, cursor, debouncedSearch);
-
     setMembers((prev) => [...prev, ...res.members]);
     setCursor(res.nextCursor);
     setLoading(false);
   };
+
+  const joiningBV = members.length
+    ? members.reduce((acc, b) => acc + b.bv, 0)
+    : 0;
 
   if (isLoading) {
     return (
@@ -116,7 +104,6 @@ export default function Team() {
           />
         </div>
       )}
-     
 
       {/* SEARCH */}
       <div className="flex items-center gap-3">
@@ -132,6 +119,7 @@ export default function Team() {
       <div className="border rounded-xl overflow-x-auto">
         <div className="px-4 py-3 border-b font-semibold flex justify-between">
           <span>ORG 1 Members</span>
+          <p>Joining BV : {joiningBV}</p>
         </div>
 
         <table className="min-w-175 w-full border">

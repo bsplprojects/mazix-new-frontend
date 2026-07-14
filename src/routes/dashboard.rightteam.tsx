@@ -69,13 +69,14 @@ export default function Team() {
     if (!cursor) return;
     setLoading(true);
     const res = await teamApi.right(userId as string, cursor);
-
     setMembers((prev) => [...prev, ...res.members]);
     setCursor(res.nextCursor);
     setLoading(false);
   };
 
-  console.log(members);
+  const joiningBV = members.length
+    ? members.reduce((acc, b) => acc + b.bv, 0)
+    : 0;
 
   if (isLoading) {
     return (
@@ -120,7 +121,7 @@ export default function Team() {
           </div>
         </>
       )}
-      <div className="grid md:grid-cols-3 gap-4">
+      {/* <div className="grid md:grid-cols-3 gap-4">
         <StatCard
           label="Joining BV"
           value={dash?.CurrentWallet ?? "0"}
@@ -133,7 +134,7 @@ export default function Team() {
           tone="brass"
           icon={<Coins className="h-4 w-4" />}
         />
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-3">
         <Input
@@ -148,6 +149,7 @@ export default function Team() {
       <div className="border rounded-xl overflow-x-auto">
         <div className="px-4 py-3 border-b font-semibold flex justify-between">
           <span>ORG 2 Members</span>
+          <p>Joining BV : {joiningBV}</p>
         </div>
 
         <table className="min-w-175 w-full border">
