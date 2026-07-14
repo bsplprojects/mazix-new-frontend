@@ -79,6 +79,7 @@ const products = [
   { title: "Category", url: "/admin/category", icon: TicketSlash },
   { title: "Invoice", url: "/admin/stock", icon: Box },
   { title: "Invoice List", url: "/admin/invoice-list", icon: Receipt },
+  { title: "Stock Report", url: "/admin/stock-report", icon: Package2Icon },
 ];
 
 const setup = [

@@ -10,6 +10,7 @@ import RepInvoice from "./routes/RepInvoice";
 import Stock from "./routes/admin/Stock";
 import InvoiceList from "./routes/admin/InvoiceList";
 import StockInvoice from "./routes/admin/StockInvoice";
+import StockReport from "./routes/admin/StockReport";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -271,6 +272,7 @@ export default function App() {
             <Route path="/admin/stock" element={<Stock />} />
             <Route path="/admin/invoice-list" element={<InvoiceList />} />
             <Route path="/admin/invoice/stock" element={<StockInvoice />} />
+            <Route path="/admin/stock-report" element={<StockReport />} />
             <Route path="/admin/category" element={<Category />} />
             <Route path="/admin/kyc" element={<KYC />} />
             <Route path="/admin/support" element={<AdminSupport />} />
