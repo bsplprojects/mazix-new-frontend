@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
-import { Users, UserPlus, ArrowLeftRight, Coins } from "lucide-react";
+import { Users, UserPlus, ArrowLeftRight } from "lucide-react";
 import { teamApi } from "@/services/teamApi";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import * as joiningApi from "@/services/joiningApi";
 
 type Member = {
   id: string;
@@ -15,11 +14,11 @@ type Member = {
   bv: number;
   active?: boolean;
   rank?: string;
+  repurchaseBV: number;
+  joinDate: Date;
 };
 
 export default function Team() {
-  const mid = sessionStorage.getItem("MID");
-  const memberId = sessionStorage.getItem("memberID");
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -53,18 +52,6 @@ export default function Team() {
     },
   });
 
-  const { data: dash } = useQuery({
-    queryKey: ["dashboard", memberId, mid],
-    queryFn: async () => {
-      const res = await joiningApi.getMemberDashboard(
-        mid as string,
-        memberId as string,
-      );
-
-      return res;
-    },
-  });
-
   const loadMore = async () => {
     if (!cursor) return;
     setLoading(true);
@@ -76,6 +63,10 @@ export default function Team() {
 
   const joiningBV = members.length
     ? members.reduce((acc, b) => acc + b.bv, 0)
+    : 0;
+
+  const repurchaseBV = members.length
+    ? members.reduce((acc, b) => acc + b.repurchaseBV, 0)
     : 0;
 
   if (isLoading) {
@@ -149,7 +140,11 @@ export default function Team() {
       <div className="border rounded-xl overflow-x-auto">
         <div className="px-4 py-3 border-b font-semibold flex justify-between">
           <span>ORG 2 Members</span>
-          <p>Joining BV : {joiningBV}</p>
+
+          <div className="flex gap-5">
+            <p>Repurchase BV : {repurchaseBV}</p>
+            <p>Joining BV : {joiningBV}</p>
+          </div>
         </div>
 
         <table className="min-w-175 w-full border">

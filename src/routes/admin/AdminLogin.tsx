@@ -4,7 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ShieldCheck, Eye, EyeOff, LockKeyhole, UserCog } from "lucide-react";
+import {
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  UserCog,
+  TriangleAlert,
+} from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { loginAdmin } from "@/services/authApi";
@@ -14,6 +21,7 @@ export default function AdminLogin() {
 
   const [showPassword, setShowPassword] = useState(false);
   const adminToken = sessionStorage.getItem("adminToken");
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     Username: "",
@@ -38,9 +46,8 @@ export default function AdminLogin() {
       navigate("/admin");
     },
     onError: (err) => {
-      console.log(err);
       if (err instanceof AxiosError) {
-        toast.error(err.message);
+        setError(err.response?.data?.message);
       } else {
         toast.error("Something went wrong");
       }
@@ -126,11 +133,19 @@ export default function AdminLogin() {
               </div>
             </div>
 
+            {/* Displaying error */}
+            {error && (
+              <div className="p-2 border w-full rounded border-red-500/20 bg-red-500/10 space-x-3 flex items-center  translate-y-0.5">
+                <TriangleAlert className="w-4 h-4 text-red-500" />
+                <p className="text-red-500 text-sm">{error}</p>
+              </div>
+            )}
+
             {/* Button */}
             <Button
               type="submit"
               disabled={mutation.isPending}
-              className="w-full h-12 rounded-xl text-base font-semibold bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:opacity-90 transition-all duration-300 shadow-lg shadow-yellow-500/20"
+              className="w-full h-12 rounded-xl text-base font-semibold bg-linear-to-r from-yellow-400 to-yellow-600 text-black hover:opacity-90 transition-all duration-300 shadow-lg shadow-yellow-500/20"
             >
               {mutation.isPending ? "Signing in..." : "Admin Login"}
             </Button>

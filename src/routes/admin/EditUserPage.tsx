@@ -1,10 +1,45 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  type NavigateFunction,
+} from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { axiosInstance } from "@/config/axios";
+
+interface User {
+  MemberName: string;
+  GuardianName: string;
+  Gender: string;
+  Age: string;
+  Address: string;
+  Pincode: string;
+  District: string;
+  State: string;
+  Country: string;
+  MobileNo: string;
+  AltMobileNo: string;
+  AadharNo: string;
+  PAN: string;
+  EmailID: string;
+
+  NomineeName: string;
+  NomineeAge: string;
+  NomineeGender: string;
+  Relation: string;
+
+  AccountName: string;
+  AccountNo: string;
+  AccountType: string;
+  BankName: string;
+  IFSC: string;
+  Branch: string;
+
+  OTP: string;
+}
 
 export default function EditUserPage() {
   const { id } = useParams();
@@ -12,7 +47,7 @@ export default function EditUserPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const [user, setUser] = useState<any>({
+  const [user, setUser] = useState<User>({
     MemberName: "",
     GuardianName: "",
     Gender: "Male",
@@ -31,7 +66,7 @@ export default function EditUserPage() {
     NomineeName: "",
     NomineeAge: "",
     NomineeGender: "Male",
-    Relation: "WIFE",
+    Relation: "",
 
     AccountName: "",
     AccountNo: "",
@@ -75,11 +110,20 @@ export default function EditUserPage() {
     }
   };
 
-  const handleChange = (key: string, value: any) => {
-    setUser((prev: any) => ({ ...prev, [key]: value }));
+  const handleChange = (key: string, value: string | number) => {
+    setUser((prev: User) => ({ ...prev, [key]: value }));
   };
 
-  const sendOTP = () => toast.success("OTP Sent");
+  const sendOTP = () => {
+    axiosInstance
+      .get(`/admin/member/otp`)
+      .then(() => {
+        toast.success("OTP sent");
+      })
+      .catch(() => {
+        toast.error("OTP send failed");
+      });
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 pb-28 space-y-8 text-white">
@@ -92,14 +136,16 @@ export default function EditUserPage() {
           <Field label="Member Name">
             <AdminInput
               value={user?.MemberName}
-              onChange={(e: any) => handleChange("MemberName", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("MemberName", e.target.value)
+              }
             />
           </Field>
 
           <Field label="Guardian Name">
             <AdminInput
               value={user?.GuardianName}
-              onChange={(e: any) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange("GuardianName", e.target.value)
               }
             />
@@ -108,7 +154,9 @@ export default function EditUserPage() {
           <Field label="Gender">
             <AdminSelect
               value={user?.Gender}
-              onChange={(e: any) => handleChange("Gender", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("Gender", e.target.value)
+              }
               options={["Male", "Female", "Transgender"]}
             />
           </Field>
@@ -116,21 +164,27 @@ export default function EditUserPage() {
           <Field label="Age">
             <AdminInput
               value={user?.Age}
-              onChange={(e: any) => handleChange("Age", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("Age", e.target.value)
+              }
             />
           </Field>
 
           <Field label="Mobile">
             <AdminInput
               value={user?.MobileNo}
-              onChange={(e: any) => handleChange("MobileNo", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("MobileNo", e.target.value)
+              }
             />
           </Field>
 
           <Field label="Email">
             <AdminInput
               value={user?.EmailID}
-              onChange={(e: any) => handleChange("EmailID", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("EmailID", e.target.value)
+              }
             />
           </Field>
         </Grid>
@@ -142,15 +196,27 @@ export default function EditUserPage() {
           <Field label="Nominee Name">
             <AdminInput
               value={user?.NomineeName}
-              onChange={(e: any) => handleChange("NomineeName", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("NomineeName", e.target.value)
+              }
             />
           </Field>
 
           <Field label="Relation">
             <AdminSelect
               value={user?.Relation}
-              onChange={(e: any) => handleChange("Relation", e.target.value)}
-              options={["WIFE", "SON", "DAUGHTER", "MOTHER", "FATHER"]}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("Relation", e.target.value)
+              }
+              options={[
+                "",
+                "WIFE",
+                "SON",
+                "DAUGHTER",
+                "MOTHER",
+                "FATHER",
+                "OTHER",
+              ]}
             />
           </Field>
         </Grid>
@@ -162,21 +228,27 @@ export default function EditUserPage() {
           <Field label="Account Name">
             <AdminInput
               value={user?.AccountName}
-              onChange={(e: any) => handleChange("AccountName", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("AccountName", e.target.value)
+              }
             />
           </Field>
 
           <Field label="Account Number">
             <AdminInput
               value={user?.AccountNo}
-              onChange={(e: any) => handleChange("AccountNo", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("AccountNo", e.target.value)
+              }
             />
           </Field>
 
           <Field label="Account Type">
             <AdminSelect
               value={user?.AccountType}
-              onChange={(e: any) => handleChange("AccountType", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("AccountType", e.target.value)
+              }
               options={["Saving", "Current", "OD"]}
             />
           </Field>
@@ -184,7 +256,9 @@ export default function EditUserPage() {
           <Field label="IFSC">
             <AdminInput
               value={user?.IFSC}
-              onChange={(e: any) => handleChange("IFSC", e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange("IFSC", e.target.value)
+              }
             />
           </Field>
         </Grid>
@@ -195,14 +269,14 @@ export default function EditUserPage() {
         <div className="flex flex-wrap gap-3">
           <AdminInput value={user?.EmailID} readOnly />
 
-          <Button variant="secondary" onClick={sendOTP}>
-            Send OTP
-          </Button>
+          <Button onClick={sendOTP}>Send OTP</Button>
 
           <AdminInput
             placeholder="Enter OTP"
             value={user?.OTP}
-            onChange={(e: any) => handleChange("OTP", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange("OTP", e.target.value)
+            }
           />
         </div>
       </Section>
@@ -213,9 +287,7 @@ export default function EditUserPage() {
   );
 }
 
-/* ================= COMPONENTS ================= */
-
-const Header = ({ navigate }: any) => (
+const Header = ({ navigate }: { navigate: NavigateFunction }) => (
   <div className="flex justify-between items-center">
     <div>
       <h1 className="text-3xl font-bold">Edit Member</h1>
@@ -228,54 +300,59 @@ const Header = ({ navigate }: any) => (
   </div>
 );
 
-const Section = ({ title, children }: any) => (
-  <div className="bg-[#0b0f19] border border-white/10 rounded-2xl p-6 space-y-5">
-    <h2 className="text-xl font-bold text-yellow-400">{title}</h2>
+const Section = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <div className=" border border-white/10 rounded-2xl p-6 space-y-5">
+    <h2 className="text-xl font-bold ">{title}</h2>
     {children}
   </div>
 );
 
-const Grid = ({ children }: any) => (
+const Grid = ({ children }: { children: React.ReactNode }) => (
   <div className="grid md:grid-cols-4 gap-5">{children}</div>
 );
 
-const Field = ({ label, children }: any) => (
+const Field = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
   <div className="space-y-2">
     <label className="text-sm text-zinc-400">{label}</label>
     {children}
   </div>
 );
 
-/* ================= PREMIUM INPUT ================= */
-
-const AdminInput = ({ ...props }: any) => (
-  <Input
-    {...props}
-    className="h-11 rounded-2xl border border-white/10 
-    bg-zinc-900/80 text-white
-    placeholder:text-zinc-500
-    focus:border-yellow-500"
-  />
-);
-
-/* ================= SELECT ================= */
+const AdminInput = ({ ...props }: any) => <Input {...props} className="" />;
 
 const AdminSelect = ({ options, ...props }: any) => (
   <select
     {...props}
-    className="h-11 w-full rounded-2xl border border-white/10 
-    bg-zinc-900/80 px-3 text-white
-    focus:border-yellow-500"
+    className=" h-8 w-full rounded-lg border border-white/10 
+    "
   >
     {options.map((o: string) => (
-      <option key={o}>{o}</option>
+      <option key={o} className="text-black">
+        {o}
+      </option>
     ))}
   </select>
 );
 
-/* ================= STICKY SAVE ================= */
-
-const StickySave = ({ loading, updateUser }: any) => (
+const StickySave = ({
+  loading,
+  updateUser,
+}: {
+  loading: boolean;
+  updateUser: () => void;
+}) => (
   <div className="fixed bottom-0 left-0 w-full bg-[#0b0f19]/90 backdrop-blur border-t border-white/10 p-4 flex justify-center">
     <Button
       size="lg"

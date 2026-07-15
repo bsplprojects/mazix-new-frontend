@@ -128,6 +128,7 @@ export default function Repurchase() {
                           <img
                             src={`https://app.mymazix.com/${p?.image.split("../../")[1]}`}
                             alt={p?.name}
+                            loading="lazy"
                             width={50}
                           />
                         )}

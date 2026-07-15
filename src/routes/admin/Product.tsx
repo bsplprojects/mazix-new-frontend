@@ -49,8 +49,6 @@ const Product = () => {
     },
   });
 
-  console.log();
-
   const filteredProducts = useMemo(() => {
     return products?.filter((product: any) => {
       return product?.Product?.toLowerCase().includes(search.toLowerCase());
@@ -661,6 +659,7 @@ const Product = () => {
                         </div>
                       ) : (
                         <img
+                          loading="lazy"
                           onClick={() =>
                             window.open(
                               `https://app.mymazix.com/${user?.Image?.replace("../../", "")}`,

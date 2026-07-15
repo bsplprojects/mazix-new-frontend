@@ -14,6 +14,8 @@ type Member = {
   bv: number;
   active?: boolean;
   rank?: string;
+  repurchaseBV: number;
+  joinDate: Date;
 };
 
 export default function Team() {
@@ -34,6 +36,7 @@ export default function Team() {
     queryKey: ["team", userId, debouncedSearch],
     queryFn: async () => {
       const res = await teamApi.left(userId as string, null, debouncedSearch);
+      console.log(res);
       setMembers(Array.isArray(res?.members) ? res?.members : []);
       setCursor(res.nextCursor);
       return res;
@@ -60,6 +63,10 @@ export default function Team() {
 
   const joiningBV = members.length
     ? members.reduce((acc, b) => acc + b.bv, 0)
+    : 0;
+
+  const repurchaseBV = members.length
+    ? members.reduce((acc, b) => acc + b.repurchaseBV, 0)
     : 0;
 
   if (isLoading) {
@@ -119,7 +126,10 @@ export default function Team() {
       <div className="border rounded-xl overflow-x-auto">
         <div className="px-4 py-3 border-b font-semibold flex justify-between">
           <span>ORG 1 Members</span>
-          <p>Joining BV : {joiningBV}</p>
+          <div className="flex gap-5">
+            <p>Repurchase BV : {repurchaseBV}</p>
+            <p>Joining BV : {joiningBV}</p>
+          </div>
         </div>
 
         <table className="min-w-175 w-full border">
