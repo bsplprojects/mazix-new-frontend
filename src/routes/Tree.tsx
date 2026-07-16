@@ -2,7 +2,7 @@ import { teamApi } from "@/services/teamApi";
 import { useQuery } from "@tanstack/react-query";
 import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Loader2, UserRound, UserStar } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import dagre from "dagre";
 
@@ -64,6 +64,31 @@ const Tree = () => {
     queryFn: () => teamApi.right(userId),
     enabled: !!userId,
   });
+
+  // const loadAll = async () => {
+  //   setLoading(true);
+  //   setAllMembers([]);
+
+  //   try {
+  //     let nextCursor: string | null = null;
+
+  //     while (true) {
+  //       const res = await teamApi.left(userId as string, nextCursor, "", 100);
+
+  //       setAllMembers((prev) => [...prev, ...res.members]);
+
+  //       if (!res.nextCursor) {
+  //         setCursor(null);
+  //         break;
+  //       }
+
+  //       nextCursor = res.nextCursor;
+  //       await new Promise((resolve) => setTimeout(resolve, 0));
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const members = useMemo(() => {
     const leftMembers = left?.members || [];
@@ -128,9 +153,6 @@ const Tree = () => {
         data: {
           label: (
             <div className="flex items-center flex-col gap-3 p-2">
-              <p className="p-3 rounded-full bg-white/50 border border-white/10 inset-shadow-[0px_0px_12px_rgba(0,0,0,0.4)] shadow-sm shadow-black">
-                <UserStar className="h-14 w-14 text-black" />
-              </p>
               {`${userId}`}
             </div>
           ),
@@ -163,9 +185,6 @@ const Tree = () => {
         data: {
           label: (
             <div className="flex items-center flex-col gap-3 p-2">
-              <p className="p-3 rounded-full bg-white/10 border border-white/10 inset-shadow-[0px_0px_12px_rgba(0,0,0,0.9)] shadow-md shadow-black">
-                <UserRound className="h-14 w-14 text-white" />
-              </p>
               {`${member.name}\n${member.id}`}
             </div>
           ),
@@ -259,6 +278,7 @@ const Tree = () => {
         height: "100%",
         width: "100%",
         background: "transparent",
+        display: "relative",
       }}
     >
       {isLoading ? (
@@ -284,6 +304,7 @@ const Tree = () => {
           <Controls className="text-black" />
         </ReactFlow>
       )}
+      {/* <Button onClick={} className="absolute bottom-16 left-1/2 translate-x-1/2">Generate All</Button> */}
     </main>
   );
 };

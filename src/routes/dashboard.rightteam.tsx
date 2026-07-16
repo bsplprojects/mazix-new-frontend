@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { axiosInstance } from "@/config/axios";
 
 type Member = {
   id: string;
@@ -31,14 +32,18 @@ export default function Team() {
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const userId = "MAZ094982";
+  const userId = sessionStorage.getItem("memberID");
 
   const { isLoading } = useQuery({
     queryKey: ["team", userId, debouncedSearch],
     queryFn: async () => {
-      const res = await teamApi.right(userId as string, null, debouncedSearch);
-      setMembers(Array.isArray(res?.members) ? res?.members : []);
-      setCursor(res.nextCursor);
+      const res = await axiosInstance.post(`/team/right/${userId}`, {
+        search: debouncedSearch,
+        queue: cursor,
+        limit: 10,
+      });
+      setMembers(Array.isArray(res.data?.members) ? res.data?.members : []);
+      setCursor(res.data?.nextCursor);
       return res;
     },
   });

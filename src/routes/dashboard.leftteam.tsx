@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
+import { axiosInstance } from "@/config/axios";
 
 type Member = {
   id: string;
@@ -35,10 +36,14 @@ export default function Team() {
   const { isLoading } = useQuery({
     queryKey: ["team", userId, debouncedSearch],
     queryFn: async () => {
-      const res = await teamApi.left(userId as string, null, debouncedSearch);
-      console.log(res);
-      setMembers(Array.isArray(res?.members) ? res?.members : []);
-      setCursor(res.nextCursor);
+      const res = await axiosInstance.post(`/team/left/${userId}`, {
+        search: debouncedSearch,
+        queue: cursor,
+        limit: 10,
+      });
+
+      setMembers(Array.isArray(res.data?.members) ? res.data?.members : []);
+      setCursor(res.data?.nextCursor);
       return res;
     },
   });
@@ -160,8 +165,8 @@ export default function Team() {
         <div className="px-4 py-3 border-b font-semibold flex justify-between">
           <span>ORG 1 Members</span>
           <div className="flex gap-5">
-            <p>Repurchase BV : {repurchaseBV}</p>
-            <p>Joining BV : {joiningBV}</p>
+            <p>Repurchase BV : {repurchaseBV ?? 0}</p>
+            <p>Joining BV : {joiningBV ?? 0}</p>
           </div>
         </div>
 
