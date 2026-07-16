@@ -7,6 +7,8 @@ import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
+const PAGE_SIZE = 10;
+
 const SaleReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -21,6 +23,8 @@ const SaleReport = () => {
           FromDate: fromDate,
           MemberId: memberId,
           Todate: toDate,
+          page,
+          pageSize: PAGE_SIZE,
         },
       });
       return data;
@@ -92,7 +96,7 @@ const SaleReport = () => {
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {reports.length }
+                  {reports.length}
                 </span>{" "}
                 results
               </p>

@@ -61,6 +61,36 @@ export default function Team() {
     setLoading(false);
   };
 
+  const loadAll = async () => {
+    setLoading(true);
+    setMembers([]);
+
+    try {
+      let nextCursor: string | null = null;
+
+      while (true) {
+        const res = await teamApi.left(
+          userId as string,
+          nextCursor,
+          debouncedSearch,
+          100,
+        );
+
+        setMembers((prev) => [...prev, ...res.members]);
+
+        if (!res.nextCursor) {
+          setCursor(null);
+          break;
+        }
+
+        nextCursor = res.nextCursor;
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const joiningBV = members.length
     ? members.reduce((acc, b) => acc + b.bv, 0)
     : 0;
@@ -120,6 +150,9 @@ export default function Team() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <Button onClick={loadAll} disabled={loading}>
+          {loading ? "Loading..." : cursor ? "All Members" : "No More Members"}
+        </Button>
       </div>
 
       {/* TABLE */}
@@ -133,13 +166,14 @@ export default function Team() {
         </div>
 
         <table className="min-w-175 w-full border">
-          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40">
+          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40 text-nowrap">
             <tr>
               <th className="text-left px-6 py-3">#</th>
               <th className="text-left px-6 py-3">Member Name</th>
               <th className="text-left px-6 py-3">Member ID</th>
               <th className="text-left px-6 py-3">joiningDate</th>
               <th className="text-left px-6 py-3">BV</th>
+              <th className="text-left px-6 py-3">Repurchase BV</th>
               <th className="text-left px-6 py-3">Rank</th>
             </tr>
           </thead>
@@ -176,6 +210,10 @@ export default function Team() {
 
                   <td className="text-left px-6 py-3">
                     {m.bv?.toLocaleString("en-IN")}
+                  </td>
+
+                  <td className="text-left px-6 py-3">
+                    {m.repurchaseBV?.toLocaleString("en-IN")}
                   </td>
 
                   <td className="text-left px-6 py-3">{m.rank || "-"}</td>

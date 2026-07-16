@@ -53,7 +53,7 @@ const main = [
       { title: "ORG 1", url: "/dashboard/team/left-team" },
       { title: "ORG 2", url: "/dashboard/team/right-team" },
       { title: "Datewise Downline", url: "/dashboard/team/datewise" },
-      { title: "Tree", url: "/dashboard/team/tree" },
+      { title: "Member Structure", url: "/dashboard/team/tree" },
     ],
   },
   { title: "New User", url: "/dashboard/userinfo", icon: User },

@@ -2,18 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
-import { Download, Loader2, Trash, Users } from "lucide-react";
+import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-// import {
-//   Pagination,
-//   PaginationContent,
-//   PaginationItem,
-//   PaginationLink,
-//   PaginationNext,
-//   PaginationPrevious,
-// } from "@/components/ui/pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -21,18 +21,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useDebounce } from "use-debounce";
 
 const PAGE_SIZE = 10;
 
 const StockReport = () => {
   const [status, setStatus] = useState<string>("");
   const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 500);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["stock-reports", page, status, fromDate, toDate],
+    queryKey: [
+      "stock-reports",
+      page,
+      status,
+      fromDate,
+      toDate,
+      debouncedSearch,
+    ],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/stock", {
         params: {
@@ -41,6 +50,7 @@ const StockReport = () => {
           Todate: toDate,
           page,
           pageSize: PAGE_SIZE,
+          search: debouncedSearch,
         },
       });
       return data;
@@ -148,7 +158,10 @@ const StockReport = () => {
               <Input
                 placeholder="Search"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
               />
             </div>
 
@@ -322,11 +335,10 @@ const StockReport = () => {
           </div>
         )}
 
-        {/* <Pagination className="mt-6">
+        <Pagination className="mt-6">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                href="#"
                 onClick={(e) => {
                   e.preventDefault();
                   if (page > 1) setPage(page - 1);
@@ -338,7 +350,6 @@ const StockReport = () => {
             {Array.from({ length: totalPages }, (_, i) => (
               <PaginationItem key={i + 1}>
                 <PaginationLink
-                  href="#"
                   isActive={page === i + 1}
                   onClick={(e) => {
                     e.preventDefault();
@@ -363,7 +374,7 @@ const StockReport = () => {
               />
             </PaginationItem>
           </PaginationContent>
-        </Pagination> */}
+        </Pagination>
       </div>
     </main>
   );

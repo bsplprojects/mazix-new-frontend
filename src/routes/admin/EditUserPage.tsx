@@ -50,7 +50,7 @@ export default function EditUserPage() {
   const [user, setUser] = useState<User>({
     MemberName: "",
     GuardianName: "",
-    Gender: "Male",
+    Gender: "",
     Age: "",
     Address: "",
     Pincode: "",
@@ -65,12 +65,12 @@ export default function EditUserPage() {
 
     NomineeName: "",
     NomineeAge: "",
-    NomineeGender: "Male",
+    NomineeGender: "",
     Relation: "",
 
     AccountName: "",
     AccountNo: "",
-    AccountType: "Saving",
+    AccountType: "",
     BankName: "",
     IFSC: "",
     Branch: "",
@@ -103,8 +103,8 @@ export default function EditUserPage() {
         toast.success("Member Updated Successfully");
         navigate(-1);
       }
-    } catch {
-      toast.error("Update failed");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Update failed");
     } finally {
       setLoading(false);
     }
@@ -208,15 +208,7 @@ export default function EditUserPage() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange("Relation", e.target.value)
               }
-              options={[
-                "",
-                "WIFE",
-                "SON",
-                "DAUGHTER",
-                "MOTHER",
-                "FATHER",
-                "OTHER",
-              ]}
+              options={["WIFE", "SON", "DAUGHTER", "MOTHER", "FATHER", "OTHER"]}
             />
           </Field>
         </Grid>
@@ -332,14 +324,14 @@ const Field = ({
 
 const AdminInput = ({ ...props }: any) => <Input {...props} className="" />;
 
-const AdminSelect = ({ options, ...props }: any) => (
-  <select
-    {...props}
-    className=" h-8 w-full rounded-lg border border-white/10 
-    "
-  >
+const AdminSelect = ({ options, placeholder = "Select", ...props }: any) => (
+  <select {...props} className="h-8 w-full rounded-lg border border-white/10">
+    <option value="" disabled>
+      {placeholder}
+    </option>
+
     {options.map((o: string) => (
-      <option key={o} className="text-black">
+      <option key={o} value={o} className="text-black">
         {o}
       </option>
     ))}

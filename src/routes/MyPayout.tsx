@@ -14,6 +14,7 @@ import { axiosInstance } from "@/config/axios";
 import { Button } from "@/components/ui/button";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { Link } from "react-router-dom";
 
 export default function MyPayout() {
   const [search, setSearch] = useState("");
@@ -322,14 +323,12 @@ export default function MyPayout() {
                     <td className="px-5 py-3">{item.Status}</td>
 
                     <td className="px-5 py-3">
-                      <a
-                        href={`/dashboard/statement/${item.BinaryPayoutID}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        to={`/dashboard/statement/${item.BinaryPayoutID}`}
                         className="text-blue-500 hover:underline"
                       >
                         Statement
-                      </a>
+                      </Link>
                     </td>
                   </tr>
                 ))

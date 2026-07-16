@@ -2,7 +2,7 @@ import { teamApi } from "@/services/teamApi";
 import { useQuery } from "@tanstack/react-query";
 import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Loader2, User, UserRound, UserStar } from "lucide-react";
+import { Loader2, UserRound, UserStar } from "lucide-react";
 import { useMemo } from "react";
 import dagre from "dagre";
 

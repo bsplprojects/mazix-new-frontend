@@ -15,11 +15,25 @@ import { AxiosError } from "axios";
 import { Images, Loader2, Package2, Pencil, Trash } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useDebounce } from "use-debounce";
+
+const PAGE_SIZE = 10;
 
 const Product = () => {
   const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 500);
+
   const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [page, setPage] = useState(1);
   const [data, setData] = useState({
     pID: 0,
     pCatID: 0,
@@ -40,14 +54,22 @@ const Product = () => {
 
   const client = useQueryClient();
 
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["products"],
+  const { data: productsData, isLoading } = useQuery({
+    queryKey: ["products", page, debouncedSearch],
     queryFn: async () => {
-      const res = await axiosInstance.get("/admin/products");
-
-      return res.data?.list;
+      const res = await axiosInstance.get("/admin/products", {
+        params: {
+          page,
+          pageSize: PAGE_SIZE,
+          search: debouncedSearch,
+        },
+      });
+      return res.data;
     },
   });
+
+  const products = productsData?.list;
+  const pagination = productsData?.pagination;
 
   const filteredProducts = useMemo(() => {
     return products?.filter((product: any) => {
@@ -105,7 +127,9 @@ const Product = () => {
     },
   });
 
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     const numericFields = [
       "MRP",
@@ -514,13 +538,16 @@ const Product = () => {
 
       <div className="flex items-center justify-between mt-10">
         <h2 className="text-2xl font-bold tracking-tight text-white">
-          Product List ({products?.length})
+          Product List ({pagination?.total})
         </h2>
         <Input
           placeholder="Search"
           className="w-1/2"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
       <div className="overflow-x-auto mt-5">
@@ -590,23 +617,25 @@ const Product = () => {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5 text-sm">
+            <tbody className="divide-y divide-white/10 text-sm">
               {filteredProducts?.length > 0 ? (
                 filteredProducts?.map((user: any, index: number) => (
-                  <tr key={index} className="transition hover:bg-white/3">
+                  <tr
+                    key={index}
+                    className="transition hover:bg-white/3 text-xs"
+                  >
                     {/* SR NO */}
                     <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                       {index + 1}
                     </td>
                     {/* DATE */}
-
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-xs text-zinc-300">
                       {user.Joining}
                     </td>
 
                     {/* MEMBER ID */}
 
-                    <td className="px-6 py-5 text-sm font-medium text-yellow-400 text-nowrap">
+                    <td className="px-6 py-5 text-xs font-medium text-yellow-400 text-nowrap">
                       {user.Product || "-"}
                     </td>
 
@@ -715,6 +744,37 @@ const Product = () => {
           </div>
         )}
       </div>
+
+      <Pagination className="mt-5">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              className={`${page === 1 ? "pointer-events-none opacity-50" : ""} `}
+            />
+          </PaginationItem>
+
+          {Array.from({ length: pagination?.totalPages || 1 }).map((_, i) => (
+            <PaginationItem key={i}>
+              <PaginationLink
+                isActive={page === i + 1}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          <PaginationItem>
+            <PaginationNext
+              className={`${page === pagination?.totalPages ? "pointer-events-none opacity-50" : ""} `}
+              onClick={() =>
+                setPage((p) => Math.min(p + 1, pagination?.totalPages || 1))
+              }
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </main>
   );
 };

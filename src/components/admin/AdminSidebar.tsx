@@ -264,7 +264,7 @@ export function AdminSidebar() {
       <SidebarContent className="px-2 py-3">
         <MenuSection label="Overview" items={adminMain} current={current} />
 
-        <MenuSection label="Setup" items={setup} current={current} />
+        {/* <MenuSection label="Setup" items={setup} current={current} /> */}
 
         <MenuSection label="Product" items={products} current={current} />
 

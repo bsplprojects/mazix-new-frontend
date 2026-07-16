@@ -322,7 +322,7 @@ export default function PayoutStatement() {
                     color: "#00a63e",
                   }}
                 >
-                  ₹ {data?.Payable}
+                  ₹ {Number(data?.Payable) + Number(data?.Bonus)}
                 </p>
               </div>
             </div>
