@@ -13,6 +13,7 @@ import {
   CreditCard,
   FileAxis3d,
   LogOut,
+  LineDotRightHorizontal,
 } from "lucide-react";
 import {
   Sidebar,
@@ -189,13 +190,18 @@ function MenuSection({
                             to={sub.url}
                             onClick={() => {
                               setOpenMenu(null);
-                              setOpenMobile(false); // only for mobile collapse
+                              setOpenMobile(false);
                             }}
                             className={`text-sm px-2 py-1 rounded-md hover:bg-accent block ${
                               current === sub.url ? "bg-primary text-white" : ""
                             }`}
                           >
-                            {sub.title}
+                            <p className="flex items-center gap-1">
+                              <LineDotRightHorizontal
+                                className={`w-3 h-3  ${current == sub.url ? "text-white" : "text-primary"} `}
+                              />
+                              {sub.title}
+                            </p>
                           </Link>
                         ))}
                       </div>

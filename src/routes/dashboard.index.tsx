@@ -1,4 +1,4 @@
-import { Wallet, Coins, GitBranch, Loader2 } from "lucide-react";
+import { Wallet, Coins, Loader2 } from "lucide-react";
 
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -103,34 +103,6 @@ export default function DashboardHome() {
           tone="brass"
           icon={<Coins className="h-4 w-4" />}
         />
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-4">
-        {/* Binary BV */}
-        <div className="rounded-2xl bg-gradient-card border border-border/60 p-6 shadow-card">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-display text-xl">Matching BV</h2>
-            <GitBranch className="h-4 w-4 text-brass" />
-          </div>
-          <p className="text-xs text-muted-foreground mb-6">
-            Current pairing cycle
-          </p>
-
-          <div className="space-y-5">
-            <LegBar
-              label="ORG 1"
-              value={Number(d?.LeftBV ?? 0)}
-              max={500000}
-              tone="emerald"
-            />
-            <LegBar
-              label="ORG 2"
-              value={Number(d?.RightBV ?? 0)}
-              max={500000}
-              tone="brass"
-            />
-          </div>
-        </div>
       </div>
 
       <div className="rounded-md border">

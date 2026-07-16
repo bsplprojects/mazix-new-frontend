@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/dashboard-ui";
 import { cn } from "@/lib/utils";
 import { rewardApi } from "@/services/rewardsApi";
+import RewardCard from "@/components/RewardCard";
 
 export default function RankPage() {
   const [rewards, setRewards] = useState<any[]>([]);
@@ -28,10 +29,6 @@ export default function RankPage() {
   const achievedIndex = useMemo(() => {
     return rewards.findLastIndex((r) => r.Status === "Achieved");
   }, [rewards]);
-
-  const currentRank = achievedIndex >= 0 ? rewards[achievedIndex] : null;
-
-  const nextRank = achievedIndex >= 0 ? rewards[achievedIndex + 1] : rewards[0];
 
   if (loading)
     return (
@@ -87,70 +84,7 @@ export default function RankPage() {
         subtitle="Your achievement journey"
       />
 
-      <div className="rounded-2xl bg-gradient-hero border border-border/60 p-8 shadow-elegant">
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* CURRENT RANK */}
-          <div>
-            <div className="text-xs uppercase tracking-wider text-brass mb-2">
-              Current Rank
-            </div>
-
-            <div className="font-display text-5xl text-gradient-emerald">
-              {currentRank?.RewardName || "Not Started"}
-            </div>
-
-            <div className="text-sm text-muted-foreground mt-2">
-              {currentRank ? "Achieved" : "Start your journey"}
-            </div>
-          </div>
-
-          {/* QUALIFICATION */}
-          <div className="space-y-2 text-sm">
-            <div className="text-xs uppercase tracking-wider text-brass">
-              Qualification
-            </div>
-
-            <Row
-              label="Achieved PV"
-              value={currentRank?.AchivePV ?? "0"}
-              pass
-            />
-
-            <Row
-              label="Achieved Bonus"
-              value={currentRank?.AchiveBV ?? "0"}
-              pass
-            />
-          </div>
-
-          {/* NEXT RANK */}
-          <div className="space-y-2 text-sm">
-            <div className="text-xs uppercase tracking-wider text-brass">
-              Next Rank: {nextRank?.RewardName || "Completed"}
-            </div>
-
-            {nextRank ? (
-              <>
-                <Row
-                  label="Required BV"
-                  value={currentRank?.RequiredPV ?? "0"}
-                  pass
-                />
-                <Row label="Required PV" value={nextRank.RequiredPV} />
-
-                <Row label="Reward" value={nextRank.Reward} />
-
-                <Row label="Status" value={nextRank.Status} />
-              </>
-            ) : (
-              <div className="text-muted-foreground">
-                🎉 All ranks completed
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
+      <RewardCard />
       {/* ================= TIMELINE ================= */}
 
       <div className="relative">
@@ -225,10 +159,6 @@ export default function RankPage() {
     </div>
   );
 }
-
-/* ============================
-        ROW COMPONENT
-============================ */
 
 function Row({
   label,

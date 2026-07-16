@@ -40,7 +40,7 @@ export default function Team() {
       const res = await axiosInstance.post(`/team/right/${userId}`, {
         search: debouncedSearch,
         queue: cursor,
-        limit: 10,
+        limit: 100,
       });
       setMembers(Array.isArray(res.data?.members) ? res.data?.members : []);
       setCursor(res.data?.nextCursor);
@@ -60,9 +60,15 @@ export default function Team() {
   const loadMore = async () => {
     if (!cursor) return;
     setLoading(true);
-    const res = await teamApi.right(userId as string, cursor);
-    setMembers((prev) => [...prev, ...res.members]);
-    setCursor(res.nextCursor);
+    const res = await axiosInstance.post(`/team/right/${userId}`, {
+      search: debouncedSearch,
+      queue: null,
+      limit: 10,
+    });
+
+    const members = Array.isArray(res.data?.members) ? res.data?.members : [];
+    setMembers((prev) => [...prev, ...members]);
+    setCursor(res.data?.nextCursor);
     setLoading(false);
   };
 
@@ -74,21 +80,31 @@ export default function Team() {
       let nextCursor: string | null = null;
 
       while (true) {
-        const res = await teamApi.right(
-          userId as string,
-          nextCursor,
-          debouncedSearch,
-          100,
-        );
+        // const res = await teamApi.right(
+        //   userId as string,
+        //   nextCursor,
+        //   debouncedSearch,
+        //   100,
+        // );
 
-        setMembers((prev) => [...prev, ...res.members]);
+        const res = await axiosInstance.post(`/team/right/${userId}`, {
+          search: debouncedSearch,
+          queue: nextCursor,
+          limit: 100,
+        });
 
-        if (!res.nextCursor) {
+        const members = Array.isArray(res.data?.members)
+          ? res.data?.members
+          : [];
+
+        setMembers((prev) => [...prev, ...members]);
+
+        if (!res.data?.nextCursor) {
           setCursor(null);
           break;
         }
 
-        nextCursor = res.nextCursor;
+        nextCursor = res.data?.nextCursor;
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
     } finally {
