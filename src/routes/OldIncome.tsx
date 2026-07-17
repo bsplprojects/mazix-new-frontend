@@ -205,7 +205,7 @@ export default function OldIncome() {
                       {(page - 1) * pageSize + i + 1}
                     </td>
                     <td className="p-3 font-mono text-xs">
-                      {new Date(item.PayoutDate).toLocaleString("en-IN")}
+                      {new Date(item.PayoutDate).toLocaleDateString("en-IN")}
                     </td>
                     <td className="px-5 py-3">{item.Pair}</td>
                     <td className="px-5 py-3">{item.Income}</td>

@@ -1,19 +1,24 @@
+import { useAuth } from "@/context/AuthContext";
 import logo from "/meghdoot_logo-original.png";
 // import stamp from "@/assets/company-stamp.png";
 // import signature from "@/assets/signature.png";
 import html2pdf from "html2pdf.js";
+import { useDashboard } from "@/hooks/useDashboard";
 
 export default function WelcomeLetter() {
+  const { mId } = useAuth();
+  const { memberDetail } = useDashboard(mId as string);
+
+  console.log(memberDetail);
+
   const member = {
-    name: "Rahul Sharma",
-    id: "MZX10245",
-    sponsor: "MZX10001",
-    joiningDate: "15 May 2026",
+    name: memberDetail?.data?.MemberName,
+    id: memberDetail?.data?.MemberID,
+    sponsor: "",
+    joiningDate: new Date(memberDetail?.data?.ModifyDate).toLocaleDateString("en-IN"),
   };
 
   const letterNo = `MZX/WL/${member.id}`;
-
-  /* ---------------- PDF DOWNLOAD ---------------- */
 
   const downloadPDF = () => {
     const element = document.getElementById("letter");
@@ -35,8 +40,6 @@ export default function WelcomeLetter() {
       .from(element)
       .save();
   };
-
-  /* ---------------- PRINT ---------------- */
 
   // const printLetter = () => window.print();
 

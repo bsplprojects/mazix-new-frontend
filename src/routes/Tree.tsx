@@ -81,7 +81,7 @@ const Tree = () => {
     leg: "left" | "right",
     cursor: string | null = null,
   ) => {
-    const res = await axiosInstance.post(`/team/${leg}/${userId}`, {
+    const res = await axiosInstance.post(`/team/${leg}/${memberId}`, {
       search: "",
       queue: cursor,
       limit: 10,
@@ -387,7 +387,7 @@ const Tree = () => {
       nodes: layoutedNodes,
       edges: rawEdges,
     };
-  }, [members, userId]);
+  }, [members, userId, memberId]);
 
   return (
     <main
@@ -410,6 +410,7 @@ const Tree = () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          proOptions={{ hideAttribution: true }}
           fitView
           fitViewOptions={{
             padding: 0.3,
