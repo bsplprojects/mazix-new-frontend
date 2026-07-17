@@ -25,7 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = "10";
 
 const RewardReport = () => {
   const queryClient = useQueryClient();
@@ -34,11 +34,19 @@ const RewardReport = () => {
   const [toDate, setToDate] = useState("");
   const [Designation, setDesignation] = useState("");
   const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState<string>(PAGE_SIZE);
 
   const [ids, setIds] = useState<string[]>([]);
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["reward-reports", page, Designation, fromDate, memberId],
+    queryKey: [
+      "reward-reports",
+      page,
+      Designation,
+      fromDate,
+      memberId,
+      rowsPerPage,
+    ],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/reward", {
         params: {
@@ -48,7 +56,7 @@ const RewardReport = () => {
           Todate: toDate,
           all: "",
           page,
-          pageSize: PAGE_SIZE,
+          pageSize: rowsPerPage !== "all" ? +rowsPerPage : "all",
         },
       });
       return data;
@@ -168,6 +176,14 @@ const RewardReport = () => {
       setIds(ids.filter((c) => c !== id));
     } else {
       setIds([...ids, id]);
+    }
+  };
+
+  const handleAll = () => {
+    if (ids.length === reports.length) {
+      setIds([]);
+    } else {
+      setIds(reports.map((c) => c.MemberID));
     }
   };
 
@@ -308,33 +324,61 @@ const RewardReport = () => {
               />
             </div>
 
-            {/* BUTTONS */}
-            <div className="flex items-end gap-2">
-              <Button
-                onClick={() => {
-                  setPage(1);
-                  refetch();
-                }}
-                disabled={isFetching}
-              >
-                {isFetching ? "Loading..." : "Search"}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setMemberId("");
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                Reset
-              </Button>
-
-              <Button variant={"default"} onClick={handleExcel}>
-                <Download /> Excel
-              </Button>
+            {/* Select */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                ROWS PER PAGE
+              </label>
+              <Select value={rowsPerPage} onValueChange={setRowsPerPage}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Rows Per Page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex items-end gap-2 my-4">
+            <Button
+              onClick={() => {
+                setPage(1);
+                refetch();
+              }}
+              disabled={isFetching}
+            >
+              {isFetching ? "Loading..." : "Search"}
+            </Button>
+
+            <Button
+              onClick={() => {
+                setPage(1);
+                refetch();
+              }}
+              disabled={isFetching}
+            >
+              {isFetching ? "Loading..." : "All Filtered"}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setMemberId("");
+                setFromDate("");
+                setToDate("");
+              }}
+            >
+              Reset
+            </Button>
+
+            <Button variant={"default"} onClick={handleExcel}>
+              <Download /> Excel
+            </Button>
           </div>
         </div>
         <Button variant={"default"} onClick={handlePaid}>
@@ -353,7 +397,7 @@ const RewardReport = () => {
             <thead className="border-b border-white/10 bg-white/3 text-nowrap">
               <tr className="text-left">
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  #
+                  <Checkbox onClick={handleAll} />
                 </th>
 
                 {/* TABLE HEADER */}
@@ -411,7 +455,10 @@ const RewardReport = () => {
                 >
                   {/* check */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
-                    <Checkbox onClick={() => handleCheckbox(user.MemberID)} />
+                    <Checkbox
+                      checked={ids.includes(user.MemberID)}
+                      onClick={() => handleCheckbox(user.MemberID)}
+                    />
                   </td>
 
                   {/* SR NO */}
@@ -485,120 +532,119 @@ const RewardReport = () => {
             </p>
           </div>
         )}
-
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (pagination?.hasPrev) {
-                    setPage((prev) => prev - 1);
-                  }
-                }}
-                className={
-                  !pagination?.hasPrev ? "pointer-events-none opacity-50" : ""
+      </div>
+      <Pagination className="mt-6">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (pagination?.hasPrev) {
+                  setPage((prev) => prev - 1);
                 }
-              />
-            </PaginationItem>
+              }}
+              className={
+                !pagination?.hasPrev ? "pointer-events-none opacity-50" : ""
+              }
+            />
+          </PaginationItem>
 
-            {(() => {
-              const items = [];
+          {(() => {
+            const items = [];
 
-              // First page
+            // First page
+            items.push(
+              <PaginationItem key={1}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPage === 1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(1);
+                  }}
+                >
+                  1
+                </PaginationLink>
+              </PaginationItem>,
+            );
+
+            // Left ellipsis
+            if (currentPage > 3) {
               items.push(
-                <PaginationItem key={1}>
+                <PaginationItem key="left-ellipsis">
+                  <PaginationEllipsis />
+                </PaginationItem>,
+              );
+            }
+
+            // Current page -1, current, current +1
+            for (
+              let i = Math.max(2, currentPage - 1);
+              i <= Math.min(totalPages - 1, currentPage + 1);
+              i++
+            ) {
+              items.push(
+                <PaginationItem key={i}>
                   <PaginationLink
                     href="#"
-                    isActive={currentPage === 1}
+                    isActive={currentPage === i}
                     onClick={(e) => {
                       e.preventDefault();
-                      setPage(1);
+                      setPage(i);
                     }}
                   >
-                    1
+                    {i}
                   </PaginationLink>
                 </PaginationItem>,
               );
+            }
 
-              // Left ellipsis
-              if (currentPage > 3) {
-                items.push(
-                  <PaginationItem key="left-ellipsis">
-                    <PaginationEllipsis />
-                  </PaginationItem>,
-                );
-              }
+            // Right ellipsis
+            if (currentPage < totalPages - 2) {
+              items.push(
+                <PaginationItem key="right-ellipsis">
+                  <PaginationEllipsis />
+                </PaginationItem>,
+              );
+            }
 
-              // Current page -1, current, current +1
-              for (
-                let i = Math.max(2, currentPage - 1);
-                i <= Math.min(totalPages - 1, currentPage + 1);
-                i++
-              ) {
-                items.push(
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      href="#"
-                      isActive={currentPage === i}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(i);
-                      }}
-                    >
-                      {i}
-                    </PaginationLink>
-                  </PaginationItem>,
-                );
-              }
+            // Last page
+            if (totalPages > 1) {
+              items.push(
+                <PaginationItem key={totalPages}>
+                  <PaginationLink
+                    href="#"
+                    isActive={currentPage === totalPages}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage(totalPages);
+                    }}
+                  >
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>,
+              );
+            }
 
-              // Right ellipsis
-              if (currentPage < totalPages - 2) {
-                items.push(
-                  <PaginationItem key="right-ellipsis">
-                    <PaginationEllipsis />
-                  </PaginationItem>,
-                );
-              }
-
-              // Last page
-              if (totalPages > 1) {
-                items.push(
-                  <PaginationItem key={totalPages}>
-                    <PaginationLink
-                      href="#"
-                      isActive={currentPage === totalPages}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setPage(totalPages);
-                      }}
-                    >
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>,
-                );
-              }
-
-              return items;
-            })()}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (pagination?.hasNext) {
-                    setPage((prev) => prev + 1);
-                  }
-                }}
-                className={
-                  !pagination?.hasNext ? "pointer-events-none opacity-50" : ""
+            return items;
+          })()}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (pagination?.hasNext) {
+                  setPage((prev) => prev + 1);
                 }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+              }}
+              className={
+                !pagination?.hasNext ? "pointer-events-none opacity-50" : ""
+              }
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </main>
   );
 };

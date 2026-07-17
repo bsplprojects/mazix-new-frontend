@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { PageHeader, StatCard } from "@/components/dashboard-ui";
 import { Users, ArrowLeftRight, UserPlus } from "lucide-react";
-import { teamApi } from "@/services/teamApi";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "use-debounce";
-import { Skeleton } from "@/components/ui/skeleton";
 import { axiosInstance } from "@/config/axios";
 
 type Member = {
@@ -24,11 +22,6 @@ export default function Team() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    totalBV: 0,
-  });
   const [debouncedSearch] = useDebounce(search, 500);
 
   const userId = sessionStorage.getItem("memberID");
@@ -44,15 +37,6 @@ export default function Team() {
 
       setMembers(Array.isArray(res.data?.members) ? res.data?.members : []);
       setCursor(res.data?.nextCursor);
-      return res;
-    },
-  });
-
-  const { isLoading: statsLoading } = useQuery({
-    queryKey: ["team", userId],
-    queryFn: async () => {
-      const res = await teamApi.stats(userId as string, "left");
-      setStats(res?.stats);
       return res;
     },
   });
@@ -121,6 +105,11 @@ export default function Team() {
     ? members.reduce((acc, b) => acc + b.repurchaseBV, 0)
     : 0;
 
+  const totalMembers = members.length ? members.length : 0;
+  const activeMembers = members.length
+    ? members.filter((m) => m.active).length
+    : 0;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
@@ -138,31 +127,15 @@ export default function Team() {
 
       {/* STATS */}
 
-      {statsLoading ? (
-        <div className="grid md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((n: number) => (
-            <Skeleton key={n} className="h-28" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-3 gap-4">
-          <StatCard
-            label="Total"
-            value={stats.total.toLocaleString("en-IN")}
-            icon={<Users />}
-          />
-          <StatCard
-            label="Total BV"
-            value={stats.totalBV.toLocaleString("en-IN")}
-            icon={<ArrowLeftRight />}
-          />
-          <StatCard
-            label="Active"
-            value={stats.active.toLocaleString("en-IN")}
-            icon={<UserPlus />}
-          />
-        </div>
-      )}
+      <div className="grid md:grid-cols-3 gap-4">
+        <StatCard label="Total" value={totalMembers} icon={<Users />} />
+        <StatCard
+          label="Total BV"
+          value={joiningBV + repurchaseBV}
+          icon={<ArrowLeftRight />}
+        />
+        <StatCard label="Active" value={activeMembers} icon={<UserPlus />} />
+      </div>
 
       {/* SEARCH */}
       <div className="flex items-center gap-3">

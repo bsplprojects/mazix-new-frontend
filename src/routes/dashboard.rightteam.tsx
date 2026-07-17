@@ -40,19 +40,10 @@ export default function Team() {
       const res = await axiosInstance.post(`/team/right/${userId}`, {
         search: debouncedSearch,
         queue: cursor,
-        limit: 100,
+        limit: 10,
       });
       setMembers(Array.isArray(res.data?.members) ? res.data?.members : []);
       setCursor(res.data?.nextCursor);
-      return res;
-    },
-  });
-
-  const { isLoading: statsLoading } = useQuery({
-    queryKey: ["team", userId],
-    queryFn: async () => {
-      const res = await teamApi.stats(userId as string, "right");
-      setStats(res?.stats);
       return res;
     },
   });
@@ -120,6 +111,9 @@ export default function Team() {
     ? members.reduce((acc, b) => acc + b.repurchaseBV, 0)
     : 0;
 
+  const totalMembers = members.length ? members.length : 0;
+  const activeMembers = members.filter((m) => m.active).length;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[70vh]">
@@ -134,35 +128,18 @@ export default function Team() {
         title="Team Performance"
         subtitle="Overview of your ORG 2 leg performance and member distribution"
       />
-
       {/* STATS */}
-      {statsLoading ? (
+      <>
         <div className="grid md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((n: number) => (
-            <Skeleton key={n} className="h-28" />
-          ))}
+          <StatCard label="Total" value={totalMembers} icon={<Users />} />
+          <StatCard
+            label="Total BV"
+            value={joiningBV + repurchaseBV}
+            icon={<ArrowLeftRight />}
+          />
+          <StatCard label="Active" value={activeMembers} icon={<UserPlus />} />
         </div>
-      ) : (
-        <>
-          <div className="grid md:grid-cols-3 gap-4">
-            <StatCard
-              label="Total"
-              value={stats.total.toLocaleString("en-IN") ?? 0}
-              icon={<Users />}
-            />
-            <StatCard
-              label="Total BV"
-              value={stats.totalBV.toLocaleString("en-IN") ?? 0}
-              icon={<ArrowLeftRight />}
-            />
-            <StatCard
-              label="Active"
-              value={stats.active.toLocaleString("en-IN") ?? 0}
-              icon={<UserPlus />}
-            />
-          </div>
-        </>
-      )}
+      </>
       {/* <div className="grid md:grid-cols-3 gap-4">
         <StatCard
           label="Joining BV"
@@ -177,7 +154,6 @@ export default function Team() {
           icon={<Coins className="h-4 w-4" />}
         />
       </div> */}
-
       <div className="flex items-center gap-3">
         <Input
           type="text"
@@ -189,7 +165,6 @@ export default function Team() {
           {loading ? "Loading..." : cursor ? "All Members" : "No More Members"}
         </Button>
       </div>
-
       {/* TABLE */}
       <div className="border rounded-xl overflow-x-auto">
         <div className="px-4 py-3 border-b font-semibold flex justify-between">

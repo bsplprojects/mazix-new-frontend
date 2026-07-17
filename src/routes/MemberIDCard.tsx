@@ -1,4 +1,4 @@
-import logo from "@/assets/mazix-logo.png";
+import logo from "/meghdoot_logo-original.png";
 import Loader from "@/components/Loader";
 import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";

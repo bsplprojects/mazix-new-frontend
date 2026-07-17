@@ -1,10 +1,16 @@
-import { teamApi } from "@/services/teamApi";
 import { useQuery } from "@tanstack/react-query";
 import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Loader2 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import dagre from "dagre";
+import { axiosInstance } from "@/config/axios";
+import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const dagreGraph = new dagre.graphlib.Graph();
 
@@ -50,53 +56,141 @@ const nodeStyle = {
   cursor: "pointer",
 };
 
+interface Members {
+  active: boolean;
+  bv: number;
+  id: string;
+  joinDate: string;
+  leg: string;
+  name: string;
+  placementId: string;
+  repurchaseBV: number;
+}
+
 const Tree = () => {
   const userId = sessionStorage.getItem("memberID") || "";
 
-  const { data: left = [], isLoading } = useQuery({
-    queryKey: ["team-left", userId],
-    queryFn: () => teamApi.left(userId),
-    enabled: !!userId,
+  const [memberId, setMemberId] = useState(userId);
+  const [allMembers, setAllMembers] = useState<Members[]>([]);
+  const [leftCursor, setLeftCursor] = useState<string | null>(null);
+  const [rightCursor, setRightCursor] = useState<string | null>(null);
+  const [isGeneratingNext, setIsGeneratingNext] = useState(false);
+  const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+
+  const fetchMembers = async (
+    leg: "left" | "right",
+    cursor: string | null = null,
+  ) => {
+    const res = await axiosInstance.post(`/team/${leg}/${userId}`, {
+      search: "",
+      queue: cursor,
+      limit: 10,
+    });
+    return res.data;
+  };
+
+  const { isLoading } = useQuery({
+    queryKey: ["left-team", userId, memberId],
+    queryFn: async () => {
+      const res = await axiosInstance.post(`/team/left/${memberId}`, {
+        search: "",
+        queue: null,
+        limit: 10,
+      });
+      const members = res.data?.members;
+      setLeftCursor(res.data?.nextCursor);
+      setAllMembers((prev) => [...prev, ...members]);
+      return res.data?.members;
+    },
   });
 
-  const { data: right = [] } = useQuery({
-    queryKey: ["team-right", userId],
-    queryFn: () => teamApi.right(userId),
-    enabled: !!userId,
+  const { isLoading: isRightLoading } = useQuery({
+    queryKey: ["right-team", userId, memberId],
+    queryFn: async () => {
+      const res = await axiosInstance.post(`/team/right/${memberId}`, {
+        search: "",
+        queue: null,
+        limit: 10,
+      });
+      const members = res.data?.members;
+      setRightCursor(res.data?.nextCursor);
+      setAllMembers((prev) => [...prev, ...members]);
+      return res.data?.members;
+    },
   });
 
-  // const loadAll = async () => {
-  //   setLoading(true);
-  //   setAllMembers([]);
+  const loadNext = async () => {
+    try {
+      setIsGeneratingNext(true);
+      const [leftRes, rightRes] = await Promise.all([
+        leftCursor ? fetchMembers("left", leftCursor) : Promise.resolve(null),
+        rightCursor
+          ? fetchMembers("right", rightCursor)
+          : Promise.resolve(null),
+      ]);
 
-  //   try {
-  //     let nextCursor: string | null = null;
+      if (leftRes) {
+        setLeftCursor(leftRes.nextCursor);
+      }
+      if (rightRes) {
+        setRightCursor(rightRes.nextCursor);
+      }
+      setAllMembers((prev) => [
+        ...prev,
+        ...(leftRes?.members ?? []),
+        ...(rightRes?.members ?? []),
+      ]);
+    } finally {
+      setIsGeneratingNext(false);
+    }
+  };
 
-  //     while (true) {
-  //       const res = await teamApi.left(userId as string, nextCursor, "", 100);
+  const loadAll = async () => {
+    try {
+      setIsGeneratingAll(true);
+      let currentLeft = leftCursor;
+      let currentRight = rightCursor;
 
-  //       setAllMembers((prev) => [...prev, ...res.members]);
+      while (currentLeft || currentRight) {
+        const [leftRes, rightRes] = await Promise.all([
+          currentLeft
+            ? fetchMembers("left", currentLeft)
+            : Promise.resolve(null),
+          currentRight
+            ? fetchMembers("right", currentRight)
+            : Promise.resolve(null),
+        ]);
 
-  //       if (!res.nextCursor) {
-  //         setCursor(null);
-  //         break;
-  //       }
+        if (leftRes) {
+          setAllMembers((prev) => [...prev, ...leftRes.members]);
+          currentLeft = leftRes.nextCursor;
+        }
 
-  //       nextCursor = res.nextCursor;
-  //       await new Promise((resolve) => setTimeout(resolve, 0));
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+        if (rightRes) {
+          setAllMembers((prev) => [...prev, ...rightRes.members]);
+          currentRight = rightRes.nextCursor;
+        }
+      }
+
+      setLeftCursor(currentLeft);
+      setRightCursor(currentRight);
+    } finally {
+      setIsGeneratingAll(false);
+    }
+  };
 
   const members = useMemo(() => {
-    const leftMembers = left?.members || [];
-    const rightMembers = right?.members || [];
-    const merged = [...leftMembers, ...rightMembers];
+    const merged = allMembers;
 
     return Array.from(new Map(merged.map((m) => [m.id, m])).values());
-  }, [left, right]);
+  }, [allMembers]);
+
+  const handleMemberClick = (id: string) => {
+    if (id === userId) {
+      setAllMembers([]);
+    }
+    setMemberId(id);
+  };
 
   const { nodes, edges } = useMemo(() => {
     if (!members.length) {
@@ -132,7 +226,7 @@ const Tree = () => {
       }
     });
 
-    const rootChildren = {
+    const rootChildren: { left: string | null; right: string | null } = {
       left: null,
       right: null,
     };
@@ -147,13 +241,17 @@ const Tree = () => {
       }
     });
 
+    // ROOT NODE
     const rawNodes: any[] = [
       {
         id: userId,
         data: {
           label: (
-            <div className="flex items-center flex-col gap-3 p-2">
-              {`${userId}`}
+            <div
+              onClick={() => handleMemberClick(userId)}
+              className="flex items-center flex-col gap-3 p-2"
+            >
+              {`${userId} (You)`}
             </div>
           ),
         },
@@ -184,12 +282,31 @@ const Tree = () => {
         id: member.id,
         data: {
           label: (
-            <div className="flex items-center flex-col gap-3 p-2">
-              {`${member.name}\n${member.id}`}
-            </div>
+            <>
+              <HoverCard openDelay={200}>
+                <HoverCardTrigger asChild>
+                  <div
+                    onClick={() => handleMemberClick(member.id)}
+                    className="flex items-center flex-col gap-3 p-2"
+                  >
+                    {`${member.name}\n${member.id}`}
+                  </div>
+                </HoverCardTrigger>
+
+                <HoverCardContent className="w-32 text-xs flex flex-col gap-1">
+                  <p>Joining BV = {member.bv}</p>
+                  <p>Repurchase BV = {member.repurchaseBV}</p>
+                </HoverCardContent>
+              </HoverCard>
+            </>
           ),
         },
-        style: nodeStyle,
+        // I want the node which is selected to get highlighted
+        style: {
+          ...nodeStyle,
+          background: memberId === member.id ? "#D99A00" : "transparent",
+          color: memberId === member.id ? "#FFF3C2" : "#F4D06F",
+        },
         position: { x: 0, y: 0 },
       });
     });
@@ -281,7 +398,7 @@ const Tree = () => {
         display: "relative",
       }}
     >
-      {isLoading ? (
+      {isLoading || isRightLoading ? (
         <div className="flex items-start mt-36 justify-center h-full">
           <div className="text-white flex items-center flex-col gap-2">
             <Loader2 className="animate-spin w-14 h-14 " />
@@ -304,7 +421,31 @@ const Tree = () => {
           <Controls className="text-black" />
         </ReactFlow>
       )}
-      {/* <Button onClick={} className="absolute bottom-16 left-1/2 translate-x-1/2">Generate All</Button> */}
+      <div className="absolute bottom-16 md:left-1/2 left-1/4 md:translate-x-1/8 flex gap-2">
+        <Button
+          onClick={loadNext}
+          variant={"outline"}
+          disabled={isGeneratingNext}
+        >
+          {isGeneratingNext ? (
+            <>
+              <Loader2 className="animate-spin" /> Generating...
+            </>
+          ) : (
+            "Generate Next 10"
+          )}
+        </Button>
+
+        <Button onClick={loadAll} disabled={isGeneratingAll}>
+          {isGeneratingAll ? (
+            <>
+              <Loader2 className="animate-spin" /> Generating...
+            </>
+          ) : (
+            "Generate All"
+          )}
+        </Button>
+      </div>
     </main>
   );
 };

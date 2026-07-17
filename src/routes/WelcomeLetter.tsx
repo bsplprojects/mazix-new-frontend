@@ -1,4 +1,4 @@
-import logo from "@/assets/mazix-logo.png";
+import logo from "/meghdoot_logo-original.png";
 // import stamp from "@/assets/company-stamp.png";
 // import signature from "@/assets/signature.png";
 import html2pdf from "html2pdf.js";
