@@ -3,14 +3,18 @@ import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
 import { recentTransactions } from "@/lib/mock-data";
 import { useMemo, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
 import Loader from "@/components/Loader";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { useDebounce } from "use-debounce";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function JoiningWallet() {
+  const client = useQueryClient();
   const [toMemberId, setToMemberId] = useState("");
+  const [debouncedMemberId] = useDebounce(toMemberId, 500);
   const [transferWallet, setTransferWallet] = useState(0);
   const [filters, setFilters] = useState({
     search: "",
@@ -18,33 +22,6 @@ export default function JoiningWallet() {
     toDate: "",
     type: "all",
   });
-
-  const filteredTransactions = useMemo(() => {
-    return recentTransactions.filter((t) => {
-      const search = filters.search.toLowerCase();
-
-      const matchSearch =
-        search === "" ||
-        t.name?.toLowerCase().includes(search) ||
-        t.memberId?.toLowerCase().includes(search);
-
-      const matchType =
-        filters.type === "all"
-          ? true
-          : filters.type === "credit"
-            ? t.amount > 0
-            : t.amount < 0;
-
-      const tDate = new Date(t.date);
-      const from = filters.fromDate ? new Date(filters.fromDate) : null;
-      const to = filters.toDate ? new Date(filters.toDate) : null;
-
-      const matchFrom = !from || tDate >= from;
-      const matchTo = !to || tDate <= to;
-
-      return matchSearch && matchType && matchFrom && matchTo;
-    });
-  }, [filters]);
 
   const memberID = sessionStorage.getItem("memberID");
 
@@ -54,6 +31,17 @@ export default function JoiningWallet() {
       const res = await axiosInstance.get(`/wallet/${memberID}`);
       return res.data;
     },
+  });
+
+  const { data: receiverData, isLoading: receiverLoading } = useQuery({
+    queryKey: ["receiver", debouncedMemberId],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/joining/check-sponsor/${debouncedMemberId}`,
+      );
+      return res.data;
+    },
+    enabled: debouncedMemberId.length > 0,
   });
 
   const { data: history, isLoading: isHistoryLoading } = useQuery({
@@ -75,7 +63,6 @@ export default function JoiningWallet() {
 
   const w = data?.[0];
   const h = history;
-  console.log(h);
 
   const transfer = useMutation({
     mutationFn: async () => {
@@ -88,18 +75,41 @@ export default function JoiningWallet() {
       return res.data;
     },
     onSuccess: (data) => {
+      client.invalidateQueries({ queryKey: ["member-wallet", memberID] });
       toast.success(data?.Message);
       setTransferWallet(0);
       setToMemberId("");
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
-        toast.error(err.message);
+        toast.error(err.response?.data?.Message);
       } else {
         toast.error("Something went wrong");
       }
     },
   });
+
+  const filteredHistory = useMemo(() => {
+    return (h || []).filter((item: any) => {
+      const search = filters.search.trim().toLowerCase();
+
+      const matchesSearch =
+        !search ||
+        item.MemberName?.toLowerCase().includes(search) ||
+        item.MemberID?.toLowerCase().includes(search) ||
+        item.FromMemberID?.toLowerCase().includes(search);
+
+      const matchesType = filters.type === "all" || item.Flag === filters.type;
+
+      const itemDate = item.Date.slice(0, 10); // YYYY-MM-DD
+
+      const matchesFrom = !filters.fromDate || itemDate >= filters.fromDate;
+
+      const matchesTo = !filters.toDate || itemDate <= filters.toDate;
+
+      return matchesSearch && matchesType && matchesFrom && matchesTo;
+    });
+  }, [h, filters]);
 
   if (isLoading || isHistoryLoading) {
     return <Loader />;
@@ -170,6 +180,13 @@ export default function JoiningWallet() {
                 placeholder="Enter Member ID"
                 className="w-full h-11 mt-1 px-3 rounded-md bg-input border border-border focus:outline-none"
               />
+              {receiverLoading ? (
+                <Skeleton className="h-4 w-32 my-2" />
+              ) : (
+                <span className="p-1 text-xs text-yellow-500">
+                  {receiverData?.MemberName}
+                </span>
+              )}
             </div>
 
             {/* AMOUNT */}
@@ -188,11 +205,11 @@ export default function JoiningWallet() {
 
             {/* SEND BUTTON */}
             <Button
-              disabled={!toMemberId || !transferWallet}
+              disabled={!toMemberId || !transferWallet || transfer.isPending}
               onClick={() => transfer.mutate()}
               className="w-full h-11 bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
             >
-              Send Now
+              {transfer.isPending ? "Transferring..." : "Send Now"}
             </Button>
           </div>
         </div>
@@ -250,14 +267,15 @@ export default function JoiningWallet() {
               <th className="text-left px-6 py-3">Member ID</th>
               <th className="text-left px-6 py-3">Member</th>
               <th className="text-left px-6 py-3">Transfer ID</th>
+              <th className="text-left px-6 py-3">From</th>
               <th className="text-left px-6 py-3">Amount</th>
               <th className="text-right px-6 py-3">Type</th>
               <th className="text-right px-6 py-3">Date</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {h &&
-              h.map((t: any, idx: number) => (
+            {filteredHistory &&
+              filteredHistory.map((t: any, idx: number) => (
                 <tr
                   key={idx}
                   className="hover:bg-accent/30 transition-smooth text-sm text-nowrap"
@@ -269,8 +287,13 @@ export default function JoiningWallet() {
                   </td>
 
                   <td className="px-6 py-4 text-muted-foreground">
-                    {t?.Amount} 
+                    {t?.FromMemberName}
                   </td>
+
+                  <td className="px-6 py-4 text-muted-foreground">
+                    {t?.Amount}
+                  </td>
+
                   <td className="px-6 py-4 text-muted-foreground text-right">
                     {t?.Flag}
                   </td>

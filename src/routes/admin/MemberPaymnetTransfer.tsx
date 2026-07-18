@@ -8,15 +8,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 const MemberPaymentTransfer = () => {
   const [PANList, setPANList] = useState("");
   const [dateList, setDateList] = useState("");
+  const [ids, setIds] = useState<string[]>([]);
 
   const { data, isFetching } = useQuery({
     queryKey: ["member-payout-date"],
@@ -26,11 +29,7 @@ const MemberPaymentTransfer = () => {
     },
   });
 
-  const {
-    data: memberPayoutDetails,
-    refetch,
-    isLoading,
-  } = useQuery({
+  const { data: memberPayoutDetails, isLoading } = useQuery({
     queryKey: ["member-payout-details", PANList, dateList],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/admin/member-payout-details", {
@@ -158,7 +157,43 @@ const MemberPaymentTransfer = () => {
       }),
       "Member_Payout_Report.xlsx",
     );
-    
+  };
+
+  const handleCheckBox = (id: string) => {
+    const existing = ids.includes(id);
+    if (existing) {
+      setIds(ids.filter((c) => c !== id));
+    } else {
+      setIds([...ids, id]);
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/admin/payment-transfer/paid`, {
+        ids,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success("Payment Transfer Successfully.");
+      setIds([]);
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handlePaid = () => {
+    if (!ids.length) {
+      toast.error("Please select at least one member.");
+      return;
+    }
+    mutation.mutate();
   };
 
   return (
@@ -229,16 +264,10 @@ const MemberPaymentTransfer = () => {
             </div>
           </div>
 
-          <Button
-            onClick={() => refetch()}
-            className="w-full"
-          >
+          {/* <Button onClick={() => refetch()} className="w-full">
             Display
-          </Button>
-          <Button
-            onClick={() => alert("This feature is not available yet.")}
-            className=" w-full"
-          >
+          </Button> */}
+          <Button onClick={handlePaid} className=" w-full">
             Paid
           </Button>
           <Button onClick={handleExcel} className="w-full ">
@@ -256,15 +285,11 @@ const MemberPaymentTransfer = () => {
         ) : (
           <table className="w-full min-w-250">
             <thead className="border-b border-white/10 bg-white/3">
-              <tr
-                className="text-left text-nowrap
-"
-              >
+              <tr className="text-left text-nowrap">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Sr.
                 </th>
-
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   #
                 </th>
@@ -365,7 +390,9 @@ const MemberPaymentTransfer = () => {
                   {/* MEMBER ID */}
 
                   <td className="px-6 py-5 text-sm font-medium text-yellow-400">
-                    <Checkbox />
+                    <Checkbox
+                      onClick={() => handleCheckBox(user.BinaryPayoutID)}
+                    />
                   </td>
 
                   <td className="px-6 py-5 text-sm font-medium text-yellow-400">

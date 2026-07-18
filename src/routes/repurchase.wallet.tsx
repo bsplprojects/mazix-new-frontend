@@ -1,15 +1,20 @@
 import { Wallet, ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
-import { recentTransactions, member } from "@/lib/mock-data";
 import { useMemo, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
 import Loader from "@/components/Loader";
 import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AxiosError } from "axios";
 
 export default function RepurchaseWallet() {
+  const client = useQueryClient();
+  const memberId = sessionStorage.getItem("memberID");
   const [toMemberId, setToMemberId] = useState("");
+  const [debouncedMemberId] = useDebounce(toMemberId, 500);
   const [transferWallet, setTransferWallet] = useState(0);
   const [filters, setFilters] = useState({
     search: "",
@@ -18,41 +23,23 @@ export default function RepurchaseWallet() {
     type: "all",
   });
 
-  const filteredTransactions = useMemo(() => {
-    return recentTransactions.filter((t) => {
-      const search = filters.search.toLowerCase();
-
-      const matchSearch =
-        search === "" ||
-        t.name?.toLowerCase().includes(search) ||
-        t.memberId?.toLowerCase().includes(search);
-
-      const matchType =
-        filters.type === "all"
-          ? true
-          : filters.type === "credit"
-            ? t.amount > 0
-            : t.amount < 0;
-
-      const tDate = new Date(t.date);
-      const from = filters.fromDate ? new Date(filters.fromDate) : null;
-      const to = filters.toDate ? new Date(filters.toDate) : null;
-
-      const matchFrom = !from || tDate >= from;
-      const matchTo = !to || tDate <= to;
-
-      return matchSearch && matchType && matchFrom && matchTo;
-    });
-  }, [filters]);
-
-  const memberId = sessionStorage.getItem("memberID");
-
   const { data, isLoading } = useQuery({
     queryKey: ["repurchase", memberId],
     queryFn: async () => {
       const res = await axiosInstance.get(`/wallet/repurchase/${memberId}`);
       return res.data;
     },
+  });
+
+  const { data: receiverData, isLoading: receiverLoading } = useQuery({
+    queryKey: ["receiver", debouncedMemberId],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/joining/check-sponsor/${debouncedMemberId}`,
+      );
+      return res.data;
+    },
+    enabled: debouncedMemberId.length > 0,
   });
 
   const { data: repurchaseHistory, isLoading: isHistoryLoading } = useQuery({
@@ -80,11 +67,41 @@ export default function RepurchaseWallet() {
       return res.data;
     },
     onSuccess: (data) => {
+      client.invalidateQueries({ queryKey: ["repurchase", memberId] });
       toast.success(data?.Message);
       setTransferWallet(0);
       setToMemberId("");
     },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err?.response?.data?.Message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
   });
+
+  const filteredHistory = useMemo(() => {
+    return (h || []).filter((item: any) => {
+      const search = filters.search.trim().toLowerCase();
+
+      const matchesSearch =
+        !search ||
+        item.MemberName?.toLowerCase().includes(search) ||
+        item.MemberID?.toLowerCase().includes(search) ||
+        item.FromMemberID?.toLowerCase().includes(search);
+
+      const matchesType = filters.type === "all" || item.Flag === filters.type;
+
+      const itemDate = item.Date.slice(0, 10); // YYYY-MM-DD
+
+      const matchesFrom = !filters.fromDate || itemDate >= filters.fromDate;
+
+      const matchesTo = !filters.toDate || itemDate <= filters.toDate;
+
+      return matchesSearch && matchesType && matchesFrom && matchesTo;
+    });
+  }, [h, filters]);
 
   if (isLoading || isHistoryLoading) {
     return <Loader />;
@@ -152,6 +169,13 @@ export default function RepurchaseWallet() {
                 onChange={(e) => setToMemberId(e.target.value)}
                 className="w-full h-11 mt-1 px-3 rounded-md bg-input border border-border focus:outline-none"
               />
+              {receiverLoading ? (
+                <Skeleton className="h-4 w-32 my-2" />
+              ) : (
+                <span className="p-1 text-xs text-yellow-500">
+                  {receiverData?.MemberName}
+                </span>
+              )}
             </div>
 
             {/* AMOUNT */}
@@ -171,9 +195,12 @@ export default function RepurchaseWallet() {
             {/* SEND BUTTON */}
             <Button
               onClick={() => transfer.mutate()}
+              disabled={
+                transferWallet === 0 || toMemberId === "" || transfer.isPending
+              }
               className="w-full h-11 bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
             >
-              Send Now
+              {transfer.isPending ? "Transferring..." : "Send Now"}
             </Button>
           </div>
         </div>
@@ -234,8 +261,8 @@ export default function RepurchaseWallet() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {h &&
-              h.map((t: any, index: number) => (
+            {filteredHistory &&
+              filteredHistory.map((t: any, index: number) => (
                 <tr
                   key={index}
                   className="hover:bg-accent/30 transition-smooth"

@@ -11,10 +11,8 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Users } from "lucide-react";
 import { useState } from "react";
-import * as joiningApi from "@/services/joiningApi";
 
 const DatewiseDownline = () => {
-  const mid = sessionStorage.getItem("MID");
   const memberId = sessionStorage.getItem("memberID");
   const [position, setPosition] = useState("Left");
   const [fromDate, setFromDate] = useState("");
@@ -36,19 +34,7 @@ const DatewiseDownline = () => {
     enabled: false,
   });
 
-  const { data: dash } = useQuery({
-    queryKey: ["dashboard", memberId, mid],
-    queryFn: async () => {
-      const res = await joiningApi.getMemberDashboard(
-        mid as string,
-        memberId as string,
-      );
-
-      return res;
-    },
-  });
-
-  const reports = data?.data || [];
+  const reports = data || [];
 
   return (
     <main>
@@ -63,7 +49,7 @@ const DatewiseDownline = () => {
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
                 <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                  {reports.length}
                 </span>{" "}
                 registered members
               </p>
@@ -71,7 +57,7 @@ const DatewiseDownline = () => {
           </div>
         </div>
 
-        <div className="bg-white/2 ">
+        <div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* MEMBER ID */}
             <div className="space-y-2">
@@ -172,7 +158,7 @@ const DatewiseDownline = () => {
         ) : (
           <table className="w-full min-w-250">
             <thead className="border-b border-white/10 bg-white/3">
-              <tr className="text-left">
+              <tr className="text-left text-nowrap">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Sr.
@@ -210,15 +196,15 @@ const DatewiseDownline = () => {
 
             <tbody className="divide-y divide-white/5">
               {reports?.map((user: any, index: number) => (
-                <tr key={index} className="transition hover:bg-white/3">
+                <tr key={index} className="transition hover:bg-white/3 text-xs">
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-xs font-semibold text-zinc-300">
                     {index + 1}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-xs font-medium text-yellow-400">
                     {user.MemberID || "-"}
                   </td>
 

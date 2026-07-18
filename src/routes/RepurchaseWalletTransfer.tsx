@@ -1,16 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
-import { IndianRupee, Loader2, Users } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { IndianRupee, Loader2, User, Users } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
 
 const RepurchaseWalletTransfer = () => {
+  const client = useQueryClient();
   const [transferID, setTransferID] = useState("");
+  const [debouncedMemberId] = useDebounce(transferID, 500);
   const [amount, setAmount] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
+
+  const { data: adminWallet } = useQuery({
+    queryKey: ["admin-wallet"],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/wallet/admin`);
+      return res.data;
+    },
+  });
 
   const { data, refetch, isFetching } = useQuery({
     queryKey: ["wallet-joining"],
@@ -25,10 +38,51 @@ const RepurchaseWalletTransfer = () => {
     },
     enabled: false,
   });
+
+  const { data: receiverData, isLoading: receiverLoading } = useQuery({
+    queryKey: ["receiver", debouncedMemberId],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/joining/check-sponsor/${debouncedMemberId}`,
+      );
+      return res.data;
+    },
+    enabled: debouncedMemberId.length > 0,
+  });
+
   const reports = data?.data || [];
 
+  const transfer = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/wallet/repurchase-transfer`, {
+        FromMemberID: "admin",
+        ToMemberID: transferID,
+        TransferWallet: Number(amount),
+        MainWallet: adminWallet?.[0]?.Amount,
+      });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      client.invalidateQueries({ queryKey: ["wallet-joining"] });
+      toast.success(data?.Message);
+      setAmount("");
+      setTransferID("");
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err?.response?.data?.Message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
   const handleTransfer = () => {
-    alert("This feature is not available yet");
+    if (!amount || !transferID) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    transfer.mutate();
   };
 
   return (
@@ -52,7 +106,7 @@ const RepurchaseWalletTransfer = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 place-items-end">
+        <div className="flex md:items-center justify-center gap-4 flex-col md:flex-row">
           {/* MEMBER ID */}
           <div className="space-y-2">
             <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
@@ -88,6 +142,27 @@ const RepurchaseWalletTransfer = () => {
             </div>
           </div>
 
+          {/*Transfer MEMBER Name */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              Member Name
+            </label>
+
+            <div className="relative">
+              {receiverLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin absolute top-1/4 left-3 -transalte-y-1/3 text-yellow-500" />
+              ) : (
+                <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+              )}
+
+              <Input
+                value={transferID && receiverData?.MemberName}
+                disabled
+                className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+              />
+            </div>
+          </div>
+
           {/* Amount */}
           <div className="space-y-2">
             <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
@@ -107,11 +182,7 @@ const RepurchaseWalletTransfer = () => {
             </div>
           </div>
 
-          <Button
-            onClick={handleTransfer}
-            disabled={!transferID || !amount}
-            className="w-full"
-          >
+          <Button onClick={handleTransfer} disabled={!transferID || !amount}>
             Transfer
           </Button>
         </div>
@@ -164,7 +235,6 @@ const RepurchaseWalletTransfer = () => {
                   setFromDate("");
                   setToDate("");
                 }}
-              
               >
                 Reset
               </Button>

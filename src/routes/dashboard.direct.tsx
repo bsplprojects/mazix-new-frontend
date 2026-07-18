@@ -9,7 +9,6 @@ export default function DirectTeam() {
   const [members, setMembers] = useState<any[]>([]);
   const memberId = sessionStorage.getItem("memberID");
 
-  /* ✅ API CALL */
   useEffect(() => {
     const load = async () => {
       try {
@@ -60,6 +59,8 @@ export default function DirectTeam() {
             <tr>
               <th className="text-left px-6 py-3">Member</th>
               <th className="text-left px-6 py-3">Member ID</th>
+              <th className="text-left px-6 py-3">Leg</th>
+              <th className="text-left px-6 py-3">Rank</th>
               <th className="text-left px-6 py-3">Joining</th>
             </tr>
           </thead>
@@ -85,15 +86,16 @@ export default function DirectTeam() {
                   {m.id}
                 </td>
 
+                <td className="px-6 py-4 font-mono text-xs text-muted-foreground">
+                  {m.leg}
+                </td>
+
+                <td className="px-6 py-4 font-mono text-xs text-muted-foreground">
+                  {m.rank}
+                </td>
+
                 <td className="px-6 py-4 text-brass">
-                  {new Date(m.joinDate).toLocaleString("en-IN", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
+                  {new Date(m.joinDate).toLocaleDateString("en-IN")}
                 </td>
               </tr>
             ))}

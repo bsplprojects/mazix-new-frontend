@@ -241,7 +241,6 @@ export function AppSidebar() {
   const location = useLocation();
   const current = location.pathname;
   const memberId = sessionStorage.getItem("memberID");
-  const navigate = useNavigate();
   const MID = sessionStorage.getItem("MID");
   const { logout } = useAuth();
 

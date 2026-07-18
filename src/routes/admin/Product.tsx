@@ -24,6 +24,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useDebounce } from "use-debounce";
+import { Separator } from "@/components/ui/separator";
 
 const PAGE_SIZE = 10;
 
@@ -46,7 +47,7 @@ const Product = () => {
     GST: 0,
     Discount: 0,
     BV: 0,
-    Repurchase: "0",
+    Repurchase: 0,
     seqOnline: 0,
     Image: "",
     stock: 0,
@@ -109,7 +110,7 @@ const Product = () => {
         GST: 0,
         Discount: 0,
         BV: 0,
-        Repurchase: 0,
+        Repurchase: 0, 
         seqOnline: 0,
         Image: "",
         stock: 0,
@@ -223,8 +224,6 @@ const Product = () => {
     delMutation.mutate(Number(id));
   };
 
-  // --------------------------------------------------
-
   const handleEdit = (product: any = {}) => {
     setFile(null);
 
@@ -245,7 +244,7 @@ const Product = () => {
       Discount: Number(product?.Discount) || 0,
       BV: Number(product?.BV) || 0,
 
-      Repurchase: product?.Repurchase || "1",
+      Repurchase: Number(product?.Repurchase),
 
       seqOnline: Number(product?.seqOnline) || 0,
 
@@ -420,7 +419,7 @@ const Product = () => {
             Repurchase
           </Label>
           <Select
-            value={data.Repurchase}
+            value={String(data.Repurchase)}
             onValueChange={(e: string) =>
               setData({ ...data, Repurchase: Number(e) })
             }
@@ -536,13 +535,15 @@ const Product = () => {
         </Button>
       </div>
 
+      <Separator className="my-10" />
+
       <div className="flex items-center justify-between mt-10">
         <h2 className="text-2xl font-bold tracking-tight text-white">
           Product List ({pagination?.total})
         </h2>
         <Input
-          placeholder="Search"
-          className="w-1/2"
+          placeholder="Search by Product Name"
+          className="w-1/3"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);

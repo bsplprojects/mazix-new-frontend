@@ -73,11 +73,11 @@ const AdminMemberPassword = () => {
 
       <div className="my-5">
         <h1 className="font-semibold text-primary">Member ID</h1>
-        <span>{mutation.data?.[0]}</span>
+        <span>{mutation.data?.[0] ?? "-"}</span>
       </div>
       <div>
         <h1 className="font-semibold text-primary">Password</h1>
-        <span>{mutation.data?.[1]}</span>
+        <span>{mutation.data?.[1] ?? "-"}</span>
       </div>
     </div>
   );

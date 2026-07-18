@@ -11,15 +11,18 @@ import {
 import Loader from "@/components/Loader";
 import { ArrowBigDown } from "lucide-react";
 import { PageHeader } from "@/components/dashboard-ui";
+import { useState } from "react";
 
 const UpdownTeam = () => {
   const memberID = sessionStorage.getItem("memberID");
+  const [id, setId] = useState<string | null>(memberID);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["updown"],
+    queryKey: ["updown", id],
     queryFn: async () => {
       const res = await axiosInstance.get(`/team/updown`, {
         params: {
-          member: memberID,
+          member: id,
         },
       });
       return res.data;
@@ -30,9 +33,9 @@ const UpdownTeam = () => {
 
   return (
     <div className="p-4">
-      <PageHeader 
-      title="Updown Team"
-      subtitle="View your updown team members"
+      <PageHeader
+        title="Updown Team"
+        subtitle="View your updown team members"
       />
       <div className="rounded-lg border bg-card">
         <Table>
@@ -58,7 +61,11 @@ const UpdownTeam = () => {
                 <TableCell>{member.Leaf}</TableCell>
                 <TableCell>{member.DOJ?.split("T")[0] || "-"}</TableCell>
                 <TableCell>
-                  <ArrowBigDown size={18} className="text-primary" />
+                  <ArrowBigDown
+                    onClick={() => setId(member.MemberID)}
+                    size={18}
+                    className="text-primary"
+                  />
                 </TableCell>
               </TableRow>
             ))}
