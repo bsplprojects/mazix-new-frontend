@@ -285,7 +285,7 @@ const MemberPaymentTransfer = () => {
         ) : (
           <table className="w-full min-w-250">
             <thead className="border-b border-white/10 bg-white/3">
-              <tr className="text-left text-nowrap">
+              <tr className="text-left text-nowrap text-xs">
                 {/* TABLE HEADER */}
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Sr.
@@ -380,7 +380,7 @@ const MemberPaymentTransfer = () => {
               {reports?.map((user: any, index: number) => (
                 <tr
                   key={index}
-                  className="transition hover:bg-white/3 text-nowrap"
+                  className="transition hover:bg-white/3 text-nowrap text-xs"
                 >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">

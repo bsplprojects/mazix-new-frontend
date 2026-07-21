@@ -426,12 +426,12 @@ function CartSummary({
                 ₹{totals.gst.toLocaleString("en-IN")}
               </span>
             </div>
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between">
               <span>Shipping</span>
               <span className="font-semibold">
                 ₹{totals.shipping.toLocaleString("en-IN")}
               </span>
-            </div>
+            </div> */}
 
             <div className="flex justify-between text-primary">
               <span>Total</span>

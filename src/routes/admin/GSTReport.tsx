@@ -14,17 +14,25 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { StatCard } from "@/components/dashboard-ui";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = "10";
 
 const GSTReport = () => {
   const [fromDate, setFromDate] = useState("");
   const [month, setMonth] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(PAGE_SIZE);
 
   const { data, isFetching } = useQuery({
-    queryKey: ["gst-reports", fromDate, toDate, month, page, PAGE_SIZE],
+    queryKey: ["gst-reports", fromDate, toDate, month, page, rowsPerPage],
     queryFn: async () => {
       const res = await axiosInstance.get("/reports/gst", {
         params: {
@@ -32,7 +40,7 @@ const GSTReport = () => {
           ToDate: toDate || undefined,
           month: month || undefined,
           page,
-          pageSize: PAGE_SIZE,
+          pageSize: rowsPerPage,
         },
       });
 
@@ -229,7 +237,7 @@ const GSTReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-lg border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
             </div>
 
@@ -243,8 +251,28 @@ const GSTReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-lg border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
               />
+            </div>
+
+            {/* ROWS PER PAGE */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+                Rows per page
+              </label>
+
+              <Select value={rowsPerPage} onValueChange={setRowsPerPage}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a value" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* BUTTONS */}

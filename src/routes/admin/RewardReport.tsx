@@ -42,9 +42,10 @@ const RewardReport = () => {
     queryKey: [
       "reward-reports",
       page,
-      Designation,
-      fromDate,
-      memberId,
+      // Designation,
+      // fromDate,
+      // toDate,
+      // memberId,
       rowsPerPage,
     ],
     queryFn: async () => {
@@ -61,6 +62,7 @@ const RewardReport = () => {
       });
       return data;
     },
+    enabled: false,
   });
 
   const reports = data?.data || [];
@@ -451,7 +453,7 @@ const RewardReport = () => {
               {reports?.map((user: any, index: number) => (
                 <tr
                   key={index}
-                  className="transition hover:bg-white/3 text-nowrap"
+                  className="transition hover:bg-white/3 text-nowrap text-xs"
                 >
                   {/* check */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
@@ -533,6 +535,7 @@ const RewardReport = () => {
           </div>
         )}
       </div>
+
       <Pagination className="mt-6">
         <PaginationContent>
           <PaginationItem>

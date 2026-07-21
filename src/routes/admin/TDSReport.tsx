@@ -297,7 +297,10 @@ const TDSReport = () => {
 
             <tbody className="divide-y divide-white/5">
               {reports?.map((user: any, index) => (
-                <tr key={index} className="transition hover:bg-white/3">
+                <tr
+                  key={index}
+                  className="transition hover:bg-white/3 text-xs text-nowrap"
+                >
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
                     {index + 1}

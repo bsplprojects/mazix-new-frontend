@@ -69,13 +69,13 @@ export default function DashboardHome() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <StatCard
           label="Current Wallet Amount"
-          value={d?.CurrentWallet ?? 0}
+          value={dash?.CurrentWallet ?? 0}
           tone="emerald"
           icon={<Wallet className="h-4 w-4" />}
         />
         <StatCard
           label="Current Repurchase Amount"
-          value={d?.CurrentRepWallet ?? 0}
+          value={dash?.CurrentRepWallet ?? 0}
           tone="brass"
           icon={<Coins className="h-4 w-4" />}
         />
@@ -88,18 +88,6 @@ export default function DashboardHome() {
         <StatCard
           label="Matching"
           value={d?.Total ?? 0}
-          tone="brass"
-          icon={<Coins className="h-4 w-4" />}
-        />
-        <StatCard
-          label="Joining BV"
-          value={dash?.CurrentWallet ?? "0"}
-          tone="emerald"
-          icon={<Coins className="h-4 w-4" />}
-        />
-        <StatCard
-          label="Repurchase BV"
-          value={Math.floor(dash?.CurrentWallet / 5)}
           tone="brass"
           icon={<Coins className="h-4 w-4" />}
         />

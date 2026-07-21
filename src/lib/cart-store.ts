@@ -212,17 +212,35 @@ export function useCart() {
 export function cartTotals(cart: CartItem[], products: any[] = []) {
   const items = cart.map((c) => {
     const p = products.find((x) => x.id === c.productId)!;
+
+    const lineTotal = p.price * c.qty;
+    const lineBV = p.bv * c.qty;
+    const gst = Number(p.gst || 0);
+
     return {
       ...p,
-      qty: c?.qty || 0,
-      lineTotal: p?.price * c?.qty,
-      lineBV: p?.bv * c?.qty,
+      qty: c.qty || 0,
+      lineTotal,
+      lineBV,
+      gst,
+      lineGST: (lineTotal * gst) / 100,
     };
   });
+
   const subtotal = items.reduce((s, i) => s + i.lineTotal, 0);
-  const gst = Math.round(subtotal * 0.18);
-  const shipping = subtotal === 0 ? 0 : subtotal >= 5000 ? 0 : 99;
+
+  const gst = items.reduce((s, i) => s + i.lineGST, 0);
+
   const bvTotal = items.reduce((s, i) => s + i.lineBV, 0);
-  const total = subtotal + gst + shipping;
-  return { items, subtotal, gst, shipping, bvTotal, total };
+
+  const total = subtotal + gst;
+
+  return {
+    items,
+    subtotal,
+    gst,
+    shipping: 0,
+    bvTotal,
+    total,
+  };
 }

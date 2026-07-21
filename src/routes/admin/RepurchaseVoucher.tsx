@@ -27,7 +27,8 @@ const RepurchaseVoucher = () => {
     enabled: false,
   });
 
-  const reports = data || [];
+  const reports = data?.data || [];
+
   const handleExcel = async () => {
     if (!reports?.length) {
       alert("No data available");
@@ -345,7 +346,7 @@ const RepurchaseVoucher = () => {
                 return (
                   <tr
                     key={index}
-                    className="transition hover:bg-white/3 text-nowrap"
+                    className="transition hover:bg-white/3 text-nowrap text-xs"
                   >
                     {/* SR NO */}
                     <td className="px-6 py-5 text-sm font-semibold text-zinc-300">

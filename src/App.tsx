@@ -11,6 +11,8 @@ import Stock from "./routes/admin/Stock";
 import InvoiceList from "./routes/admin/InvoiceList";
 import StockInvoice from "./routes/admin/StockInvoice";
 import StockReport from "./routes/admin/StockReport";
+import AdminLeftTeam from "./routes/admin/AdminLeftTeam";
+import AdminRightTeam from "./routes/admin/AdminRightTeam";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -198,6 +200,8 @@ export default function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboardHome />} />
             <Route path="/admin/all-users" element={<AllUsersPage />} />
+            <Route path="/admin/org1" element={<AdminLeftTeam />} />
+            <Route path="/admin/org2" element={<AdminRightTeam />} />
             <Route path="/admin/sale-reports" element={<SaleReport />} />
             <Route
               path="/admin/transfer-payment"

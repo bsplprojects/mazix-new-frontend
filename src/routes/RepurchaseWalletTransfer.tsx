@@ -1,9 +1,10 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { IndianRupee, Loader2, User, Users } from "lucide-react";
+import { IndianRupee, Loader2, Trash, User, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
@@ -83,6 +84,34 @@ const RepurchaseWalletTransfer = () => {
       return;
     }
     transfer.mutate();
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axiosInstance.delete(`/admin/wallet/repurchase/${id}`);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      client.invalidateQueries({ queryKey: ["wallet-joining"] });
+      toast.success(data?.message);
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleDelete = (record: any) => {
+    if (!record) return;
+    const response = window.confirm(
+      "Are you sure you want to delete this record ?",
+    );
+    if (!response) return;
+
+    deleteMutation.mutate(record.RepWalletTranferID);
   };
 
   return (
@@ -281,6 +310,14 @@ const RepurchaseWalletTransfer = () => {
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Date
                 </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  Status
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -316,6 +353,22 @@ const RepurchaseWalletTransfer = () => {
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
                     {new Date(user.Date).toLocaleDateString()}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-zinc-300">
+                    <Badge
+                      variant={
+                        user.Status === "Active" ? "default" : "destructive"
+                      }
+                    >
+                      {user.Status || "-"}
+                    </Badge>
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-zinc-300">
+                    <Button size={"icon"} onClick={() => handleDelete(user)}>
+                      <Trash className="h-4 w-4" />
+                    </Button>
                   </td>
                 </tr>
               ))}

@@ -5,9 +5,6 @@ import {
   Wallet,
   Package,
   FileText,
-  Settings,
-  LifeBuoy,
-  BarChart3,
   UserPlus,
   CreditCard,
   TicketPercent,
@@ -31,6 +28,8 @@ import {
   Key,
   Box,
   Receipt,
+  User,
+  Users2,
 } from "lucide-react";
 
 import {
@@ -67,6 +66,8 @@ const userManagement = [
   { title: "PAN Confirmation", url: "/admin/pan", icon: IdCard },
   // { title: "Old PAN Confirmation", url: "/admin/old-pan", icon: IdCard },
   { title: "Franchise", url: "/admin/franchise", icon: UserPlus },
+  { title: "ORG1", url: "/admin/org1", icon: Users },
+  { title: "ORG2", url: "/admin/org2", icon: Users2 },
 ];
 
 const tokens = [

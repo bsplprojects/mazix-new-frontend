@@ -236,13 +236,12 @@ export default function UserInfo() {
       0,
     ),
 
-    // Reverse GST extraction
     gst: cart.reduce((a, b) => {
       const price = Number(b.price) || 0;
       const qty = Number(b.qty) || 0;
       const gstRate = Number(b.gst) || 0;
 
-      const gstAmount = price - price / (1 + gstRate / 100);
+      const gstAmount = (price * gstRate) / 100;
 
       return a + gstAmount * qty;
     }, 0),
@@ -250,8 +249,8 @@ export default function UserInfo() {
 
   totals.shipping = 0;
   totals.total = totals.subtotal;
-  const avgGST =
-    totals.subtotal > 0 ? ((totals.gst / totals.subtotal) * 100).toFixed(2) : 0;
+  // const avgGST =
+  //   totals.subtotal > 0 ? ((totals.gst / totals.subtotal) * 100).toFixed(2) : 0;
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
@@ -318,6 +317,19 @@ export default function UserInfo() {
 
       const payload = buildPayload();
 
+      // do some checks
+
+      if (dashboard?.CurrentWallet <= 0)
+        return toast.error("Insufficient balance");
+
+      const totalCostOfItems = payload.products.reduce(
+        (a, b) => a + (Number(b.MRP) || 0) * (Number(b.Qty) || 0),
+        0,
+      );
+
+      if (dashboard?.CurrentWallet < totalCostOfItems)
+        return toast.error("Insufficient balance");
+
       const data = await joiningApi.registerJoining(payload);
 
       if (!data) {
@@ -374,7 +386,7 @@ export default function UserInfo() {
           >
             <div className="grid md:grid-cols-3 gap-4">
               {/* Sponsor ID */}
-              <Field label="Sponsor ID">
+              <Field label="Sponsor ID *">
                 <Input
                   placeholder="Sponsor ID"
                   value={form.SponsorID || ""}
@@ -403,7 +415,7 @@ export default function UserInfo() {
               </Field>
 
               {/* Placement */}
-              <Field label="Placement">
+              <Field label="Placement *">
                 <Select
                   value={form.Placement}
                   onValueChange={(v) => setForm({ ...form, Placement: v })}
@@ -419,7 +431,7 @@ export default function UserInfo() {
               </Field>
 
               {/* Member Name */}
-              <Field label="Member Name">
+              <Field label="Member Name *">
                 <Input
                   placeholder="Member Name"
                   value={form.MemberName || ""}
@@ -458,7 +470,7 @@ export default function UserInfo() {
               </Field>
 
               {/* Age */}
-              <Field label="Age">
+              <Field label="Age *">
                 <Input
                   placeholder="Like: 44 Year"
                   value={form.Age || ""}
@@ -489,7 +501,7 @@ export default function UserInfo() {
               </Field>
 
               {/* State */}
-              <Field label="State">
+              <Field label="State *">
                 <Select
                   value={form.StateID}
                   onValueChange={(v) => {
@@ -547,7 +559,7 @@ export default function UserInfo() {
               </Field>
 
               {/* Contact No */}
-              <Field label="Contact No">
+              <Field label="Contact No *">
                 <Input
                   placeholder="Contact No"
                   value={form.Mobile || ""}
@@ -824,7 +836,7 @@ export default function UserInfo() {
                 </div>
 
                 <div className="flex justify-between">
-                  <span>GST ({avgGST}%)</span>
+                  <span>GST</span>
                   <span>₹{totals.gst.toLocaleString("en-IN")}</span>
                 </div>
 

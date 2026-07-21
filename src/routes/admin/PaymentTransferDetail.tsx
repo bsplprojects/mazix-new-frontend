@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowDown, Download, Loader2, Users } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Download, Loader2, Trash, Users } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -13,9 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 const PaymentTransferDetail = () => {
   const [memberId, setMemberId] = useState("");
+  const client = useQueryClient();
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -129,13 +132,51 @@ const PaymentTransferDetail = () => {
     );
   };
 
-  const handleAction = (val: any) => {
-    alert("This feature is not available yet");
+  const delMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axiosInstance.delete(
+        `/admin/reports/pay-transfer/${id}`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["sale-reports"] });
+      toast.success("Deleted Successfully");
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleDelete = (val: any) => {
+    const response = window.confirm(
+      "Are you sure you want to delete this record?",
+    );
+    if (!response) return;
+
+    delMutation.mutate(val?.BinaryPayoutID);
   };
 
   return (
     <main>
-      <div className="border-b border-white/10 bg-white/2 p-5">
+      <div className="border-b border-white/10 bg-white/2">
+        <div className="mb-5">
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Payment Transfer List
+          </h2>
+
+          <p className="mt-1 text-sm text-zinc-400">
+            Showing{" "}
+            <span className="font-semibold text-yellow-400">
+              {reports.length}
+            </span>{" "}
+            results
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* MEMBER ID SEARCH */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -213,7 +254,7 @@ const PaymentTransferDetail = () => {
 
         <div className="flex items-center gap-2 mt-5 justify-end">
           <Button onClick={handleExcel} className=" rounded-2xl">
-            <Download className="mr-2 h-4 w-4" />
+            <Download className="h-4 w-4" />
             Excel
           </Button>
 
@@ -337,7 +378,7 @@ const PaymentTransferDetail = () => {
                 {reports?.map((user: any, index: number) => (
                   <tr
                     key={index}
-                    className="transition hover:bg-white/3 text-nowrap"
+                    className="transition hover:bg-white/3 text-nowrap text-xs"
                   >
                     {/* SR NO */}
                     <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
@@ -358,7 +399,9 @@ const PaymentTransferDetail = () => {
                     {/* MEMBER */}
 
                     <td className="px-6 py-5">
-                      {user?.PayoutDate?.split("T")[0] || "-"}
+                      {new Date(user?.PayoutDate)?.toLocaleDateString(
+                        "en-IN",
+                      ) || "-"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
@@ -434,12 +477,9 @@ const PaymentTransferDetail = () => {
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      <p
-                        onClick={() => handleAction(user)}
-                        className="p-1 bg-primary/20 text-primary rounded-full flex items-center justify-center hover:bg-primary/50 transition-all ease-in-out cursor-pointer shadow shadow-primary"
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                      </p>
+                      <Button size={"icon"} onClick={() => handleDelete(user)}>
+                        <Trash className="h-4 w-4" />
+                      </Button>
                     </td>
                   </tr>
                 ))}

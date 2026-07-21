@@ -110,7 +110,7 @@ const Product = () => {
         GST: 0,
         Discount: 0,
         BV: 0,
-        Repurchase: 0, 
+        Repurchase: 0,
         seqOnline: 0,
         Image: "",
         stock: 0,
@@ -178,7 +178,7 @@ const Product = () => {
     appendValue("Discount", Number(data?.Discount) || 0);
     appendValue("BV", Number(data?.BV) || 0);
 
-    appendValue("Repurchase", Number(data?.Repurchase) || 1);
+    appendValue("Repurchase", Number(data?.Repurchase));
     appendValue("seqOnline", Number(data?.seqOnline) || 0);
 
     appendValue("Status", data?.Status || "Active");
@@ -244,7 +244,7 @@ const Product = () => {
       Discount: Number(product?.Discount) || 0,
       BV: Number(product?.BV) || 0,
 
-      Repurchase: Number(product?.Repurchase),
+      Repurchase: Number(product?.Repurchase ?? 0),
 
       seqOnline: Number(product?.seqOnline) || 0,
 
@@ -593,7 +593,7 @@ const Product = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Type
+                  Repurchase
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
@@ -667,7 +667,7 @@ const Product = () => {
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
-                      {user.Repurchase || "-"}
+                      {user.Repurchase === "1" ? "Yes" : "No"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-zinc-300">
