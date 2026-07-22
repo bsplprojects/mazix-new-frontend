@@ -225,7 +225,7 @@ const RewardReport = () => {
 
     const year = new Date(report.ModifyDate).getFullYear();
 
-    console.log(year, startYear, endYear);
+
 
     return year >= Number(startYear) && year <= Number(endYear);
   });

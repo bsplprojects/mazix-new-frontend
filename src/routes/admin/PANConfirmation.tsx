@@ -1,23 +1,54 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { IdCard, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "use-debounce";
+
+const PAGE_SIZE = "10";
 
 const PANConfirmation = () => {
   const [checkLists, setCheckLists] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [rows, setRows] = useState(PAGE_SIZE);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 500);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["pan"],
+    queryKey: ["pan", page, rows, debouncedSearch],
     queryFn: async () => {
-      const res = await axiosInstance.get("/admin/pan");
+      const res = await axiosInstance.get("/admin/pan", {
+        params: {
+          pageSize: rows === "All" ? "All" : Number(rows),
+          page,
+          search: debouncedSearch,
+        },
+      });
       return res.data;
     },
   });
+
+  const records = data?.data ?? [];
+  const pagination = data?.pagination ?? {};
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -62,6 +93,31 @@ const PANConfirmation = () => {
     }
   };
 
+  const getPageNumbers = () => {
+    const total = pagination?.totalPages || 1;
+    const current = page;
+    const delta = 2;
+
+    const pages: (number | string)[] = [];
+
+    pages.push(1);
+
+    const left = Math.max(2, current - delta);
+    const right = Math.min(total - 1, current + delta);
+
+    if (left > 2) pages.push("...");
+
+    for (let i = left; i <= right; i++) {
+      pages.push(i);
+    }
+
+    if (right < total - 1) pages.push("...");
+
+    if (total > 1) pages.push(total);
+
+    return pages;
+  };
+
   if (isLoading) {
     return <Loader2 className="animate-spin" />;
   }
@@ -70,11 +126,34 @@ const PANConfirmation = () => {
     <main>
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          PAN Records ({data?.length})
+          PAN Records ({pagination?.total})
         </h2>
-        <Button onClick={handleVerification} className="w-1/8 ">
-          {mutation.isPending ? <Loader2 className="animate-spin" /> : "Verify"}
-        </Button>
+        <div className="flex gap-2 ">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name"
+          />
+          <Select value={rows} onValueChange={setRows}>
+            <SelectTrigger className="w-24">
+              <SelectValue placeholder="Select Rows per page" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="25">25</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+              <SelectItem value="All">All</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={handleVerification} className="w-fit">
+            {mutation.isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              "Verify"
+            )}
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-x-auto mt-5">
@@ -113,7 +192,7 @@ const PANConfirmation = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {data?.map((user: any, index: number) => (
+              {records?.map((user: any, index: number) => (
                 <tr key={index} className="transition hover:bg-white/3 ">
                   {/* SR NO */}
                   <td className="px-6 py-5 text-xs font-semibold text-accent-foreground">
@@ -170,6 +249,54 @@ const PANConfirmation = () => {
             </p>
           </div>
         )}
+
+        <div className="py-2">
+          <Pagination className="mt-6">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page > 1) setPage(page - 1);
+                  }}
+                  className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+
+              {getPageNumbers().map((item, index) => (
+                <PaginationItem key={index}>
+                  {item === "..." ? (
+                    <span className="px-3 text-muted-foreground">...</span>
+                  ) : (
+                    <PaginationLink
+                      isActive={page === item}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(item as number);
+                      }}
+                    >
+                      {item}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (page < pagination?.totalPages) setPage(page + 1);
+                  }}
+                  className={
+                    page === pagination?.totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </main>
   );

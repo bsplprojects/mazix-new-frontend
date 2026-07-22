@@ -258,19 +258,17 @@ export default function EditUserPage() {
 
       {/* OTP */}
       <Section title="Email Verification">
-        <div className="flex flex-wrap gap-3 ">
-          <AdminInput value={user?.EmailID} readOnly />
+        <AdminInput value={user?.EmailID} readOnly />
 
-          <Button onClick={sendOTP}>Send OTP</Button>
+        <Button onClick={sendOTP}>Send OTP</Button>
 
-          <AdminInput
-            placeholder="Enter OTP"
-            value={user?.OTP}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange("OTP", e.target.value)
-            }
-          />
-        </div>
+        <AdminInput
+          placeholder="Enter OTP"
+          value={user?.OTP}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            handleChange("OTP", e.target.value)
+          }
+        />
       </Section>
 
       {/* SAVE */}
@@ -286,7 +284,11 @@ const Header = ({ navigate }: { navigate: NavigateFunction }) => (
       <p className="text-zinc-400 text-sm">Update member information</p>
     </div>
 
-    <Button variant="outline" onClick={() => navigate(-1)} className="text-accent-foreground">
+    <Button
+      variant="outline"
+      onClick={() => navigate(-1)}
+      className="text-accent-foreground"
+    >
       Back
     </Button>
   </div>
@@ -299,10 +301,17 @@ const Section = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <div className=" border border-white/10 rounded-2xl p-6 space-y-5">
-    <h2 className="text-xl font-bold text-accent-foreground">{title}</h2>
-    {children}
-  </div>
+  <section className="rounded-2xl border border-border bg-card/70 p-6 shadow-card backdrop-blur-sm transition-all duration-300 hover:shadow-elegant">
+    <div className="mb-5 flex items-center gap-3 border-b border-border pb-4">
+      <div className="h-2 w-2 rounded-full bg-primary" />
+
+      <h2 className="text-xl font-semibold tracking-tight text-foreground">
+        {title}
+      </h2>
+    </div>
+
+    <div className="space-y-5">{children}</div>
+  </section>
 );
 
 const Grid = ({ children }: { children: React.ReactNode }) => (

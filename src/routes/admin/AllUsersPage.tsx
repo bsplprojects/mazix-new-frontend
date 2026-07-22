@@ -133,7 +133,7 @@ export default function AllUsersPage() {
           </div>
 
           <div className="border-b border-white/10 bg-white/2">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 p-5">
               {/* MEMBER ID */}
               <div className="space-y-2">
                 <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
@@ -451,10 +451,6 @@ export default function AllUsersPage() {
               </tbody>
             </table>
           )}
-
-          {/* =========================================
-              EMPTY STATE
-          ========================================= */}
 
           {!loading && filteredUsers.length === 0 && (
             <div className="py-20 text-center">
