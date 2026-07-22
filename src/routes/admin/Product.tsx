@@ -269,13 +269,13 @@ const Product = () => {
 
   return (
     <main>
-      <h2 className="text-2xl font-bold tracking-tight text-white">
+      <h2 className="text-2xl font-bold tracking-tight text-foreground">
         Add Product
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-5 ">
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Product
           </Label>
           <Input
@@ -287,7 +287,7 @@ const Product = () => {
           />
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Category
           </Label>
           <Select
@@ -310,7 +310,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             MRP
           </Label>
           <Input
@@ -325,7 +325,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Stock
           </Label>
           <Input
@@ -340,7 +340,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Member MRP
           </Label>
           <Input
@@ -355,7 +355,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Stockist MRP
           </Label>
           <Input
@@ -370,7 +370,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             GST (%)
           </Label>
           <Input
@@ -385,7 +385,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             BV
           </Label>
           <Input
@@ -400,7 +400,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Discount (%)
           </Label>
           <Input
@@ -415,7 +415,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Repurchase
           </Label>
           <Select
@@ -435,7 +435,7 @@ const Product = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Status
           </Label>
           <Select
@@ -453,7 +453,7 @@ const Product = () => {
         </div>
 
         <div className="col-span-2">
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Description
           </Label>
           <Textarea
@@ -466,7 +466,7 @@ const Product = () => {
         </div>
 
         <div className="col-span-2">
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Image
           </Label>
           <Input
@@ -486,7 +486,7 @@ const Product = () => {
           />
           {preview && (
             <div className="col-span-2 mt-3">
-              <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Image Preview
               </Label>
               {<img src={preview} className="mt-1 w-20 h-20" />}
@@ -538,7 +538,7 @@ const Product = () => {
       <Separator className="my-10" />
 
       <div className="flex items-center justify-between mt-10">
-        <h2 className="text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
           Product List ({pagination?.total})
         </h2>
         <Input
@@ -554,65 +554,65 @@ const Product = () => {
       <div className="overflow-x-auto mt-5">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Category
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Item
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Description
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   MRP
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member MRP
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Stockist MRP
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   GST (%)
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Repurchase
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   BV
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Dis (%)
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Status
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Image
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Action
                 </th>
               </tr>
@@ -626,17 +626,18 @@ const Product = () => {
                     className="transition hover:bg-white/3 text-xs"
                   >
                     {/* SR NO */}
-                    <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                    <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                       {index + 1}
                     </td>
+
                     {/* DATE */}
-                    <td className="px-6 py-5 text-xs text-zinc-300">
+                    <td className="px-6 py-5 text-xs text-accent-foreground">
                       {user.Joining}
                     </td>
 
                     {/* MEMBER ID */}
 
-                    <td className="px-6 py-5 text-xs font-medium text-yellow-400 text-nowrap">
+                    <td className="px-6 py-5 text-xs font-medium text-primary text-nowrap">
                       {user.Product || "-"}
                     </td>
 
@@ -644,45 +645,45 @@ const Product = () => {
 
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="text-white font-medium line-clamp-2">
+                        <div className="text-accent-foreground font-medium line-clamp-2">
                           {user.Description || "-"}
                         </div>
                       </div>
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.MRP || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.MemberMRP || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.StockistMRP || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
+                    <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
                       {user.GST || "0"}%
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.Repurchase === "1" ? "Yes" : "No"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.BV || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.Discount || "0"}%
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.Status || ""}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Image === null ? (
                         <div className="h-12 w-12 border flex items-center justify-center">
                           <Images className="text-primary/60" />
@@ -702,7 +703,7 @@ const Product = () => {
                       )}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300 flex items-center gap-1">
+                    <td className="px-6 py-5 text-sm text-accent-foreground flex items-center gap-1">
                       <Button
                         onClick={() => handleEdit(user)}
                         size={"icon"}

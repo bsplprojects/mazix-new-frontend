@@ -242,9 +242,11 @@ const Stock = () => {
 
   return (
     <main>
-      <h2 className="text-2xl font-bold tracking-tight text-white">Invoice</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-foreground">
+        Invoice
+      </h2>
       <div>
-        <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+        <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
           Manage Stocks and Invoice
         </Label>
       </div>
@@ -252,7 +254,7 @@ const Stock = () => {
       {/* HEADER */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mt-4">
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             MEMBER ID
           </Label>
           <Input
@@ -263,7 +265,7 @@ const Stock = () => {
           />
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             NAME
           </Label>
           <Input
@@ -275,7 +277,7 @@ const Stock = () => {
           />
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             PHONE
           </Label>
           <Input
@@ -288,7 +290,7 @@ const Stock = () => {
           />
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             EMAIL
           </Label>
           <Input
@@ -305,7 +307,7 @@ const Stock = () => {
       {/* Item selection */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mt-4">
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             CATEGORY
           </Label>
           <Select value={pCatID} onValueChange={setPCatID}>
@@ -328,7 +330,7 @@ const Stock = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             PRODUCTS
           </Label>
 
@@ -366,7 +368,7 @@ const Stock = () => {
       {product && (
         <div className="w-full grid grid-cols-1 md:grid-cols-[auto_repeat(7,minmax(0,1fr))] gap-4 mt-5">
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               IMAGE
             </Label>
 
@@ -383,7 +385,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               MRP
             </Label>
 
@@ -396,7 +398,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               MEMBER MRP
             </Label>
 
@@ -409,7 +411,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               GST (%)
             </Label>
 
@@ -422,7 +424,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               DISCOUNT (%)
             </Label>
 
@@ -435,7 +437,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               STOCK
             </Label>
 
@@ -448,7 +450,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               QTY
             </Label>
 
@@ -462,7 +464,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               ACTION
             </Label>
 
@@ -480,7 +482,7 @@ const Stock = () => {
       {
         <div className="my-4">
           <Table className="border table-xs ">
-            <TableHeader className="bg-neutral-900">
+            <TableHeader className="border-b border-border bg-muted/40 text-nowrap">
               <TableRow>
                 <TableHead>#</TableHead>
                 <TableHead>Name</TableHead>
@@ -525,7 +527,7 @@ const Stock = () => {
       <div className="w-full flex flex-col md:flex-row items-start justify-between my-4">
         <div>
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mb-1">
               PAYMENT MODE
             </Label>
 
@@ -559,7 +561,7 @@ const Stock = () => {
           </div>
 
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400 mt-4">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground mt-4">
               REMARKS
             </Label>
 
@@ -572,7 +574,7 @@ const Stock = () => {
           <Table className="border table-xs ">
             <TableHeader>
               <TableRow>
-                <TableHead className="bg-neutral-900 w-37.5">
+                <TableHead className="border-b border-border bg-muted/40 text-nowrap w-37.5">
                   Total Taxable
                 </TableHead>
                 <TableHead className="w-37.5 text-right">
@@ -580,7 +582,7 @@ const Stock = () => {
                 </TableHead>
               </TableRow>
               <TableRow>
-                <TableHead className="bg-neutral-900 w-37.5">
+                <TableHead className="border-b border-border bg-muted/40 text-nowrap w-37.5">
                   Discount
                 </TableHead>
                 <TableHead className="w-37.5 text-right">
@@ -588,13 +590,13 @@ const Stock = () => {
                 </TableHead>
               </TableRow>
               <TableRow>
-                <TableHead className="bg-neutral-900 w-37.5">GST</TableHead>
+                <TableHead className="border-b border-border bg-muted/40 text-nowrap w-37.5">GST</TableHead>
                 <TableHead className="w-37.5 text-right">
                   {totalGst.toFixed(2)}
                 </TableHead>
               </TableRow>
               <TableRow>
-                <TableHead className="bg-neutral-900 w-37.5">
+                <TableHead className="border-b border-border bg-muted/40 text-nowrap w-37.5">
                   Grand Total
                 </TableHead>
                 <TableHead className="w-37.5 text-right">
@@ -602,7 +604,7 @@ const Stock = () => {
                 </TableHead>
               </TableRow>
               <TableRow>
-                <TableHead className="bg-neutral-900 w-37.5">Paid</TableHead>
+                <TableHead className="border-b border-border bg-muted/40 text-nowrap w-37.5">Paid</TableHead>
                 <TableHead className="w-37.5 text-right">
                   <Input
                     placeholder="0"

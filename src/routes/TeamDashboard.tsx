@@ -1,9 +1,8 @@
-import Loader from "@/components/Loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
-import { Users, UserCheck, UserPlus, Network } from "lucide-react";
+import { Users, UserCheck, UserPlus, Network, Hourglass } from "lucide-react";
 
 const cards = [
   {
@@ -41,10 +40,17 @@ const TeamDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-        {[1, 2, 3, 4].map(() => (
-          <Skeleton className="h-28 w-full" />
-        ))}
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          {[1, 2, 3, 4].map((_, index) => (
+            <Skeleton key={index} className="h-28 w-full" />
+          ))}
+        </div>
+
+        <div className="text-center text-sm text-muted-foreground animate-pulse flex justify-center items-center mt-2 gap-2">
+          <Hourglass className="w-4 h-4 animate-spin" /> This might take some
+          time. Please have some patience.
+        </div>
       </div>
     );
   }

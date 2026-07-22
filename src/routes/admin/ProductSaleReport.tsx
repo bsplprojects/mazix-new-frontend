@@ -192,13 +192,13 @@ const ProductSaleReport = () => {
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white text-nowrap">
+              <h2 className="text-2xl font-bold tracking-tight text-accent-foreground text-nowrap">
                 Product Sales List
               </h2>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-accent-foreground">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-primary">
                   {reports.length}
                 </span>{" "}
                 results
@@ -207,29 +207,29 @@ const ProductSaleReport = () => {
           </div>
         </div>
 
-        <div className="border-b border-white/10 bg-white/2 md:p-5">
+        <div className="border-b border-white/10 bg-white/2 ">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* MEMBER ID */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Member ID
               </label>
 
               <div className="relative">
-                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
                 <Input
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
                 />
               </div>
             </div>
 
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 From Date
               </label>
 
@@ -237,13 +237,13 @@ const ProductSaleReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* TO DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 To Date
               </label>
 
@@ -251,7 +251,7 @@ const ProductSaleReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
@@ -290,81 +290,81 @@ const ProductSaleReport = () => {
       <div className="overflow-x-auto">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Date
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   State
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   District
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Product
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   BV
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   MRP
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member MRP
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Qty
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Taxable Amount
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   GST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   CGST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   SGST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   IGST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Amount
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total BV
                 </th>
               </tr>
@@ -375,20 +375,23 @@ const ProductSaleReport = () => {
                 const calc = calculateGST(user);
 
                 return (
-                  <tr key={index} className="transition hover:bg-white/3 text-xs text-nowrap">
+                  <tr
+                    key={index}
+                    className="transition hover:bg-white/3 text-xs text-nowrap"
+                  >
                     {/* SR NO */}
-                    <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                    <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                       {index + 1}
                     </td>
                     {/* DATE */}
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {new Date(user.MPDate).toLocaleDateString()}
                     </td>
 
                     {/* MEMBER ID */}
 
-                    <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                    <td className="px-6 py-5 text-sm font-medium text-primary">
                       {user.MemberID || "-"}
                     </td>
 
@@ -402,58 +405,58 @@ const ProductSaleReport = () => {
                       </div>
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.StateName || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.CityName || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.Product || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
+                    <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
                       {user.BV || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.MRP || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.MemberMRP || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.Qty || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.TMRP || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.GST || 0}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {Number(calc?.cgst || 0).toFixed(2)}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {Number(calc?.sgst || 0).toFixed(2)}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {Number(calc?.igst || 0).toFixed(2)}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {Number(calc?.net || 0).toFixed(2)}
                     </td>
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user.TBV || 0}
                     </td>
                   </tr>
@@ -467,7 +470,7 @@ const ProductSaleReport = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold text-accent-foreground">
               No Product Sale Record Found
             </h3>
 

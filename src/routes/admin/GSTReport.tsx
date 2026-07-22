@@ -185,17 +185,17 @@ const GSTReport = () => {
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
                 GST Report
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-primary">
                   {reports.length}
                 </span>{" "}
                 results out of{" "}
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-primary">
                   {totalRecords}
                 </span>
               </p>
@@ -216,7 +216,7 @@ const GSTReport = () => {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Month
               </label>
 
@@ -229,7 +229,7 @@ const GSTReport = () => {
 
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 From Date
               </label>
 
@@ -237,13 +237,13 @@ const GSTReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-lg border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* TO DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 To Date
               </label>
 
@@ -251,13 +251,13 @@ const GSTReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-lg border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* ROWS PER PAGE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Rows per page
               </label>
 
@@ -277,14 +277,14 @@ const GSTReport = () => {
 
             {/* BUTTONS */}
             <div className="flex items-end gap-2">
-              <Button
+              {/* <Button
                 onClick={() => {
                   setPage(1);
                 }}
                 disabled={isFetching}
               >
                 {isFetching ? "Loading..." : "Search"}
-              </Button>
+              </Button> */}
 
               <Button
                 variant="outline"
@@ -309,38 +309,38 @@ const GSTReport = () => {
       <div className="overflow-x-auto">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Order No
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Order Date
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total Amount
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total GST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total Discount
                 </th>
               </tr>
@@ -353,35 +353,35 @@ const GSTReport = () => {
                   className="transition hover:bg-white/3 text-nowrap"
                 >
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
                     {user?.MemberID || "-"}
                   </td>
 
                   {/* MEMBER */}
 
-                  <td className="px-6 py-5 text-sm  text-zinc-300">
+                  <td className="px-6 py-5 text-sm  text-accent-foreground">
                     {user?.OrderNo || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm  text-zinc-300">
+                  <td className="px-6 py-5 text-sm  text-accent-foreground">
                     {new Date(user?.OrderDate).toLocaleDateString("en-IN") ||
                       "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm  text-zinc-300">
+                  <td className="px-6 py-5 text-sm  text-accent-foreground">
                     {user?.TotalAmount || "-"}
                   </td>
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
                     {user?.TotalGST || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user?.TotalDiscount || "-"}
                   </td>
                 </tr>

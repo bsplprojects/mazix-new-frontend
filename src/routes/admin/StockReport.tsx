@@ -134,13 +134,13 @@ const StockReport = () => {
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-accent-foreground">
                 Stocks
               </h2>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-foreground">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-primary">
                   {reports.length}
                 </span>{" "}
                 results
@@ -149,10 +149,10 @@ const StockReport = () => {
           </div>
         </div>
 
-        <div className="  md:p-5 mb-4">
+        <div className="md:p-5 mb-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-foreground">
                 Search
               </label>
               <Input
@@ -167,7 +167,7 @@ const StockReport = () => {
 
             {/* STATUS */}
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-foreground">
                 Status
               </label>
               <Select value={status} onValueChange={setStatus}>
@@ -184,7 +184,7 @@ const StockReport = () => {
 
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-foreground">
                 From Date
               </label>
 
@@ -192,13 +192,13 @@ const StockReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* TO DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-foreground">
                 To Date
               </label>
 
@@ -206,7 +206,7 @@ const StockReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
@@ -249,34 +249,34 @@ const StockReport = () => {
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap  ">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Sr.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Product
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Created At
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Last Updated
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Opening Stock
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Stock
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Status
                 </th>
               </tr>
@@ -289,30 +289,30 @@ const StockReport = () => {
                   className="transition hover:bg-white/3 text-nowrap"
                 >
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
                   <td className="px-6 py-5 text-sm ">{user?.Product}</td>
 
                   {/* MEMBER ID */}
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400 uppercase">
+                  <td className="px-6 py-5 text-sm font-medium text-primary uppercase">
                     {formatIST(user?.CreatedAt) || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm  text-zinc-300">
+                  <td className="px-6 py-5 text-sm  text-accent-foreground">
                     {formatIST(user?.UpdatedAt) || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.openingStock || "0"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.stock || "0"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Status || "-"}
                   </td>
                 </tr>
@@ -325,7 +325,7 @@ const StockReport = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold text-foreground">
               No Stocks Found
             </h3>
 

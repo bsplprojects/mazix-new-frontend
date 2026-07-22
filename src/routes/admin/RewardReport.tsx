@@ -217,19 +217,32 @@ const RewardReport = () => {
     mutation.mutate();
   };
 
+  // filter the data which belongs t0 2025-26
+  const filteredReport = reports.filter((report: any) => {
+    const yearRange = report.Year;
+    const startYear = yearRange.split("-")[0];
+    const endYear = "20".concat(yearRange.split("-")[1]);
+
+    const year = new Date(report.ModifyDate).getFullYear();
+
+    console.log(year, startYear, endYear);
+
+    return year >= Number(startYear) && year <= Number(endYear);
+  });
+
   return (
     <main>
       <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-col lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
                 Rewards List
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-primary">
                   {reports.length}
                 </span>{" "}
                 results
@@ -242,25 +255,25 @@ const RewardReport = () => {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* MEMBER ID */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-primary">
                 Member ID
               </label>
 
               <div className="relative">
-                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
                 <Input
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
                 />
               </div>
             </div>
 
             {/* Select */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-primary">
                 Designation
               </label>
               <Select value={Designation} onValueChange={setDesignation}>
@@ -300,7 +313,7 @@ const RewardReport = () => {
 
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-primary">
                 From Date
               </label>
 
@@ -308,13 +321,13 @@ const RewardReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* TO DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-primary">
                 To Date
               </label>
 
@@ -322,13 +335,13 @@ const RewardReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* Select */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-primary">
                 ROWS PER PAGE
               </label>
               <Select value={rowsPerPage} onValueChange={setRowsPerPage}>
@@ -392,58 +405,58 @@ const RewardReport = () => {
       <div className="overflow-x-auto">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   <Checkbox onClick={handleAll} />
                 </th>
 
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Contact No.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Designation
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Reward
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Pair
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Achieve Pair
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Bonus
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Date
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Status
                 </th>
               </tr>
@@ -456,7 +469,7 @@ const RewardReport = () => {
                   className="transition hover:bg-white/3 text-nowrap text-xs"
                 >
                   {/* check */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     <Checkbox
                       checked={ids.includes(user.MemberID)}
                       onClick={() => handleCheckbox(user.MemberID)}
@@ -464,13 +477,13 @@ const RewardReport = () => {
                   </td>
 
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-accent-foreground">
                     {user.MemberID || "-"}
                   </td>
 
@@ -478,41 +491,41 @@ const RewardReport = () => {
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-primary font-medium">
                         {user.Flag || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.RequiredBV || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Designation || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.RewardName || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
+                  <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
                     {user.RequiredPV || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.AchievedPV || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.AchievedBVAmt || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {new Date(user.ModifyDate).toLocaleDateString() || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Status || "-"}
                   </td>
                 </tr>

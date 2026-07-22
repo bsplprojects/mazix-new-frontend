@@ -1,19 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 const PurchaseReport = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
+
+  const [delivery, setDelivery] = useState({
+    deliveryPartner: "",
+    trackerId: "",
+  });
 
   const { data, refetch, isFetching } = useQuery({
     queryKey: ["purchase-reports"],
@@ -34,6 +52,41 @@ const PurchaseReport = () => {
   });
 
   const reports = data?.data || [];
+
+  const mutation = useMutation({
+    mutationFn: async (orderNo: string) => {
+      const res = await axiosInstance.post(
+        `/admin/order/delivery/${orderNo}`,
+        delivery,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      setOpen(false);
+      setDelivery({
+        deliveryPartner: "",
+        trackerId: "",
+      });
+      refetch();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  console.log(reports);
+
+  const handleSubmit = (orderNo: string) => {
+    if (!delivery.deliveryPartner || !delivery.trackerId) {
+      alert("Please fill all the fields");
+      return;
+    }
+    mutation.mutate(orderNo);
+  };
 
   const handleExcel = () => {
     if (!reports || reports.length === 0) {
@@ -102,13 +155,13 @@ const PurchaseReport = () => {
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
                 Purchase List
               </h2>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-accent-foreground">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
+                <span className="font-semibold text-primary">
                   {reports.length}
                 </span>{" "}
                 results
@@ -121,25 +174,25 @@ const PurchaseReport = () => {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* MEMBER ID */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Member ID
               </label>
 
               <div className="relative">
-                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
                 <Input
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                  className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
                 />
               </div>
             </div>
 
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 From Date
               </label>
 
@@ -147,13 +200,13 @@ const PurchaseReport = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* TO DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 To Date
               </label>
 
@@ -161,7 +214,7 @@ const PurchaseReport = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 text-white focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
@@ -200,77 +253,77 @@ const PurchaseReport = () => {
       <div className="overflow-x-auto">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Order No
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Order Date
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Customer Name
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Phone
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   City
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total Amount
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Pay Mode
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Delivery Status
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Delivery Partner
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Tracker ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Products (QTY)
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total CGST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total SGST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total IGST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Total GST
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Action
                 </th>
               </tr>
@@ -280,24 +333,23 @@ const PurchaseReport = () => {
               {reports?.map((user: any, index: number) => (
                 <tr
                   key={index}
-                  className="transition hover:bg-white/3 text-nowrap"
+                  className="transition hover:bg-white/3 text-nowrap text-xs"
                 >
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {user?.OrderNo}
                   </td>
-                  {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  {/* DATE */}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {new Date(user.OrderDate).toLocaleDateString()}
                   </td>
 
                   {/* MEMBER */}
-
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
                       <div className="text-white font-medium">
@@ -306,55 +358,55 @@ const PurchaseReport = () => {
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Phone || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.City || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TotalAmount || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
+                  <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
                     {user.PayMode || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.DeliveryStatus || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.DeliveryPartner || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TrackingID || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.ItemCount || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TotalCGST || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TotalSGST || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TotalIGST || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TotalGST || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300 space-y-1">
+                  <td className="px-6 py-5 text-sm text-accent-foreground space-y-1">
                     <Button
                       onClick={() =>
                         navigate(
@@ -366,7 +418,62 @@ const PurchaseReport = () => {
                     >
                       Invoice
                     </Button>
-                    <Button size={"sm"}>Assign Delivery</Button>
+
+                    <Dialog open={open} onOpenChange={setOpen}>
+                      <Button onClick={() => setOpen(true)} size={"sm"}>
+                        Assign Delivery
+                      </Button>
+
+                      <DialogContent className="sm:max-w-sm">
+                        <DialogHeader>
+                          <DialogTitle>Assign Delivery</DialogTitle>
+                          <DialogDescription>
+                            Assign a delivery partner to this order.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <FieldGroup>
+                          <Field>
+                            <Label htmlFor="deliveryPartner">
+                              Delivery Partner
+                            </Label>
+                            <Input
+                              id="deliveryPartner"
+                              name="deliveryPartner"
+                              value={delivery.deliveryPartner}
+                              onChange={(e) =>
+                                setDelivery((prev) => ({
+                                  ...prev,
+                                  deliveryPartner: e.target.value,
+                                }))
+                              }
+                            />
+                          </Field>
+                          <Field>
+                            <Label htmlFor="trackerId">Tracker ID</Label>
+                            <Input
+                              id="trackerId"
+                              name="trackerId"
+                              value={delivery.trackerId}
+                              onChange={(e) =>
+                                setDelivery((prev) => ({
+                                  ...prev,
+                                  trackerId: e.target.value,
+                                }))
+                              }
+                            />
+                          </Field>
+                        </FieldGroup>
+                        <DialogFooter>
+                          <Button
+                            onClick={() => handleSubmit(user.OrderNo)}
+                            type="submit"
+                            disabled={mutation.isPending}
+                          >
+                            {mutation.isPending ? "Saving..." : "Save changes"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </td>
                 </tr>
               ))}
@@ -378,7 +485,7 @@ const PurchaseReport = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold text-accent-foreground">
               No Purchase Record Found
             </h3>
 

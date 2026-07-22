@@ -37,15 +37,13 @@ const FranchiseList = () => {
     <main className="my-5">
       <div className="flex items-center gap-3 mb-5">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
             Franschise List
           </h2>
 
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="mt-1 text-sm text-zinc-500">
             Showing{" "}
-            <span className="font-semibold text-yellow-400">
-              {reports.length}
-            </span>{" "}
+            <span className="font-semibold text-primary">{reports.length}</span>{" "}
             results
           </p>
         </div>
@@ -53,30 +51,30 @@ const FranchiseList = () => {
       <div className="overflow-x-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3 text-nowrap">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Contact No.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Gender
                 </th>
               </tr>
@@ -89,30 +87,30 @@ const FranchiseList = () => {
                   className="transition hover:bg-white/3 text-nowrap"
                 >
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
                     {user.MemberID || "-"}
                   </td>
 
                   {/* MEMBER */}
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-accent-foreground font-medium">
                         {user.MemberName || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.ContactNo || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Gender || "-"}
                   </td>
                 </tr>

@@ -119,7 +119,7 @@ const Franchise = () => {
   return (
     <>
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
           Add Franchise
         </h2>
 

@@ -184,18 +184,18 @@ export default function AdminRightTeam() {
 
       <div className="flex items-end gap-2">
         <div className="space-y-2 w-1/5">
-          <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Member ID
           </label>
 
           <div className="relative">
-            <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+            <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
             <Input
               placeholder="RMG1001"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+              className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
             />
           </div>
         </div>

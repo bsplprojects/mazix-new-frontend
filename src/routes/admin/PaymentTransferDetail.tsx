@@ -165,15 +165,13 @@ const PaymentTransferDetail = () => {
     <main>
       <div className="border-b border-white/10 bg-white/2">
         <div className="mb-5">
-          <h2 className="text-2xl font-bold tracking-tight text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
             Payment Transfer List
           </h2>
 
           <p className="mt-1 text-sm text-zinc-400">
             Showing{" "}
-            <span className="font-semibold text-yellow-400">
-              {reports.length}
-            </span>{" "}
+            <span className="font-semibold text-primary">{reports.length}</span>{" "}
             results
           </p>
         </div>
@@ -181,18 +179,18 @@ const PaymentTransferDetail = () => {
           {/* MEMBER ID SEARCH */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Member ID
               </label>
 
               <div className="relative ">
-                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
                 <Input
                   placeholder="RMG1001"
                   value={memberId}
                   onChange={(e) => setMemberId(e.target.value)}
-                  className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white"
+                  className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
                 />
               </div>
 
@@ -212,7 +210,7 @@ const PaymentTransferDetail = () => {
           {/* DATE SEARCH */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Payout Date
               </label>
 
@@ -224,7 +222,7 @@ const PaymentTransferDetail = () => {
               /> */}
 
               <Select value={dateList} onValueChange={setDateList}>
-                <SelectTrigger className="h-11 w-full  rounded-2xl border border-white/10 bg-zinc-900/80 text-white">
+                <SelectTrigger className="h-11 w-full rounded-2xl border border-border bg-card text-foreground focus:border-primary focus:ring-primary">
                   <SelectValue placeholder="Payout Date" />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,7 +262,7 @@ const PaymentTransferDetail = () => {
               setMemberId("");
               setDateList("");
             }}
-            className=" rounded-2xl border-white/10 text-white"
+            className=" rounded-2xl border-white/10 text-accent-foreground"
           >
             Reset
           </Button>
@@ -278,97 +276,97 @@ const PaymentTransferDetail = () => {
             </div>
           ) : (
             <table className="w-full min-w-250">
-              <thead className="border-b border-white/10 bg-white/3">
+              <thead className="border-b border-border bg-muted/40 text-nowrap">
                 <tr className="text-left">
                   {/* TABLE HEADER */}
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Sr.
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Member ID
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Member
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Payout Date
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     PAN
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     CurLeft
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     CurRight
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Pair
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Payable
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     TDS
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Admin Charge
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Admin (18%)
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Admin (82%)
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Voucher
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Bonus
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Amount
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Paid Date
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Bank Name
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Ac No
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     IFSC
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Branch
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Paid Amount
                   </th>
 
-                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 text-nowrap">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground text-nowrap">
                     Action
                   </th>
                 </tr>
@@ -381,18 +379,18 @@ const PaymentTransferDetail = () => {
                     className="transition hover:bg-white/3 text-nowrap text-xs"
                   >
                     {/* SR NO */}
-                    <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                    <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                       {index + 1}
                     </td>
                     {/* DATE */}
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.MemberID}
                     </td>
 
                     {/* MEMBER ID */}
 
-                    <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                    <td className="px-6 py-5 text-sm font-medium text-primary">
                       {user?.MemberName || "-"}
                     </td>
 
@@ -404,79 +402,79 @@ const PaymentTransferDetail = () => {
                       ) || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.PAN || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.CurrentLeft || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.CurrentRight || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300 min-w-62.5">
+                    <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
                       {user?.Pair || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Payable || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.TDS || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.AdminCharge || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {(18 * user?.AdminCharge) / 100}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {(82 * user?.AdminCharge) / 100}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Vouchur || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Bonus || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Amount || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.ModifyDate?.split("T")[0] || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Bank || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.AcNo || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.IFSC || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Branch || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       {user?.Payable || "-"}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-zinc-300">
+                    <td className="px-6 py-5 text-sm text-accent-foreground">
                       <Button size={"icon"} onClick={() => handleDelete(user)}>
                         <Trash className="h-4 w-4" />
                       </Button>
@@ -491,7 +489,7 @@ const PaymentTransferDetail = () => {
             <div className="py-20 text-center">
               <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-              <h3 className="text-xl font-semibold text-white">
+              <h3 className="text-xl font-semibold text-accent-foreground">
                 No Payment Transfer Records Found
               </h3>
 

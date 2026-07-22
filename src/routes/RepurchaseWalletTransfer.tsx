@@ -120,14 +120,14 @@ const RepurchaseWalletTransfer = () => {
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
                 Repurchase Wallet Transfer
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                <span className="font-semibold text-primary">
+                  {reports.length}
                 </span>{" "}
                 registered members
               </p>
@@ -138,24 +138,24 @@ const RepurchaseWalletTransfer = () => {
         <div className="flex md:items-center justify-center gap-4 flex-col md:flex-row">
           {/* MEMBER ID */}
           <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Member ID
             </label>
 
             <div className="relative">
-              <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+              <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
               <Input
                 defaultValue={"admin"}
                 disabled
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
           </div>
 
           {/*Transfer MEMBER ID */}
           <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Transfer Member ID
             </label>
 
@@ -166,35 +166,35 @@ const RepurchaseWalletTransfer = () => {
                 placeholder="MAZ1001"
                 value={transferID}
                 onChange={(e) => setTransferID(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
           </div>
 
           {/*Transfer MEMBER Name */}
           <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Member Name
             </label>
 
             <div className="relative">
               {receiverLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin absolute top-1/4 left-3 -transalte-y-1/3 text-yellow-500" />
+                <Loader2 className="h-4 w-4 animate-spin absolute top-1/4 left-3 -transalte-y-1/3 text-primary" />
               ) : (
-                <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+                <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
               )}
 
               <Input
                 value={transferID && receiverData?.MemberName}
                 disabled
-                className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className=" rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
           </div>
 
           {/* Amount */}
           <div className="space-y-2">
-            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Amount
             </label>
 
@@ -206,7 +206,7 @@ const RepurchaseWalletTransfer = () => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 type="number"
-                className=" rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+                className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
           </div>
@@ -220,7 +220,7 @@ const RepurchaseWalletTransfer = () => {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* FROM DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 From Date
               </label>
 
@@ -228,12 +228,13 @@ const RepurchaseWalletTransfer = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
             {/* TO DATE */}
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 To Date
               </label>
 
@@ -241,6 +242,7 @@ const RepurchaseWalletTransfer = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
+                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
               />
             </div>
 
@@ -284,38 +286,38 @@ const RepurchaseWalletTransfer = () => {
       <div className="overflow-x-auto">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left text-sm">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Amount
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Date
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Status
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Action
                 </th>
               </tr>
@@ -325,13 +327,13 @@ const RepurchaseWalletTransfer = () => {
               {reports?.map((user: any, index: number) => (
                 <tr key={index} className="transition hover:bg-white/3">
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
                     {user.MemberID || "-"}
                   </td>
 
@@ -339,23 +341,23 @@ const RepurchaseWalletTransfer = () => {
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-primary font-medium">
                         {user.MemberName || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Amount || "-"}
                   </td>
 
                   {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
-                    {new Date(user.Date).toLocaleDateString()}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {new Date(user.Date).toLocaleDateString("en-IN")}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     <Badge
                       variant={
                         user.Status === "Active" ? "default" : "destructive"
@@ -365,7 +367,7 @@ const RepurchaseWalletTransfer = () => {
                     </Badge>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     <Button size={"icon"} onClick={() => handleDelete(user)}>
                       <Trash className="h-4 w-4" />
                     </Button>
@@ -380,7 +382,7 @@ const RepurchaseWalletTransfer = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold text-accent-foreground">
               No Records Found
             </h3>
 

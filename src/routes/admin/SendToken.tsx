@@ -53,19 +53,19 @@ const SendToken = () => {
 
   return (
     <main>
-      <h2 className="text-2xl font-bold tracking-tight text-white">
+      <h2 className="text-2xl font-bold tracking-tight text-foreground">
         Send Token
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-5 ">
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Member ID
           </Label>
           <Input placeholder="MAZ000091" className="mt-1" />
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Package
           </Label>
           <Select
@@ -79,7 +79,7 @@ const SendToken = () => {
           </Select>
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Token Type
           </Label>
           <Select
@@ -95,7 +95,7 @@ const SendToken = () => {
           </Select>
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Token No.
           </Label>
           <Input
@@ -106,7 +106,7 @@ const SendToken = () => {
           />
         </div>
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Pay Type
           </Label>
           <Select

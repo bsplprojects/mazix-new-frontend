@@ -159,6 +159,14 @@ const MemberPaymentTransfer = () => {
     );
   };
 
+  const handleCheckAll = () => {
+    if (ids.length) {
+      setIds([]);
+    } else {
+      setIds(reports.map((c) => c.BinaryPayoutID));
+    }
+  };
+
   const handleCheckBox = (id: string) => {
     const existing = ids.includes(id);
     if (existing) {
@@ -202,14 +210,14 @@ const MemberPaymentTransfer = () => {
         <div>
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
                 Member Payment Transfer
               </h2>
 
               <p className="mt-1 text-sm text-zinc-400">
                 Showing{" "}
-                <span className="font-semibold text-yellow-400">
-                  {/* {filteredUsers.length} */}
+                <span className="font-semibold text-primary">
+                  {reports.length}
                 </span>{" "}
                 results
               </p>
@@ -220,13 +228,13 @@ const MemberPaymentTransfer = () => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 place-items-end">
           {/*date */}
           <div className="space-y-2 w-full">
-            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Date
             </label>
 
             <div className="relative">
               <Select value={dateList} onValueChange={setDateList}>
-                <SelectTrigger className="h-11 w-full  rounded-2xl border border-white/10 bg-zinc-900/80 text-white">
+                <SelectTrigger className="h-11 w-full rounded-2xl border border-border bg-card text-foreground focus:border-primary focus:ring-primary">
                   <SelectValue placeholder="Payout Date" />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,7 +251,7 @@ const MemberPaymentTransfer = () => {
 
           {/* type */}
           <div className="space-y-2 w-full">
-            <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Type
             </label>
 
@@ -252,7 +260,7 @@ const MemberPaymentTransfer = () => {
                 value={PANList}
                 onValueChange={(val) => setPANList(val === "-1" ? "" : val)}
               >
-                <SelectTrigger className="h-11 w-full  rounded-2xl border border-white/10 bg-zinc-900/80 text-white">
+                <SelectTrigger className="h-11 w-full rounded-2xl border border-border bg-card text-foreground focus:border-primary focus:ring-primary">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -280,97 +288,97 @@ const MemberPaymentTransfer = () => {
       <div className="overflow-x-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left text-nowrap text-xs">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  #
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  <Checkbox onCheckedChange={handleCheckAll} />
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   PDate
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   PAN
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 ">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground ">
                   C-ORG 1
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 ">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground ">
                   C-ORG 2
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Pair
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Bonus
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Payable
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   TDS
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Admin Ch
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Admin(18%)
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Admin(82%)
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Voucher
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Amount
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Bank Name
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Account No.
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   IFSC
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Branch
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Flag
                 </th>
               </tr>
@@ -383,19 +391,20 @@ const MemberPaymentTransfer = () => {
                   className="transition hover:bg-white/3 text-nowrap text-xs"
                 >
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
                     <Checkbox
+                      checked={ids.includes(user.BinaryPayoutID)}
                       onClick={() => handleCheckBox(user.BinaryPayoutID)}
                     />
                   </td>
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
                     {user.MemberID || "-"}
                   </td>
 
@@ -403,64 +412,64 @@ const MemberPaymentTransfer = () => {
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-primary font-medium">
                         {user.MemberName || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Pdate || "-"}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.PAN || "-"}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.CurrentLeft || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.CurrentRight || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Pair || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Bonus || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Payable || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.TDS || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.AdminCharge || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {((user.AdminCharge * 18) / 100).toFixed(2) || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {((user.AdminCharge * 82) / 100).toFixed(2) || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Vouchur || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Amount || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Bank || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.AcNo || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.IFSC || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Branch || 0}
                   </td>
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Flag || 0}
                   </td>
                 </tr>
@@ -473,7 +482,7 @@ const MemberPaymentTransfer = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold text-accent-foreground">
               No Records Found
             </h3>
 

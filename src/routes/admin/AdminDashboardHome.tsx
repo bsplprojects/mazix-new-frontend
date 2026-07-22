@@ -45,28 +45,34 @@ export default function AdminDashboardHome() {
 
   return (
     <div className="space-y-7">
-      <div className="rounded-3xl border border-white/10 bg-linear-to-br from-yellow-500/10 via-black to-zinc-900 p-6 lg:p-8 overflow-hidden relative">
-        <div className="absolute right-0 top-0 h-52 w-52 bg-yellow-500/10 blur-3xl rounded-full" />
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-hero shadow-elegant p-6 lg:p-8">
+        {/* Background Glow */}
+        <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full bg-primary/15 blur-3xl" />
+        <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-brass/10 blur-3xl" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          {/* Left */}
           <div>
-            <div className="flex items-center gap-2 text-yellow-400 text-xs tracking-[3px] uppercase mb-3">
+            <div className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-[3px] text-primary">
               <ShieldCheck className="h-4 w-4" />
               Admin Control Panel
             </div>
 
-            <h1 className="text-3xl lg:text-4xl font-bold text-white">
+            <h1 className="font-display text-3xl font-bold text-foreground lg:text-4xl">
               Welcome Back, Admin 👋
             </h1>
 
-            <p className="text-zinc-400 mt-2 text-sm">
-              Monitor members, income, payouts & system activity.
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+              Monitor members, income, payouts, reports and overall system
+              activity from a single dashboard.
             </p>
           </div>
 
+          {/* Right */}
           <Button
             asChild
-            className="h-11 px-6 rounded-xl bg-linear-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:opacity-90"
+            size="lg"
+            className="rounded-xl bg-gradient-emerald text-primary-foreground shadow-glow transition-all hover:scale-[1.03]"
           >
             <Link to="/admin/all-users">
               Manage Members
@@ -75,8 +81,6 @@ export default function AdminDashboardHome() {
           </Button>
         </div>
       </div>
-
-      {/* ================= STATS ================= */}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <AdminCard
@@ -105,24 +109,35 @@ export default function AdminDashboardHome() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">
+        <div className="lg:col-span-2 rounded-3xl border border-border bg-card/70 backdrop-blur-xl p-6 shadow-card">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
             Current Month Members
           </h2>
 
           <div style={{ width: "100%", height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={c?.barChart || []}>
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Bar dataKey="members" fill="#DF9C00" />
+                <XAxis
+                  dataKey="day"
+                  stroke="currentColor"
+                  className="text-muted-foreground"
+                />
+                <YAxis
+                  stroke="currentColor"
+                  className="text-muted-foreground"
+                />
+                <Bar
+                  dataKey="members"
+                  fill="var(--primary)"
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">
+        <div className="rounded-3xl border border-border bg-card/70 backdrop-blur-xl p-6 shadow-card">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
             Package Distribution
           </h2>
 
@@ -138,15 +153,26 @@ export default function AdminDashboardHome() {
                     label
                   >
                     {(c?.pieChart || []).map((_, index) => (
-                      <Cell key={index} />
+                      <Cell
+                        key={index}
+                        fill={
+                          [
+                            "var(--primary)",
+                            "var(--brass)",
+                            "var(--chart-3)",
+                            "var(--chart-4)",
+                            "var(--chart-5)",
+                          ][index % 5]
+                        }
+                      />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
             ) : (
               <div className="w-full h-full grid place-items-center">
-                <p className="text-sm text-muted-foreground flex flex-col gap-1 items-center ">
-                  <Package className="w-20 h-20 text-yellow-500 rotate-y-slow" />
+                <p className="text-sm text-muted-foreground flex flex-col gap-1 items-center">
+                  <Package className="w-20 h-20 text-primary rotate-y-slow" />
                   No data available
                 </p>
               </div>
@@ -157,25 +183,20 @@ export default function AdminDashboardHome() {
     </div>
   );
 }
-
-/* =========================================
-   SMALL COMPONENTS
-========================================= */
-
 function AdminCard({ title, value, growth, icon }: any) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl p-5 hover:bg-white/5 transition-all duration-300">
+    <div className="rounded-3xl border border-border bg-card/70 backdrop-blur-xl p-5 hover:bg-card transition-all duration-300 shadow-card">
       <div className="flex items-center justify-between mb-4">
-        <div className="text-sm text-zinc-400">{title}</div>
+        <div className="text-sm text-muted-foreground">{title}</div>
 
-        <div className="h-11 w-11 rounded-2xl bg-yellow-500/10 text-yellow-400 flex items-center justify-center">
+        <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
           {icon}
         </div>
       </div>
 
-      <div className="text-3xl font-bold text-white">{value}</div>
+      <div className="text-3xl font-bold text-foreground">{value}</div>
 
-      <div className="text-xs text-green-400 mt-2">{growth}</div>
+      <div className="text-xs text-success mt-2">{growth}</div>
     </div>
   );
 }

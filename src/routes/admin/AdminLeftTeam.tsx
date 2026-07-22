@@ -67,13 +67,6 @@ export default function AdminLeftTeam() {
       let nextCursor: string | null = null;
 
       while (true) {
-        // const res = await teamApi.left(
-        //   userId as string,
-        //   nextCursor,
-        //   debouncedSearch,
-        //   100,
-        // );
-
         const res = await axiosInstance.post(`/team/left/${userId}`, {
           search: debouncedSearch,
           queue: nextCursor,
@@ -190,18 +183,18 @@ export default function AdminLeftTeam() {
 
       <div className="flex items-end gap-2">
         <div className="space-y-2 w-1/5">
-          <label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Member ID
           </label>
 
           <div className="relative">
-            <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+            <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
             <Input
               placeholder="RMG1001"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-zinc-900/80 pl-10 text-white placeholder:text-zinc-500 focus:border-yellow-500"
+              className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
             />
           </div>
         </div>
@@ -215,13 +208,18 @@ export default function AdminLeftTeam() {
       </div>
 
       {/* SEARCH */}
-      <div className="flex items-center gap-3">
-        <Input
-          type="text"
-          placeholder="Search by Name or ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+        <div className="space-y-2">
+          <label className="text-xs font-medium uppercase tracking-wider text-zinc-400"></label>
+
+          <Input
+            type="text"
+            placeholder="Search by Name or ID..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
         <Button onClick={loadAll} disabled={loading || !cursor}>
           {loading ? "Loading..." : cursor ? "All Members" : "No More Members"}
         </Button>

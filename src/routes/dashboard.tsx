@@ -15,6 +15,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useState } from "react";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export const searchPages = [
   {
@@ -163,7 +164,7 @@ export default function DashboardLayout() {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 flex items-center gap-4 px-4 lg:px-6 border-b border-border bg-card/40 backdrop-blur-md sticky top-0 z-30">
+          <header className="h-16 flex items-center justify-between gap-4 px-4 lg:px-6 border-b border-border bg-card/40 backdrop-blur-md sticky top-0 z-30">
             <SidebarTrigger className="text-muted-foreground hover:text-foreground block lg:hidden" />
             <div className="hidden md:flex items-center gap-2 flex-1 max-w-md">
               <div className="relative w-full">
@@ -175,27 +176,7 @@ export default function DashboardLayout() {
                 />
               </div>
             </div>
-            <div className="flex-1 md:hidden" />
-            {/* <Button
-              asChild
-              variant="ghost"
-              size="icon"
-              className="relative"
-              title="Cart"
-            >
-              <Link to="/dashboard/checkout" search={{ kind: cartTo }}>
-                <ShoppingCart className="h-4 w-4" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-brass text-brass-foreground text-[10px] font-semibold flex items-center justify-center shadow-brass">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            </Button> */}
-            {/* <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-4 w-4" />
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-brass shadow-brass" />
-            </Button> */}
+            {/* <div className="flex-1 md:hidden" /> */}
 
             <div className="flex items-center gap-3 pl-3 border-l border-border">
               <div className="text-right hidden sm:block">
@@ -219,6 +200,7 @@ export default function DashboardLayout() {
               >
                 <LogOut className="h-4 w-4" />
               </Button>
+              <ModeToggle />
             </div>
           </header>
           <main className="flex-1 p-4 lg:p-8 overflow-auto">

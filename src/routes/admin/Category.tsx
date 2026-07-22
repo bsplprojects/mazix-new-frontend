@@ -152,13 +152,13 @@ const Category = () => {
 
   return (
     <main>
-      <h2 className="text-2xl font-bold tracking-tight text-white">
+      <h2 className="text-2xl font-bold tracking-tight text-foreground">
         Add Category
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-5 ">
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Category
           </Label>
           <Input
@@ -171,7 +171,7 @@ const Category = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Status
           </Label>
           <Select
@@ -189,7 +189,7 @@ const Category = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Sequence
           </Label>
           <Input
@@ -202,7 +202,7 @@ const Category = () => {
         </div>
 
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+          <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
             Image
           </Label>
           <Input
@@ -224,7 +224,7 @@ const Category = () => {
         </div>
         {preview && (
           <div className="col-span-2 mt-3">
-            <Label className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+            <Label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
               Image Preview
             </Label>
             {<img src={preview} className="mt-1 w-20 h-20" />}
@@ -246,7 +246,7 @@ const Category = () => {
       </div>
 
       <div className="flex items-center justify-between mt-10">
-        <h2 className="text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
           Categories List ({categories?.length})
         </h2>
         <Input
@@ -259,37 +259,37 @@ const Category = () => {
       <div className="overflow-x-auto mt-5">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Category
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Image
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Status
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sequence
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Date
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Action
                 </th>
               </tr>
@@ -299,18 +299,18 @@ const Category = () => {
               {filteredCategories?.map((user: any, index: number) => (
                 <tr key={index} className="transition hover:bg-white/3">
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
                   {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Category}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400 text-nowrap">
+                  <td className="px-6 py-5 text-sm font-medium text-primary text-nowrap">
                     <img
                       src={`https://app.mymazix.com/${user?.Image?.replace("../../", "")}`}
                       alt="img"
@@ -322,21 +322,21 @@ const Category = () => {
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium line-clamp-2">
+                      <div className="text-primary font-medium line-clamp-2">
                         {user.Status || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.seqOnline || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
                     {new Date(user.ModifyDate).toLocaleDateString() || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-zinc-300 flex items-center gap-1">
+                  <td className="px-6 py-5 text-sm text-accent-foreground flex items-center gap-1">
                     <Button
                       onClick={() => handleEdit(user)}
                       size={"icon"}

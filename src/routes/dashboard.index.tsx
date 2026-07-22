@@ -86,7 +86,7 @@ export default function DashboardHome() {
           icon={<Coins className="h-4 w-4" />}
         />
         <StatCard
-          label="Matching"
+          label="Matching Amount"
           value={d?.Total ?? 0}
           tone="brass"
           icon={<Coins className="h-4 w-4" />}

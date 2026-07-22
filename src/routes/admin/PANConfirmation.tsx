@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -53,6 +54,14 @@ const PANConfirmation = () => {
     mutation.mutate();
   };
 
+  const handleAllCheck = () => {
+    if (checkLists.length === data?.length) {
+      setCheckLists([]);
+    } else {
+      setCheckLists(data?.map((item: any) => item.MemberID));
+    }
+  };
+
   if (isLoading) {
     return <Loader2 className="animate-spin" />;
   }
@@ -60,7 +69,7 @@ const PANConfirmation = () => {
   return (
     <main>
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
           PAN Records ({data?.length})
         </h2>
         <Button onClick={handleVerification} className="w-1/8 ">
@@ -71,33 +80,33 @@ const PANConfirmation = () => {
       <div className="overflow-x-auto mt-5">
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250 ">
-            <thead className="border-b border-white/10 bg-white/3">
+            <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  #
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  <Checkbox onCheckedChange={handleAllCheck} />
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   DOJ
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member
                 </th>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   PAN No.
                 </th>
               </tr>
@@ -107,40 +116,39 @@ const PANConfirmation = () => {
               {data?.map((user: any, index: number) => (
                 <tr key={index} className="transition hover:bg-white/3 ">
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-xs font-semibold text-zinc-300">
-                    <Input
-                      type="checkbox"
-                      className="h-4 w-4"
-                      onChange={() => handleCheck(user?.MemberID)}
+                  <td className="px-6 py-5 text-xs font-semibold text-accent-foreground">
+                    <Checkbox
+                      checked={checkLists.includes(user?.MemberID)}
+                      onCheckedChange={() => handleCheck(user?.MemberID)}
                     />
                   </td>
 
-                  <td className="px-6 py-5 text-xs font-semibold text-zinc-300">
+                  <td className="px-6 py-5 text-xs font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
                   {/* DATE */}
 
-                  <td className="px-6 py-5 text-xs text-zinc-300">
+                  <td className="px-6 py-5 text-xs text-accent-foreground">
                     {new Date(user.ModifyDate).toLocaleDateString()}
                   </td>
 
                   {/* MEMBER ID */}
 
-                  <td className="px-6 py-5 text-xs font-medium text-yellow-400">
+                  <td className="px-6 py-5 text-xs font-medium text-primary">
                     {user.MemberID || "-"}
                   </td>
 
                   {/* MEMBER */}
 
-                  <td className="px-6 py-5">
+                  <td className="px-6 py-5 text-xs">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-primary font-medium">
                         {user.MemberName || "-"}
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-6 py-5 text-xs text-zinc-300">
+                  <td className="px-6 py-5 text-xs text-accent-foreground">
                     {user.PAN || "-"}
                   </td>
                 </tr>

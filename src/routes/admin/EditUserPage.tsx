@@ -258,7 +258,7 @@ export default function EditUserPage() {
 
       {/* OTP */}
       <Section title="Email Verification">
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 ">
           <AdminInput value={user?.EmailID} readOnly />
 
           <Button onClick={sendOTP}>Send OTP</Button>
@@ -282,11 +282,11 @@ export default function EditUserPage() {
 const Header = ({ navigate }: { navigate: NavigateFunction }) => (
   <div className="flex justify-between items-center">
     <div>
-      <h1 className="text-3xl font-bold">Edit Member</h1>
+      <h1 className="text-3xl font-bold text-accent-foreground">Edit Member</h1>
       <p className="text-zinc-400 text-sm">Update member information</p>
     </div>
 
-    <Button variant="outline" onClick={() => navigate(-1)}>
+    <Button variant="outline" onClick={() => navigate(-1)} className="text-accent-foreground">
       Back
     </Button>
   </div>
@@ -300,7 +300,7 @@ const Section = ({
   children: React.ReactNode;
 }) => (
   <div className=" border border-white/10 rounded-2xl p-6 space-y-5">
-    <h2 className="text-xl font-bold ">{title}</h2>
+    <h2 className="text-xl font-bold text-accent-foreground">{title}</h2>
     {children}
   </div>
 );
@@ -317,15 +317,23 @@ const Field = ({
   children: React.ReactNode;
 }) => (
   <div className="space-y-2">
-    <label className="text-sm text-zinc-400">{label}</label>
+    <label className="text-sm text-accent-foreground">{label}</label>
     {children}
   </div>
 );
 
-const AdminInput = ({ ...props }: any) => <Input {...props} className="" />;
+const AdminInput = ({ ...props }: any) => (
+  <Input
+    {...props}
+    className="h-8 w-full rounded-lg border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
+  />
+);
 
 const AdminSelect = ({ options, placeholder = "Select", ...props }: any) => (
-  <select {...props} className="h-8 w-full rounded-lg border border-white/10">
+  <select
+    {...props}
+    className="h-8 w-full rounded-lg border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
+  >
     <option value="" disabled>
       {placeholder}
     </option>
@@ -345,7 +353,7 @@ const StickySave = ({
   loading: boolean;
   updateUser: () => void;
 }) => (
-  <div className="fixed bottom-0 left-0 w-full bg-[#0b0f19]/90 backdrop-blur border-t border-white/10 p-4 flex justify-center">
+  <div className="fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur border-t border-border p-4 flex justify-center">
     <Button
       size="lg"
       onClick={updateUser}
