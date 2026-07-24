@@ -163,7 +163,7 @@ const PaymentTransferDetail = () => {
 
   return (
     <main>
-      <div className="border-b border-white/10 bg-white/2">
+      <div className="border-b border-white/10 ">
         <div className="mb-5">
           <h2 className="text-2xl font-bold tracking-tight text-foreground">
             Payment Transfer List

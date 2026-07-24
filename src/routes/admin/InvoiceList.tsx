@@ -143,7 +143,7 @@ const InvoiceList = () => {
         </div>
 
         <div className="border-b border-white/10 bg-white/2 ">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 p-5">
             {/* MEMBER ID */}
             <div className="space-y-2">
               <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
@@ -222,7 +222,7 @@ const InvoiceList = () => {
       </div>
 
       {/* SALES LIST */}
-      <div className="overflow-x-auto my-10">
+      <div className="overflow-x-auto mb-10">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -306,7 +306,7 @@ const InvoiceList = () => {
                   </td>
 
                   {/* MEMBER ID */}
-                  <td className="px-6 py-5 text-sm font-medium text-yellow-400 uppercase">
+                  <td className="px-6 py-5 text-sm font-medium text-primary uppercase">
                     {user.memberId || "-"}
                   </td>
 
@@ -365,7 +365,7 @@ const InvoiceList = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold text-accent-foreground">
               No Invoices Found
             </h3>
 
@@ -375,6 +375,7 @@ const InvoiceList = () => {
           </div>
         )}
 
+      </div>
         <Pagination className="mt-6">
           <PaginationContent>
             <PaginationItem>
@@ -417,7 +418,6 @@ const InvoiceList = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-      </div>
     </main>
   );
 };

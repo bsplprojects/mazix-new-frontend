@@ -22,37 +22,22 @@ dagreGraph.setGraph({
   ranksep: 180,
 });
 
-const nodeStyle = {
-  background: "transparent",
-  filter: "drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))",
+const nodeStyle: React.CSSProperties = {
+  background: "var(--color-card)",
+  color: "var(--color-foreground)",
 
-  color: "#F4D06F",
-
-  border: "1px solid rgba(244,208,111,0.22)",
-  borderTop: "2px solid rgba(244,208,111,0.75)",
-
-  borderRadius: "20px",
+  border: "1px solid var(--color-border)",
+  borderRadius: "14px",
 
   minWidth: "250px",
   padding: "14px 18px",
 
-  fontSize: "18px",
-  fontWeight: "600",
-  letterSpacing: "0.3px",
+  fontSize: "17px",
+  fontWeight: 600,
 
-  textAlign: "center",
+  boxShadow: "var(--shadow-card)",
 
-  boxShadow: `
-    0 12px 30px rgba(0,0,0,0.45),
-    0 4px 12px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.05),
-    inset 0 0 20px rgba(244,208,111,0.04)
-  `,
-
-  backdropFilter: "blur(10px)",
-
-  transition: "all 0.25s ease",
-
+  transition: ".2s ease",
   cursor: "pointer",
 };
 
@@ -257,19 +242,24 @@ const Tree = () => {
         },
         style: {
           ...nodeStyle,
+
           background:
-            "linear-gradient(180deg, #FFE08A 0%, #FFBF00 55%, #D99A00 100%)",
-          color: "#000",
-          border: "2px solid #FFF3C2",
-          borderRadius: "22px",
+            "linear-gradient(135deg, #f8d56b 0%, #d4a017 50%, #9c6b00 100%)",
+
+          color: "#1a1a1a",
+
+          border: "1px solid rgba(255,255,255,0.35)",
+
+          borderRadius: "18px",
+
           boxShadow: `
-          0 20px 50px rgba(255,191,0,0.45),
-          0 8px 20px rgba(0,0,0,0.3),
-          inset 0 2px 0 rgba(255,255,255,0.8)
-        `,
-          fontWeight: "800",
-          letterSpacing: "0.5px",
-          fontSize: "22px",
+    0 10px 30px rgba(212,160,23,.35),
+    inset 0 1px 0 rgba(255,255,255,.45)
+  `,
+
+          fontWeight: 800,
+          letterSpacing: "0.4px",
+          fontSize: "24px",
         },
         position: { x: 0, y: 0 },
       },
@@ -289,7 +279,12 @@ const Tree = () => {
                     onClick={() => handleMemberClick(member.id)}
                     className="flex items-center flex-col gap-3 p-2"
                   >
-                    {`${member.name}\n${member.id}`}
+                    <span className="font-bold text-xl">{member.name}</span>
+                    <span
+                      className={` ${memberId === member.id ? "text-white" : "text-primary"} font-medium`}
+                    >
+                      {member.id}
+                    </span>
                   </div>
                 </HoverCardTrigger>
 
@@ -304,8 +299,26 @@ const Tree = () => {
         // I want the node which is selected to get highlighted
         style: {
           ...nodeStyle,
-          background: memberId === member.id ? "#D99A00" : "transparent",
-          color: memberId === member.id ? "#FFF3C2" : "#F4D06F",
+
+          background:
+            memberId === member.id
+              ? "var(--color-primary)"
+              : "var(--color-card)",
+
+          color:
+            memberId === member.id
+              ? "var(--color-primary-foreground)"
+              : "var(--color-foreground)",
+
+          border:
+            memberId === member.id
+              ? "2px solid var(--color-primary)"
+              : "1px solid var(--color-border)",
+
+          boxShadow:
+            memberId === member.id
+              ? "var(--shadow-glow)"
+              : "var(--shadow-card)",
         },
         position: { x: 0, y: 0 },
       });
@@ -400,7 +413,7 @@ const Tree = () => {
     >
       {isLoading || isRightLoading ? (
         <div className="flex items-start mt-36 justify-center h-full">
-          <div className="text-white flex items-center flex-col gap-2">
+          <div className="text-accent-foreground flex items-center flex-col gap-2">
             <Loader2 className="animate-spin w-14 h-14 " />
             Please wait while we're generating your tree. This may take a
             moment.

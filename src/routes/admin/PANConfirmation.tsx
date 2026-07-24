@@ -86,10 +86,10 @@ const PANConfirmation = () => {
   };
 
   const handleAllCheck = () => {
-    if (checkLists.length === data?.length) {
+    if (checkLists.length === records?.length) {
       setCheckLists([]);
     } else {
-      setCheckLists(data?.map((item: any) => item.MemberID));
+      setCheckLists(records?.map((item: any) => item.MemberID));
     }
   };
 

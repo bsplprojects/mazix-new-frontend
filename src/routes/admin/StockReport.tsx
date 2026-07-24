@@ -14,13 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { useDebounce } from "use-debounce";
 
 const PAGE_SIZE = 10;
@@ -37,9 +31,9 @@ const StockReport = () => {
     queryKey: [
       "stock-reports",
       page,
-      status,
-      fromDate,
-      toDate,
+      // status,
+      // fromDate,
+      // toDate,
       debouncedSearch,
     ],
     queryFn: async () => {
@@ -165,7 +159,7 @@ const StockReport = () => {
               />
             </div>
 
-            {/* STATUS */}
+            {/* STATUS
             <div>
               <label className="text-xs font-medium uppercase tracking-wider text-foreground">
                 Status
@@ -180,7 +174,7 @@ const StockReport = () => {
                   <SelectItem value="all">All</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
             {/* FROM DATE */}
             <div className="space-y-2">
@@ -304,11 +298,11 @@ const StockReport = () => {
                     {formatIST(user?.UpdatedAt) || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                  <td className="px-6 py-5 text-sm text-primary">
                     {user.openingStock || "0"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                  <td className="px-6 py-5 text-sm text-primary">
                     {user.stock || "0"}
                   </td>
 

@@ -54,6 +54,7 @@ const adminMain = [
     url: "/admin",
     icon: LayoutDashboard,
     exact: true,
+    end: true,
   },
 ];
 

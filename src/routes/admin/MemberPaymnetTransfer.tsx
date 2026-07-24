@@ -206,7 +206,7 @@ const MemberPaymentTransfer = () => {
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-col lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-white/10  lg:flex-col lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
@@ -225,7 +225,7 @@ const MemberPaymentTransfer = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 place-items-end">
+        <div className="grid grid-cols-1 gap-4 p-5  md:grid-cols-2 xl:grid-cols-5 place-items-end">
           {/*date */}
           <div className="space-y-2 w-full">
             <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">

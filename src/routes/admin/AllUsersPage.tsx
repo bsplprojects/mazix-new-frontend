@@ -106,10 +106,10 @@ export default function AllUsersPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/3 backdrop-blur-xl">
+      <div className="overflow-hidden rounded-3xl border dark:border-white/10 bg-white/3 backdrop-blur-xl">
         {/* TOP BAR */}
 
-        <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-col lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-4 border-b border-white/10  p-5 lg:flex-col lg:items-start lg:justify-between">
           <div>
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/50 text-white shadow-lg">
@@ -132,7 +132,7 @@ export default function AllUsersPage() {
             </div>
           </div>
 
-          <div className="border-b border-white/10 bg-white/2">
+          <div className="border-b border-white/10  bg-white/2">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 p-5">
               {/* MEMBER ID */}
               <div className="space-y-2">
@@ -141,7 +141,7 @@ export default function AllUsersPage() {
                 </label>
 
                 <div className="relative">
-                  <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-yellow-500" />
+                  <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
 
                   <Input
                     placeholder="RMG1001"
@@ -233,7 +233,7 @@ export default function AllUsersPage() {
             </div>
           ) : (
             <table className="w-full min-w-250">
-              <thead className="border-b border-white/10 bg-white/3">
+              <thead className="border-b border-border bg-muted/40 text-nowrap">
                 <tr className="text-left text-nowrap">
                   {/* TABLE HEADER */}
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">

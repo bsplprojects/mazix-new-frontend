@@ -5,6 +5,7 @@ import { ToWords } from "to-words";
 import { Loader2 } from "lucide-react";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import logo from "/meghdoot_logo-original.png";
 
 const converter = new ToWords({
   localeCode: "hi-IN",
@@ -25,8 +26,6 @@ const StockInvoice = () => {
       return res.data;
     },
   });
-
-  console.log(receipt);
 
   if (isLoading)
     return (
@@ -128,10 +127,10 @@ const StockInvoice = () => {
               }}
             >
               <img
-                src="https://new.mazix.co.in/assets/img/logo_m.png"
+                src={logo}
                 alt="meghdoot"
                 style={{
-                  height: "70px",
+                  height: "60px",
                 }}
               />
               <h4

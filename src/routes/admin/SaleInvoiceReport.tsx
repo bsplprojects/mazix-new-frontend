@@ -122,7 +122,7 @@ const SaleInvoiceReport = () => {
 
   return (
     <main>
-      <div className="flex flex-col gap-4  border-white/10 p-5 lg:flex-col lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4  border-white/10  lg:flex-col lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
@@ -141,7 +141,7 @@ const SaleInvoiceReport = () => {
           </div>
         </div>
 
-        <div className="border-b border-white/10 bg-white/2">
+        <div className="border-b border-white/10 bg-white/2 p-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* MEMBER ID */}
             <div className="space-y-2">
