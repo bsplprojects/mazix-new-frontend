@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
-import { Download, Loader2, Users } from "lucide-react";
+import { Download, Loader2, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import { StatCard } from "@/components/dashboard-ui";
 
 const AdminRepWalletTransferReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -30,6 +31,8 @@ const AdminRepWalletTransferReport = () => {
     enabled: false,
   });
 
+  const totalSend = data?.totalSend ?? 0;
+  const totalReceived = data?.totalReceived ?? 0;
   const reports = data?.data || [];
 
   const handleExcel = async () => {
@@ -149,6 +152,22 @@ const AdminRepWalletTransferReport = () => {
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 w-3/4">
+          <StatCard
+            label="Total Sent"
+            value={totalSend}
+            tone="emerald"
+            icon={<Wallet className="h-4 w-4" />}
+          />
+
+          <StatCard
+            label="Total Received"
+            value={totalReceived}
+            tone="brass"
+            icon={<Wallet className="h-4 w-4" />}
+          />
         </div>
 
         <div className="border-b border-white/10 bg-white/2 p-5">

@@ -116,7 +116,7 @@ const JoiningWalletTransfer = () => {
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-col lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-col lg:items-start lg:justify-between">
         <div>
           <div className="flex items-center gap-3">
             <div>
@@ -216,7 +216,7 @@ const JoiningWalletTransfer = () => {
           </Button>
         </div>
 
-        <div className=" bg-white/2">
+        <div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* FROM DATE */}
             <div className="space-y-2">
@@ -284,10 +284,10 @@ const JoiningWalletTransfer = () => {
       </div>
 
       {/* SALES LIST */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto my-10">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-400" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
           <table className="w-full min-w-250">
