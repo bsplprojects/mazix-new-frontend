@@ -38,15 +38,15 @@ const RewardReport = () => {
 
   const [ids, setIds] = useState<string[]>([]);
 
-  const { data, refetch, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: [
       "reward-reports",
       page,
-      // Designation,
-      // fromDate,
-      // toDate,
-      // memberId,
       rowsPerPage,
+      Designation,
+      fromDate,
+      toDate,
+      memberId,
     ],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/reward", {
@@ -55,14 +55,13 @@ const RewardReport = () => {
           FromDate: fromDate,
           MemberId: memberId,
           Todate: toDate,
-          all: "",
           page,
           pageSize: rowsPerPage !== "all" ? +rowsPerPage : "all",
         },
       });
+
       return data;
     },
-    enabled: false,
   });
 
   const reports = data?.data || [];
@@ -225,8 +224,6 @@ const RewardReport = () => {
 
     const year = new Date(report.ModifyDate).getFullYear();
 
-
-
     return year >= Number(startYear) && year <= Number(endYear);
   });
 
@@ -360,23 +357,9 @@ const RewardReport = () => {
 
           {/* BUTTONS */}
           <div className="flex items-end gap-2 my-4">
-            <Button
-              onClick={() => {
-                setPage(1);
-                refetch();
-              }}
-              disabled={isFetching}
-            >
-              {isFetching ? "Loading..." : "Search"}
-            </Button>
+            <Button onClick={() => setPage(1)}>Search</Button>
 
-            <Button
-              onClick={() => {
-                setPage(1);
-                refetch();
-              }}
-              disabled={isFetching}
-            >
+            <Button onClick={() => setPage(1)} disabled={isFetching}>
               {isFetching ? "Loading..." : "All Filtered"}
             </Button>
 

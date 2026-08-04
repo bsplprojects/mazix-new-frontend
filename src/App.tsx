@@ -13,6 +13,8 @@ import StockInvoice from "./routes/admin/StockInvoice";
 import StockReport from "./routes/admin/StockReport";
 import AdminLeftTeam from "./routes/admin/AdminLeftTeam";
 import AdminRightTeam from "./routes/admin/AdminRightTeam";
+import PayoutReport from "./routes/admin/PayoutReport";
+import Offer from "./routes/admin/Offer";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -217,6 +219,10 @@ export default function App() {
               path="/admin/repurchase-report"
               element={<RepurchaseReport />}
             />
+
+            <Route path="/admin/payout-report" element={<PayoutReport />} />
+            <Route path="/admin/offers/new" element={<Offer />} />
+
             <Route
               path="/admin/rep-wallet-transfer-report"
               element={<AdminRepWalletTransferReport />}

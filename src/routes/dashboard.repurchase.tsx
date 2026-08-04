@@ -12,12 +12,7 @@ import { PageHeader } from "@/components/dashboard-ui";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  cartStore,
-  useCart,
-  cartTotals,
-  type OrderType,
-} from "@/lib/cart-store";
+import { cartStore, useCart } from "@/lib/cart-store";
 
 import { useRepurchase } from "@/hooks/useRepurchase";
 import Loader from "@/components/Loader";
@@ -25,16 +20,16 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/config/axios";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+
+import type { Product } from "./dashboard.UserInfo";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 import { AxiosError } from "axios";
 
 // fDate and tDate be 1 month
@@ -43,10 +38,12 @@ const tDate = new Date();
 
 export default function Repurchase() {
   const state = useCart();
+
   const [selectedWallet, setSelectedWallet] = useState<
     "Repurchase" | "Voucher"
   >("Repurchase");
-
+  const [cart, setCart] = useState<Product[]>([]);
+  const mid = sessionStorage.getItem("MID");
   const memberId = sessionStorage.getItem("memberID");
   const [search, setSearch] = useState("");
 
@@ -80,9 +77,123 @@ export default function Repurchase() {
     limit: 5,
   });
 
-  const quickAdd = (p: any) => {
-    cartStore.add("repurchase", p);
-    toast.success(`${p?.name} added to cart`);
+  const addToCart = (product: Product) => {
+    setCart((prev: Product[]) => {
+      const exist = prev.find((x: Product) => x.id === product.id);
+
+      if (exist) {
+        return prev.map((x: Product) =>
+          x.id === product.id
+            ? { ...x, qty: x.qty ? Number(x.qty) + 1 : 1 }
+            : x,
+        );
+      }
+
+      return [...prev, { ...product, qty: 1 }];
+    });
+
+    toast.success(`${product.name} added`);
+  };
+
+  const setQty = (id: string, qty: number) => {
+    if (qty <= 0) {
+      removeItem(id);
+      return;
+    }
+
+    setCart((prev: Product[]) =>
+      prev.map((x: Product) => (x.id === id ? { ...x, qty } : x)),
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setCart((prev) => prev.filter((x) => x.id !== id));
+  };
+
+  const totals = {
+    items: cart,
+    shipping: 0,
+    total: 0,
+    // GST INCLUDED PRICE
+    subtotal: cart.reduce(
+      (a, b) => a + (Number(b.price) || 0) * (Number(b.qty) || 0),
+      0,
+    ),
+
+    bvTotal: cart.reduce(
+      (a, b) => a + (Number(b.bv) || 0) * (Number(b.qty) || 0),
+      0,
+    ),
+
+    gst: cart.reduce((a, b) => {
+      const price = Number(b.price) || 0;
+      const qty = Number(b.qty) || 0;
+      const gstRate = Number(b.gst) || 0;
+
+      const gstAmount = (price * gstRate) / 100;
+
+      return a + gstAmount * qty;
+    }, 0),
+  };
+
+  totals.shipping = 0;
+  totals.total = totals.subtotal;
+
+  const mutation = useMutation({
+    mutationFn: async (mappedItems: Items[]) => {
+      const res = await axiosInstance.post(
+        `/repurchase/insert-rep?memberID=${memberId}&mid=${mid}`,
+        {
+          kotbills: mappedItems,
+        },
+      );
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success(data?.message);
+      cartStore.clear("repurchase");
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+
+    if (selectedWallet === "Repurchase") {
+      if (Number(walletAmount?.Repurchase) < Number(totals.total)) {
+        toast.error("Insufficient wallet balance");
+        return;
+      }
+    }
+
+    if (selectedWallet === "Voucher") {
+      if (Number(walletAmount?.Voucher) < Number(totals.total)) {
+        toast.error("Insufficient wallet balance");
+        return;
+      }
+    }
+
+    const mappedItems = cart.map((c) => ({
+      BV: String(c.bv),
+      Flag: selectedWallet,
+      MRP: String(c.price),
+      NetAmount: String(Number(c.bv) * Number(c.qty)),
+      Qty: String(c.qty),
+      TotalAmount: String(Number(c.price) * Number(c.qty)),
+      pCatID: String(c.catId),
+      pID: String(c.id),
+    }));
+
+    mutation.mutate(mappedItems);
   };
 
   return (
@@ -191,7 +302,7 @@ export default function Repurchase() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => quickAdd(p)}
+                        onClick={() => addToCart(p)}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -270,219 +381,132 @@ export default function Repurchase() {
         </div>
 
         {/* RIGHT CART SUMMARY */}
-        <CartSummary
-          kind="repurchase"
-          products={products}
-          walletAmount={walletAmount}
-          selectedWallet={selectedWallet}
-          setSelectedWallet={setSelectedWallet}
-        />
-      </div>
-    </div>
-  );
-}
-
-function CartSummary({
-  kind,
-  products,
-  selectedWallet,
-  walletAmount,
-  setSelectedWallet,
-}: {
-  kind: OrderType;
-  products: any[];
-  selectedWallet: "Repurchase" | "Voucher";
-  walletAmount: {
-    Repurchase: number;
-    Voucher: number;
-  };
-  setSelectedWallet: (w: "Repurchase" | "Voucher") => void;
-}) {
-  type Items = {
-    BV: string;
-    Flag: "Voucher" | "Repurchase";
-    MRP: string;
-    NetAmount: string;
-    Qty: string;
-    TotalAmount: string;
-    pCatID: string;
-    pID: string;
-  };
-
-  const state = useCart();
-  const cart = state[kind].cart;
-  const totals = cartTotals(cart, products);
-  const memberID = sessionStorage.getItem("memberID");
-  const mid = sessionStorage.getItem("MID");
-
-  const mutation = useMutation({
-    mutationFn: async (mappedItems: Items[]) => {
-      const res = await axiosInstance.post(
-        `/repurchase/insert-rep?memberID=${memberID}&mid=${mid}`,
-        {
-          kotbills: mappedItems,
-        },
-      );
-      return res.data;
-    },
-    onSuccess: (data) => {
-      toast.success(data?.message);
-      cartStore.clear(kind);
-    },
-    onError: (err) => {
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data?.message);
-      } else {
-        toast.error("Something went wrong");
-      }
-    },
-  });
-
-  const handleCheckout = () => {
-    if (cart.length === 0) {
-      toast.error("Cart is empty");
-      return;
-    }
-
-    const mappedItems = cart.map((c) => ({
-      BV: String(c.bv),
-      Flag: selectedWallet,
-      MRP: String(c.price),
-      NetAmount: String(Number(c.bv) * Number(c.qty)),
-      Qty: String(c.qty),
-      TotalAmount: String(Number(c.price) * Number(c.qty)),
-      pCatID: String(c.catId),
-      pID: String(c.productId),
-    }));
-
-    // console.log(mappedItems);
-
-    mutation.mutate(mappedItems);
-  };
-
-  return (
-    <div className="rounded-2xl bg-gradient-card border p-6 shadow-card h-fit lg:sticky lg:top-20">
-      <div className="flex justify-between mb-4">
-        <h3 className="font-display text-lg">Cart</h3>
-
-        <Badge variant="outline">
-          {cart.length} item{cart.length !== 1 && "s"}
-        </Badge>
-      </div>
-
-      {cart.length === 0 ? (
-        <div className="text-center text-sm text-muted-foreground py-10">
-          <ShoppingCart className="h-10 w-10 mx-auto mb-3 opacity-30" />
-          Cart empty
-        </div>
-      ) : (
-        <>
-          <div className="space-y-3 max-h-72 overflow-auto">
-            {totals.items.map((i) => (
-              <div
-                key={i.id}
-                className="flex items-center gap-3 p-2 rounded-lg bg-secondary/30"
-              >
-                <div className="text-2xl">
-                  {i?.image ? (
-                    <img
-                      src={`https://app.mymazix.com/${i?.image?.split("../../")[1]}`}
-                      alt={i?.name}
-                      width={50}
-                    />
-                  ) : (
-                    <ShoppingCartIcon className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{i.name}</div>
-
-                  <div className="text-xs">
-                    ₹{i?.price?.toLocaleString("en-IN")} × {i.qty}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => cartStore.remove(kind, i.id)}
-                  className="text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
+        <div className="rounded-2xl bg-gradient-card border p-6 shadow-card h-fit lg:sticky lg:top-20">
+          {/* ================= HEADER ================= */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-lg">Cart</h3>
+            <Badge variant="outline">
+              {cart.length} item{cart.length !== 1 ? "s" : ""}
+            </Badge>
           </div>
 
-          <div className="space-y-2 mt-4 border-t pt-4">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span className="font-semibold">
-                ₹{totals.subtotal.toLocaleString("en-IN")}
-              </span>
+          {cart.length === 0 ? (
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              <ShoppingCart className="h-10 w-10 mx-auto mb-3 opacity-30" />
+              Your cart is empty
             </div>
-            <div className="flex justify-between">
-              <span>GST</span>
-              <span className="font-semibold">
-                ₹{totals.gst.toLocaleString("en-IN")}
-              </span>
-            </div>
-            {/* <div className="flex justify-between">
-              <span>Shipping</span>
-              <span className="font-semibold">
-                ₹{totals.shipping.toLocaleString("en-IN")}
-              </span>
-            </div> */}
+          ) : (
+            <>
+              <div className="space-y-3 max-h-72 overflow-auto pr-1">
+                {totals.items.map((i) => (
+                  <div
+                    key={i.id}
+                    className="flex items-center gap-3 p-2 rounded-lg bg-secondary/30"
+                  >
+                    <div className="text-2xl">{"📦"}</div>
 
-            <div className="flex justify-between text-primary">
-              <span>Total</span>
-              <span className="font-semibold">
-                ₹{totals.total.toLocaleString("en-IN")}
-              </span>
-            </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {i.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground font-mono">
+                        ₹{i.price.toLocaleString("en-IN")} × {i.qty}
+                      </div>
+                      <div className="flex items-center gap-1 mt-1.5">
+                        <div className="flex items-center gap-0.5 rounded-md border border-border p-0.5">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-5 w-5"
+                            onClick={() => setQty(i.id, Number(i.qty) - 1)}
+                          >
+                            <Minus className="h-2.5 w-2.5" />
+                          </Button>
+                          <span className="w-5 text-center text-[11px] font-mono">
+                            {i.qty}
+                          </span>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-5 w-5"
+                            onClick={() => setQty(i.id, Number(i.qty) + 1)}
+                          >
+                            <Plus className="h-2.5 w-2.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => removeItem(i.id)}
+                      className="text-muted-foreground hover:text-destructive transition-smooth self-start"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-            <Separator />
-
-            <Select value={selectedWallet} onValueChange={setSelectedWallet}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Wallet" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Wallet</SelectLabel>
+              <Label className="mt-5 pl-2 mb-1">Select Wallet</Label>
+              <Select value={selectedWallet} onValueChange={setSelectedWallet}>
+                <SelectTrigger className="w-full ">
+                  <SelectValue placeholder="Select a Wallet" />
+                </SelectTrigger>
+                <SelectContent>
                   <SelectItem value="Repurchase">Repurchase</SelectItem>
                   <SelectItem value="Voucher">Voucher</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                </SelectContent>
+              </Select>
 
-            {walletAmount?.Repurchase > 0 && (
-              <div className="flex justify-between text-yellow-500 text-sm">
-                <span>Repurchase Wallet</span>
-                <span className="font-semibold">
-                  ₹{walletAmount?.Repurchase?.toLocaleString("en-IN")}
-                </span>
+              <div className="flex items-center gap-2 justify-between text-sx text-primary border mt-3 p-1 rounded-full px-4">
+                <h2>
+                  {selectedWallet === "Repurchase"
+                    ? "Repurchase"
+                    : "Voucher"}{" "}
+                </h2>
+                <p>
+                  {selectedWallet === "Repurchase"
+                    ? walletAmount?.Repurchase
+                    : walletAmount?.Voucher}
+                </p>
               </div>
-            )}
 
-            {walletAmount?.Voucher > 0 && (
-              <div className="flex justify-between text-yellow-500 text-sm">
-                <span>Voucher Wallet</span>
-                <span className="font-semibold">
-                  ₹{walletAmount?.Voucher?.toLocaleString("en-IN")}
-                </span>
+              {/* TOTALS */}
+              <div className="space-y-2 text-sm mt-4 pt-4 border-t">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>₹{totals.subtotal.toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>GST</span>
+                  <span>₹{totals.gst.toLocaleString("en-IN")}</span>
+                </div>
+
+                {/* <div className="flex justify-between">
+                  <span>Shipping</span>
+                  <span>
+                    {totals.shipping === 0 ? "Free" : `₹${totals.shipping}`}
+                  </span>
+                </div> */}
+
+                <div className="flex justify-between">
+                  <span>BV Credit</span>
+                  <span className="text-primary">{totals.bvTotal} BV</span>
+                </div>
+
+                <div className="flex justify-between font-semibold text-base border-t pt-2">
+                  <span>Total</span>
+                  <span>₹{totals.total.toLocaleString("en-IN")}</span>
+                </div>
               </div>
-            )}
-          </div>
 
-          <Button
-            onClick={handleCheckout}
-            className="w-full mt-5 bg-gradient-emerald"
-          >
-            Purchase
-          </Button>
-        </>
-      )}
+              <Button onClick={handleCheckout} className="w-full mt-4">
+                Purchase
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

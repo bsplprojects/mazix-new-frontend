@@ -27,7 +27,7 @@ const RepurchaseVoucher = () => {
     enabled: false,
   });
 
-  const reports = data?.data || [];
+  const reports = data || [];
 
   const handleExcel = async () => {
     if (!reports?.length) {

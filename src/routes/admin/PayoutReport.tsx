@@ -4,24 +4,27 @@ import { axiosInstance } from "@/config/axios";
 import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
-import ExcelJS from "exceljs";
-import { useNavigate } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
-const RepurchaseReport = () => {
+const PAGE_SIZE = 10;
+
+const PayoutReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
-  const navigate = useNavigate("");
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["repurchase-reports"],
+    queryKey: ["sale-reports"],
     queryFn: async () => {
-      const { data } = await axiosInstance.get("/reports/repurchase", {
+      const { data } = await axiosInstance.get("/reports/payout", {
         params: {
           FromDate: fromDate,
           MemberId: memberId,
           Todate: toDate,
+          page,
+          pageSize: PAGE_SIZE,
         },
       });
       return data;
@@ -31,125 +34,72 @@ const RepurchaseReport = () => {
 
   const reports = data?.data || [];
 
-  const handleExcel = async () => {
-    if (!reports?.length) {
-      alert("No data available");
+  const handleExcel = () => {
+    if (!reports || reports.length === 0) {
+      alert("No data found");
       return;
     }
-
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Member Report");
-
-    worksheet.columns = [
-      { header: "Sr.", key: "sr", width: 8 },
-      { header: "Order No", key: "orderNo", width: 15 },
-      { header: "Order Date", key: "orderDate", width: 18 },
-      { header: "Member ID", key: "memberId", width: 30 },
-      { header: "Total Amount", key: "totalAmount", width: 18 },
-      { header: "CGST", key: "CGST", width: 18 },
-      { header: "SGST", key: "SGST", width: 18 },
-      { header: "IGST", key: "IGST", width: 18 },
-      { header: "Total BV", key: "totalBV", width: 18 },
-      { header: "Wallet", key: "wallet", width: 12 },
+    const excelData = reports.map((user: any, index: number) => ({
+      "Sr.": index + 1,
+      DOJ: user?.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
+      "Member ID": user?.MemberID ?? "-",
+      Member: user?.MemberName ?? "-",
+      "Contact No.": user?.ContactNo ?? "-",
+      "Sponsor ID": user?.SponserID ?? "-",
+      "Placement ID": user?.PlacementID ?? "-",
+      Leaf: user?.Leaf ?? "-",
+      State: user?.StateName ?? "-",
+      District: user?.CityName ?? "-",
+      BV: user?.BV ?? "-",
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    worksheet["!cols"] = [
+      { wch: 6 }, // Sr
+      { wch: 15 }, // DOJ
+      { wch: 18 }, // Member ID
+      { wch: 30 }, // Member
+      { wch: 18 }, // Contact
+      { wch: 18 }, // Sponsor ID
+      { wch: 18 }, // Placement ID
+      { wch: 10 }, // Leaf
+      { wch: 20 }, // State
+      { wch: 20 }, // District
+      { wch: 10 }, // BV
     ];
 
-    // Header Style
-    const header = worksheet.getRow(1);
+    const workbook = XLSX.utils.book_new();
 
-    header.font = {
-      bold: true,
-      color: { argb: "FFFFFFFF" },
-    };
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sale Report");
 
-    header.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "1E40AF" },
-    };
-
-    header.alignment = {
-      vertical: "middle",
-      horizontal: "center",
-    };
-
-    // Data
-    reports.forEach((user: any, index: number) => {
-      worksheet.addRow({
-        sr: index + 1,
-        orderNo: user.OrderNo,
-        orderDate: user.OrderDate
-          ? new Date(user.OrderDate).toLocaleDateString()
-          : "-",
-        memberId: user.MemberID || "-",
-        totalAmount: user.TotalAmount || "-",
-        CGST: user.TotalGST / 2 || "-",
-        SGST: user.TotalGST / 2 || "-",
-        IGST: 0,
-        totalBV: user.TotalBV || "-",
-        wallet: user.OrderStatus === "RPO" ? "Repurchase" : "Voucher",
-      });
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
     });
 
-    // Styling
-    worksheet.eachRow((row, rowNumber) => {
-      row.height = 22;
-
-      row.eachCell((cell) => {
-        cell.border = {
-          top: { style: "thin" },
-          bottom: { style: "thin" },
-          left: { style: "thin" },
-          right: { style: "thin" },
-        };
-
-        cell.alignment = {
-          vertical: "middle",
-          horizontal: rowNumber === 1 ? "center" : "left",
-        };
-      });
-    });
-
-    // Freeze Header
-    worksheet.views = [
-      {
-        state: "frozen",
-        ySplit: 1,
-      },
-    ];
-
-    // Download
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    const blob = new Blob([buffer], {
+    const blob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Repurchase_report_${
-      new Date().toISOString().split("T")[0]
-    }.xlsx`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
+    saveAs(blob, `Sale_Report_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 lg:flex-col  lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-white/10 lg:flex-col lg:items-start lg:justify-between">
         <div>
+
+          <div className="flex text-sm p-2 bg-amber-500/10 text-amber-500 items-center gap-1 mb-4">
+            <span className="font-semibold">Note:</span>
+            <p> This report is still under development.</p>
+          </div>
+
           <div className="flex items-center gap-3">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                Repurchase List
+                Payout Report
               </h2>
 
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-accent-foreground">
                 Showing{" "}
                 <span className="font-semibold text-primary">
                   {reports.length}
@@ -158,18 +108,19 @@ const RepurchaseReport = () => {
               </p>
             </div>
           </div>
+          
         </div>
 
         <div className="border-b border-white/10 bg-white/2 p-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             {/* MEMBER ID */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Member ID
               </label>
 
               <div className="relative">
-                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-accent-foreground" />
 
                 <Input
                   placeholder="RMG1001"
@@ -178,7 +129,7 @@ const RepurchaseReport = () => {
                   className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* FROM DATE */}
             <div className="space-y-2">
@@ -239,11 +190,11 @@ const RepurchaseReport = () => {
         </div>
       </div>
 
-      {/* SALES LIST */}
+      {/* Payout LIST */}
       <div className="overflow-x-auto">
         {isFetching ? (
           <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <Loader2 className="h-10 w-10 animate-spin text-accent-foreground" />
           </div>
         ) : (
           <table className="w-full min-w-250">
@@ -254,91 +205,105 @@ const RepurchaseReport = () => {
                   Sr.
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  DOJ
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Member ID
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Order No
+                  Member
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Order Date
+                  Contact No.
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Total Amount
+                  Sponsor ID
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  SGST
+                  Placement ID
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  CGST
+                  Leaf
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  IGST
+                  State
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Total BV
+                  District
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Wallet
+                  BV
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5 text-xs">
+            <tbody className="divide-y divide-white/5">
               {reports?.map((user: any, index: number) => (
                 <tr
                   key={index}
-                  className="transition hover:bg-white/3 text-nowrap "
+                  className="transition hover:bg-white/3 text-nowrap"
                 >
                   {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-muted-foreground">
+                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
                     {index + 1}
                   </td>
+                  {/* DATE */}
 
-                  <td className="px-6 py-5 text-sm font-semibold text-muted-foreground">
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {new Date(user.DOJ).toLocaleDateString()}
+                  </td>
+
+                  {/* MEMBER ID */}
+
+                  <td className="px-6 py-5 text-sm font-medium text-accent-foreground">
                     {user.MemberID || "-"}
                   </td>
 
-                  {/* CUSTOMER NAME */}
-                  <td className="px-6 py-5 text-sm font-medium text-primary">
-                    {user.OrderNo || "-"}
+                  {/* MEMBER */}
+
+                  <td className="px-6 py-5 text-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="text-primary font-medium">
+                        {user.MemberName || "-"}
+                      </div>
+                    </div>
                   </td>
 
-                  {/* PHONE */}
-                  <td className="px-6 py-5 text-sm text-muted-foreground ">
-                    {new Date(user.OrderDate).toLocaleDateString("en-IN") ||
-                      "-"}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.ContactNo || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-muted-foreground">
-                    {user.TotalAmount || "-"}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.SponserID || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-muted-foreground">
-                    {user.TotalGST / 2 || "-"}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.PlacementID || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-muted-foreground">
-                    {user.TotalGST / 2 || "-"}
+                  <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
+                    {user.Leaf === "Left" ? "ORG 1" : "ORG 2"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-muted-foreground">
-                    {0}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.StateName || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-muted-foreground">
-                    {user.TotalBV || "-"}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.CityName || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-muted-foreground">
-                    {user.OrderStatus === "RPO" ? "Repurchase" : "Voucher"}
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.BV || "-"}
                   </td>
                 </tr>
               ))}
@@ -350,11 +315,11 @@ const RepurchaseReport = () => {
           <div className="py-20 text-center">
             <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-accent-foreground">
-              No Repurchase Records Found
+            <h3 className="text-xl font-semibold text-white">
+              No Payout Found
             </h3>
 
-            <p className="mt-2 text-sm text-accent-foreground">
+            <p className="mt-2 text-sm text-zinc-500">
               Try searching with another keyword or dates.
             </p>
           </div>
@@ -364,4 +329,4 @@ const RepurchaseReport = () => {
   );
 };
 
-export default RepurchaseReport;
+export default PayoutReport;

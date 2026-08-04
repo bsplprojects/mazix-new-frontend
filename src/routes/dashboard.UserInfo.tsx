@@ -15,7 +15,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-interface Product {
+export interface Product {
   MRP: number | string;
   bv: number | string;
   catId: string;

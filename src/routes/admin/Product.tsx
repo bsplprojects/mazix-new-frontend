@@ -668,7 +668,9 @@ const Product = () => {
                     </td>
 
                     <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.Repurchase === "1" ? "Yes" : "No"}
+                      {user.Repurchase === "1" || user.Repurchase === "Yes"
+                        ? "Yes"
+                        : "No"}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-accent-foreground">

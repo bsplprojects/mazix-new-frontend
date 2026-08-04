@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import * as joiningApi from "@/services/joiningApi";
+import OfferPopup from "@/components/OfferPopup";
 
 export default function DashboardHome() {
   const mid = sessionStorage.getItem("MID");
@@ -153,6 +154,8 @@ export default function DashboardHome() {
           </TableBody>
         </Table>
       </div>
+
+      <OfferPopup />
     </div>
   );
 }

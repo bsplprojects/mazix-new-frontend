@@ -30,6 +30,8 @@ import {
   Receipt,
   User,
   Users2,
+  FileChartColumnIcon,
+  GiftIcon,
 } from "lucide-react";
 
 import {
@@ -102,6 +104,14 @@ const setup = [
   },
 ];
 
+const offers = [
+  {
+    title: "Offers",
+    url: "/admin/offers/new",
+    icon: GiftIcon,
+  },
+];
+
 const finance = [
   {
     title: "Joining Wallet Transfer",
@@ -121,6 +131,11 @@ const finance = [
 ];
 
 const reports = [
+  {
+    title: "Payout Report",
+    url: "/admin/payout-report",
+    icon: FileChartColumnIcon,
+  },
   {
     title: "Transferred Payments",
     url: "/admin/transfer-payment",
@@ -275,6 +290,8 @@ export function AdminSidebar() {
           items={userManagement}
           current={current}
         />
+
+        <MenuSection label="Offers" items={offers} current={current} />
 
         <MenuSection label="Token" items={tokens} current={current} />
 

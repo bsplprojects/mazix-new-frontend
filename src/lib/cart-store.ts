@@ -163,37 +163,46 @@ export const cartStore = {
     const ch = state[type];
     const items = ch.cart.map((c) => {
       const p = products.find((x) => x.id === c.productId)!;
+
+      const itemTotal = p.price * c.qty;
+
+      const basePrice = itemTotal / (1 + p.gst / 100);
+      const gstAmount = itemTotal - basePrice;
+
       return {
         productId: p.id,
         name: p.name,
         qty: c.qty,
         price: p.price,
         bv: p.bv,
+        gst: p.gst,
+        gstAmount: Math.round(gstAmount),
+        basePrice: Math.round(basePrice),
       };
     });
     const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-    const gst = Math.round(subtotal * 0.18);
+    const gst = items.reduce((s, i) => s + i.gstAmount, 0);
     const shipping = subtotal >= 5000 ? 0 : 99;
     const bvTotal = items.reduce((s, i) => s + i.bv * i.qty, 0);
-    const total = subtotal + gst + shipping;
-    const order: Order = {
-      id: `ORD-${Math.floor(100000 + Math.random() * 899999)}`,
-      type,
-      date: new Date().toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
-      items,
-      subtotal,
-      gst,
-      shipping,
-      total,
-      bvTotal,
-      payment: ch.payment,
-      address: { ...ch.address },
-      status: "Confirmed",
-    };
+    const total = subtotal + shipping;
+   const order: Order = {
+     id: `ORD-${Math.floor(100000 + Math.random() * 899999)}`,
+     type,
+     date: new Date().toLocaleDateString("en-IN", {
+       day: "2-digit",
+       month: "short",
+       year: "numeric",
+     }),
+     items,
+     subtotal,
+     gst,
+     shipping,
+     total,
+     bvTotal,
+     payment: ch.payment,
+     address: { ...ch.address },
+     status: "Confirmed",
+   };
     state.orders = [order, ...state.orders];
     ch.cart = [];
     emit();

@@ -44,7 +44,9 @@ export default function AdminDashboardHome() {
   const c = chart;
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-7 ">
+     
+
       <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-hero shadow-elegant p-6 lg:p-8">
         {/* Background Glow */}
         <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full bg-primary/15 blur-3xl" />

@@ -250,41 +250,45 @@ export default function RepurchaseWallet() {
             </div>
           </div>
         </div>
-        <table className="w-full text-sm">
-          <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40">
-            <tr>
-              <th className="text-left px-6 py-3">From Member ID</th>
-              <th className="text-left px-6 py-3">Member Name</th>
-              <th className="text-left px-6 py-3">Amount</th>
-              <th className="text-left px-6 py-3">Type</th>
-              <th className="text-right px-6 py-3">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {filteredHistory &&
-              filteredHistory.map((t: any, index: number) => (
-                <tr
-                  key={index}
-                  className="hover:bg-accent/30 transition-smooth"
-                >
-                  <td className="px-6 py-4 font-mono text-xs">
-                    {t.FromMemberID}
-                  </td>
-                  <td className="px-6 py-4">{t.MemberName}</td>
-                  <td className="px-6 py-4 text-muted-foreground">
-                    {t.Amount}
-                  </td>
-                  <td className="px-6 py-4 text-muted-foreground">{t.Flag}</td>
-
-                  <td
-                    className={`px-6 py-4 text-right font-display text-base `}
+        <div className="w-full overflow-x-auto">
+          <table className="w-full text-sm ">
+            <thead className="text-xs uppercase tracking-wider text-muted-foreground bg-secondary/40 text-nowrap">
+              <tr>
+                <th className="text-left px-6 py-3">From Member ID</th>
+                <th className="text-left px-6 py-3">Member Name</th>
+                <th className="text-left px-6 py-3">Amount</th>
+                <th className="text-left px-6 py-3">Type</th>
+                <th className="text-right px-6 py-3">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredHistory &&
+                filteredHistory.map((t: any, index: number) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-accent/30 transition-smooth"
                   >
-                    {new Date(t.Date).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+                    <td className="px-6 py-4 font-mono text-xs">
+                      {t.FromMemberID}
+                    </td>
+                    <td className="px-6 py-4 text-nowrap">{t.MemberName}</td>
+                    <td className="px-6 py-4 text-muted-foreground">
+                      {t.Amount}
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground">
+                      {t.Flag}
+                    </td>
+
+                    <td
+                      className={`px-6 py-4 text-right font-display  text-xs`}
+                    >
+                      {new Date(t.Date).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
