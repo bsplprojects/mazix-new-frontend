@@ -1,329 +1,252 @@
+import StatusModal from "@/components/StatusModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
-import { Download, Loader2, Users } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useState } from "react";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-
-const PAGE_SIZE = 10;
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const PayoutReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [page, setPage] = useState(1);
-
-  const { data, refetch, isFetching } = useQuery({
-    queryKey: ["sale-reports"],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get("/reports/payout", {
-        params: {
-          FromDate: fromDate,
-          MemberId: memberId,
-          Todate: toDate,
-          page,
-          pageSize: PAGE_SIZE,
-        },
-      });
-      return data;
-    },
-    enabled: false,
+  const [singleMember, setSingleMember] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [modal, setModal] = useState({
+    type: "",
+    message: "",
   });
 
-  const reports = data?.data || [];
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/reports/payout`, {
+        FromDate: fromDate,
+        MemberId: memberId,
+        Todate: toDate,
+      });
+      return res.data;
+    },
+    onMutate: () => {
+      setProgress(0);
 
-  const handleExcel = () => {
-    if (!reports || reports.length === 0) {
-      alert("No data found");
-      return;
+      let current = 0;
+
+      const interval = setInterval(() => {
+        current += Math.random() * 8;
+
+        if (current >= 95) {
+          current = 95;
+        }
+
+        setProgress(Math.floor(current));
+      }, 200);
+
+      window.progressInterval = interval;
+    },
+
+    onSuccess: () => {
+      setModal({
+        type: "success",
+        message: "Report generated successfully",
+      });
+      setFromDate("");
+      setToDate("");
+      setMemberId("");
+      clearInterval(window.progressInterval);
+
+      setProgress(100);
+
+      setTimeout(() => setProgress(0), 500);
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        setModal({
+          type: "error",
+          message:
+            err.response?.data?.message ||
+            "Failed to generate report. Please try again later.",
+        });
+      } else {
+        setModal({
+          type: "error",
+          message: "Something went wrong",
+        });
+      }
+      clearInterval(window.progressInterval);
+      setProgress(0);
+      setFromDate("");
+      setToDate("");
+      setMemberId("");
+    },
+  });
+
+  const handleGenerate = () => {
+    const now = new Date();
+
+    const currentHour = now.getHours();
+
+    // Only allowed from 10:00 PM  to 11:59 PM
+    const isAllowedTime = currentHour >= 22 && currentHour < 24;
+
+    // if (!isAllowedTime) {
+    //   setModal({
+    //     type: "info",
+    //     message:
+    //       "Payment report can be generated only between 10:00 PM to 12:00 AM",
+    //   });
+    //   return;
+    // }
+
+    if (singleMember && !memberId) {
+      return toast.error("Please enter the Member ID");
     }
-    const excelData = reports.map((user: any, index: number) => ({
-      "Sr.": index + 1,
-      DOJ: user?.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
-      "Member ID": user?.MemberID ?? "-",
-      Member: user?.MemberName ?? "-",
-      "Contact No.": user?.ContactNo ?? "-",
-      "Sponsor ID": user?.SponserID ?? "-",
-      "Placement ID": user?.PlacementID ?? "-",
-      Leaf: user?.Leaf ?? "-",
-      State: user?.StateName ?? "-",
-      District: user?.CityName ?? "-",
-      BV: user?.BV ?? "-",
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    worksheet["!cols"] = [
-      { wch: 6 }, // Sr
-      { wch: 15 }, // DOJ
-      { wch: 18 }, // Member ID
-      { wch: 30 }, // Member
-      { wch: 18 }, // Contact
-      { wch: 18 }, // Sponsor ID
-      { wch: 18 }, // Placement ID
-      { wch: 10 }, // Leaf
-      { wch: 20 }, // State
-      { wch: 20 }, // District
-      { wch: 10 }, // BV
-    ];
 
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sale Report");
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    saveAs(blob, `Sale_Report_${new Date().toISOString().split("T")[0]}.xlsx`);
+    mutation.mutate();
   };
 
   return (
     <main>
-      <div className="flex flex-col gap-4 border-b border-white/10 lg:flex-col lg:items-start lg:justify-between">
-        <div>
-
-          <div className="flex text-sm p-2 bg-amber-500/10 text-amber-500 items-center gap-1 mb-4">
-            <span className="font-semibold">Note:</span>
-            <p> This report is still under development.</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                Payout Report
-              </h2>
-
-              <p className="mt-1 text-sm text-accent-foreground">
-                Showing{" "}
-                <span className="font-semibold text-primary">
-                  {reports.length}
-                </span>{" "}
-                results
-              </p>
-            </div>
-          </div>
-          
+      <div className="space-y-8">
+        <div className="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-500">
+          ⚠ This report is still under development. Please do not use it.
         </div>
 
-        <div className="border-b border-white/10 bg-white/2 p-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
-            {/* MEMBER ID */}
-            {/* <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
-                Member ID
-              </label>
-
-              <div className="relative">
-                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-accent-foreground" />
-
-                <Input
-                  placeholder="RMG1001"
-                  value={memberId}
-                  onChange={(e) => setMemberId(e.target.value)}
-                  className="rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
-                />
-              </div>
-            </div> */}
-
-            {/* FROM DATE */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
-                From Date
-              </label>
-
-              <Input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
-              />
-            </div>
-
-            {/* TO DATE */}
-            <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
-                To Date
-              </label>
-
-              <Input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="rounded-2xl border border-border bg-card text-foreground focus:border-primary focus-visible:ring-primary"
-              />
-            </div>
-
-            {/* BUTTONS */}
-            <div className="flex items-end gap-2">
-              <Button
-                onClick={() => {
-                  setPage(1);
-                  refetch();
-                }}
-                disabled={isFetching}
-              >
-                {isFetching ? "Loading..." : "Search"}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setMemberId("");
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                Reset
-              </Button>
-
-              <Button variant={"default"} onClick={handleExcel}>
-                <Download /> Excel
-              </Button>
-            </div>
+        {/* Header */}
+        <div className="space-y-3">
+          <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+            MLM OPS • PAYOUT REPORT
           </div>
-        </div>
-      </div>
 
-      {/* Payout LIST */}
-      <div className="overflow-x-auto">
-        {isFetching ? (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="h-10 w-10 animate-spin text-accent-foreground" />
-          </div>
-        ) : (
-          <table className="w-full min-w-250">
-            <thead className="border-b border-border bg-muted/40 text-nowrap">
-              <tr className="text-left">
-                {/* TABLE HEADER */}
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Sr.
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  DOJ
-                </th>
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">
+              Payout Report Console
+            </h1>
 
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Member ID
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Member
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Contact No.
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Sponsor ID
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Placement ID
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Leaf
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  State
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  District
-                </th>
-
-                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  BV
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index: number) => (
-                <tr
-                  key={index}
-                  className="transition hover:bg-white/3 text-nowrap"
-                >
-                  {/* SR NO */}
-                  <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
-                    {index + 1}
-                  </td>
-                  {/* DATE */}
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.DOJ).toLocaleDateString()}
-                  </td>
-
-                  {/* MEMBER ID */}
-
-                  <td className="px-6 py-5 text-sm font-medium text-accent-foreground">
-                    {user.MemberID || "-"}
-                  </td>
-
-                  {/* MEMBER */}
-
-                  <td className="px-6 py-5 text-xs">
-                    <div className="flex items-center gap-3">
-                      <div className="text-primary font-medium">
-                        {user.MemberName || "-"}
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.ContactNo || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.SponserID || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.PlacementID || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
-                    {user.Leaf === "Left" ? "ORG 1" : "ORG 2"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.StateName || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.CityName || "-"}
-                  </td>
-
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.BV || "-"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {!isFetching && reports?.length === 0 && (
-          <div className="py-20 text-center">
-            <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
-
-            <h3 className="text-xl font-semibold text-white">
-              No Payout Found
-            </h3>
-
-            <p className="mt-2 text-sm text-zinc-500">
-              Try searching with another keyword or dates.
+            <p className="mt-2 max-w-2xl text-muted-foreground">
+              Generate payout reports for a selected date range. Reports are
+              prepared securely and processed server-side.
             </p>
           </div>
-        )}
+        </div>
+
+        {/* Card */}
+        <div className="rounded-3xl border bg-card p-8 shadow-sm">
+          <div className="grid gap-6">
+            {/* Single Member Toggle */}
+            <div className="rounded-2xl border bg-background/50 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <Label
+                    htmlFor="single-member"
+                    className="text-sm font-semibold cursor-pointer"
+                  >
+                    Generate Single Member Payout
+                  </Label>
+
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Enable this option if you want to generate payout for only
+                    one member.
+                  </p>
+                </div>
+
+                <Switch
+                  id="single-member"
+                  checked={singleMember}
+                  onCheckedChange={setSingleMember}
+                />
+              </div>
+            </div>
+
+            {singleMember && (
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Member ID
+                </label>
+
+                <Input
+                  placeholder="Enter Member ID"
+                  value={memberId}
+                  onChange={(e) => setMemberId(e.target.value)}
+                  className="h-12 rounded-xl bg-background"
+                />
+              </div>
+            )}
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  From Date
+                </label>
+
+                <Input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="h-12 rounded-xl bg-background"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  To Date
+                </label>
+
+                <Input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="h-12 rounded-xl bg-background"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={handleGenerate}
+              disabled={mutation.isPending}
+              size="lg"
+              className="mt-2 h-12 rounded-xl text-base font-semibold"
+            >
+              {mutation.isPending
+                ? `Generating ${progress}%`
+                : "Generate Report"}
+            </Button>
+
+            <div className="border-t pt-5">
+              <div className="flex items-start gap-3">
+                <div className="mt-1 rounded-full border p-1">🔒</div>
+
+                <p className="text-sm text-muted-foreground">
+                  Reports are generated securely on the server. Data will only
+                  be available after the report has been completely prepared.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {mutation.isPending && (
+            <div className="mt-6">
+              <div className="mb-2 flex justify-between text-sm">
+                <span className="text-muted-foreground">
+                  Preparing report...
+                </span>
+
+                <span className="font-semibold">{progress}%</span>
+              </div>
+
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-primary transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          <StatusModal modal={modal} setModal={setModal} />
+        </div>
       </div>
     </main>
   );

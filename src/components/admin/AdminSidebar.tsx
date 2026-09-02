@@ -132,9 +132,14 @@ const finance = [
 
 const reports = [
   {
-    title: "Payout Report",
+    title: "Payout",
     url: "/admin/payout-report",
     icon: FileChartColumnIcon,
+  },
+  {
+    title: "Offer Report",
+    url: "/admin/offer-report",
+    icon: GiftIcon,
   },
   {
     title: "Transferred Payments",

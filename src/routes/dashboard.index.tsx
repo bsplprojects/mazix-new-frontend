@@ -155,37 +155,8 @@ export default function DashboardHome() {
         </Table>
       </div>
 
+      {/* OFFER POPUP */}
       <OfferPopup />
-    </div>
-  );
-}
-
-function LegBar({
-  label,
-  value,
-  max,
-  tone,
-}: {
-  label: string;
-  value: number;
-  max: number;
-  tone: "emerald" | "brass";
-}) {
-  const pct = Math.min((value / max) * 100, 100);
-  return (
-    <div>
-      <div className="flex justify-between text-xs mb-2">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-mono font-medium">
-          {value.toLocaleString("en-IN")} BV
-        </span>
-      </div>
-      <div className="h-2 rounded-full bg-secondary overflow-hidden">
-        <div
-          className={`h-full rounded-full ${tone === "emerald" ? "bg-gradient-emerald" : "bg-gradient-brass"}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
     </div>
   );
 }

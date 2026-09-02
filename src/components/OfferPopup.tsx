@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/config/axios";
+import { CalendarDays, Expand } from "lucide-react";
 
 const OfferPopup = () => {
   const [open, setOpen] = useState(false);
@@ -38,14 +39,25 @@ const OfferPopup = () => {
           <img
             src={`https://app.mymazix.com/${data.Image.replace("../../", "")}`}
             alt={data.Title}
-            className="w-full h-80 object-cover"
+            className="w-full h-80 object-contain"
           />
 
+          {/* Offer Badge */}
           <div className="absolute top-4 left-4">
-            <span className="rounded-full bg-red-600 text-white px-4 py-1 text-sm font-semibold shadow-lg">
+            <span className="rounded-full bg-red-600/60 text-white px-4 py-1 text-sm font-semibold shadow-lg">
               🎁 Limited Time Offer
             </span>
           </div>
+
+          {/* View Full Image */}
+          <a
+            href={`https://app.mymazix.com/${data.Image.replace("../../", "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-lg dark:bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 text-xs font-medium dark:text-white shadow-lg transition-all dark:hover:bg-white/20"
+          >
+            <Expand size={14} />
+          </a>
         </div>
 
         <div className="space-y-5 p-6">
@@ -60,16 +72,18 @@ const OfferPopup = () => {
           </div>
 
           <div className="rounded-xl border bg-muted/40 p-4">
-            <p className="text-sm font-medium">📅 Offer Validity</p>
+            <p className="text-sm font-medium flex items-center gap-2">
+              <CalendarDays size={14} /> Offer Validity
+            </p>
 
             <p className="mt-1 text-sm text-muted-foreground">
               This offer is valid from{" "}
               <span className="font-semibold text-foreground">
-                {new Date(data.StartDate).toLocaleDateString()}
+                {new Date(data.StartDate).toLocaleDateString("en-IN")}
               </span>{" "}
               to{" "}
               <span className="font-semibold text-foreground">
-                {new Date(data.EndDate).toLocaleDateString()}
+                {new Date(data.EndDate).toLocaleDateString("en-IN")}
               </span>
               .
             </p>

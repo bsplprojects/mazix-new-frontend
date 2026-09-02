@@ -5,6 +5,18 @@ import { Badge } from "@/components/ui/badge";
 import { axiosInstance } from "@/config/axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
+
+type Offer = {
+  OfferID: number;
+  Title: string;
+  Description?: string;
+  Link?: string;
+  Image?: string;
+  StartDate: Date | string;
+  EndDate: Date | string;
+  Status: boolean;
+};
 
 const OffersList = () => {
   const queryClient = useQueryClient();
@@ -38,11 +50,15 @@ const OffersList = () => {
     },
 
     onError: (err: any) => {
-      toast.error(err?.response?.data?.msg || "Failed to update offer.");
+      if (err instanceof AxiosError) {
+        toast.error(err?.response?.data?.msg);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 
-  const handleToggleOffer = (offer: any) => {
+  const handleToggleOffer = (offer: Offer) => {
     toggleOffer({
       offerId: offer.OfferID,
       status: !offer.Status,
@@ -73,7 +89,7 @@ const OffersList = () => {
             </div>
           )}
 
-          {data?.map((offer: any) => (
+          {data?.map((offer: Offer) => (
             <div
               key={offer.OfferID}
               className="border rounded-xl overflow-hidden flex flex-col md:flex-row"
@@ -116,8 +132,8 @@ const OffersList = () => {
                 </div>
 
                 <div className="text-sm text-muted-foreground">
-                  {offer.StartDate?.slice(0, 10)} →{" "}
-                  {offer.EndDate?.slice(0, 10)}
+                  {offer.StartDate?.toString()?.slice(0, 10)} →{" "}
+                  {offer.EndDate?.toString()?.slice(0, 10)}
                 </div>
               </div>
             </div>

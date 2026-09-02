@@ -15,6 +15,7 @@ import AdminLeftTeam from "./routes/admin/AdminLeftTeam";
 import AdminRightTeam from "./routes/admin/AdminRightTeam";
 import PayoutReport from "./routes/admin/PayoutReport";
 import Offer from "./routes/admin/Offer";
+import OfferReport from "./routes/admin/OfferReport";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -243,6 +244,7 @@ export default function App() {
               element={<SaleInvoiceReport />}
             />
             <Route path="/admin/gst-report" element={<GSTReport />} />
+            <Route path="/admin/offer-report" element={<OfferReport />} />
             <Route path="/admin/franchise" element={<Franchise />} />
             <Route path="/admin/invoice" element={<PrintInvoice />} />
 

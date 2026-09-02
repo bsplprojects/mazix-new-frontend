@@ -106,13 +106,13 @@ export default function RankPage() {
                 {/* CARD */}
                 <div
                   className={cn(
-                    "md:text-right p-4",
+                    "md:text-right p-4 ",
                     i % 2 === 1 && "md:text-left",
                   )}
                 >
                   <div
                     className={cn(
-                      "inline-block rounded-xl border px-5 py-3 transition-all",
+                      "inline-block w-1/2 rounded-xl border px-5 py-3 transition-all",
                       current
                         ? "bg-gradient-emerald border-primary text-primary-foreground shadow-glow"
                         : achieved
@@ -127,6 +127,14 @@ export default function RankPage() {
                     <div className="font-display text-2xl">{r.RewardName}</div>
 
                     <div className="text-xs opacity-70">{r.Reward}</div>
+
+                    {achieved && !current && (
+                      <div
+                        className={`text-xs text-primary mt-4 opacity-70 flex items-center ${i % 2 == 0 ? "justify-end" : "justify-start"} `}
+                      >
+                        ✔ Achieved
+                      </div>
+                    )}
 
                     {current && (
                       <div className="text-xs mt-1">★ Current Rank</div>
