@@ -1,18 +1,29 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AuthShell } from "@/components/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginMember } from "@/services/authApi";
+import { loginUser } from "@/services/authApi";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuth } from "@/context/AuthContext";
 
+type User = {
+  MID: string | null;
+  MemberID: string | null;
+  role: "admin" | "member" | "franchise";
+};
+
+type Data = {
+  token: string;
+  user: User;
+};
+
 export default function SignIn() {
   const navigate = useNavigate();
-  const { mId, memberId, login } = useAuth();
+  const { mId, memberId, login, role } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
@@ -22,13 +33,21 @@ export default function SignIn() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const res = await loginMember(form.MemberID, form.Password);
-      return res.user;
+      const res = await loginUser(form.MemberID, form.Password);
+      return res;
     },
-    onSuccess: (user: any) => {
-      login(user.MID, user.MemberID);
-      toast.success("Login successful");
-      navigate("/dashboard");
+    onSuccess: (data: Data) => {
+      if (data.user.MID === null || data.user.MemberID === null) {
+        toast.error("User not found");
+        return;
+      }
+      login(data.user.MID, data.user.MemberID, data.user.role as User["role"]);
+      if (data.user.role === "member" || data.user.role === "franchise") {
+        navigate("/dashboard");
+      } else if (data.user.role === "admin") {
+        sessionStorage.setItem("adminToken", data.token);
+        navigate("/admin");
+      }
     },
     onError: (error: any) => {
       if (error instanceof AxiosError) {
@@ -50,12 +69,6 @@ export default function SignIn() {
 
     loginMutation.mutate();
   };
-
-  useEffect(() => {
-    if (mId && memberId) {
-      navigate("/dashboard");
-    }
-  }, [mId, memberId, navigate]);
 
   return (
     <AuthShell

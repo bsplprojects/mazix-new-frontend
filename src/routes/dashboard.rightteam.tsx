@@ -24,11 +24,6 @@ export default function Team() {
   const [members, setMembers] = useState<Member[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    totalBV: 0,
-  });
 
   const [debouncedSearch] = useDebounce(search, 500);
 

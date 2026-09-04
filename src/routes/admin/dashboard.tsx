@@ -16,13 +16,13 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (!adminToken) {
-      navigate("/admin-login");
+      navigate("/");
     }
   }, [adminToken]);
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate("/admin-login");
+    navigate("/");
   };
 
   return (

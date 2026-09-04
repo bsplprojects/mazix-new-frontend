@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/config/axios";
 
-export const loginMember = (MemberID: string, Password: string) =>
+export const loginUser = (MemberID: string, Password: string) =>
   axiosInstance
     .post("/auth/login", {
       MemberID,

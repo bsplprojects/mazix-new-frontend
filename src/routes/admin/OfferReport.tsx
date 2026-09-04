@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Download, Gift, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
@@ -24,35 +24,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const PAGE_SIZE = 10;
-
 const OfferReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [rank, setRank] = useState("all");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
+  const [qty, setQty] = useState("25");
 
-  const { data, refetch, isFetching } = useQuery({
-    queryKey: ["offer-reports", page],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get("/reports/offer", {
+  const mutation = useMutation({
+    mutationFn: async (page: number) => {
+      const res = await axiosInstance.get("/reports/offer", {
         params: {
           FromDate: fromDate,
           MemberId: memberId,
           Todate: toDate,
           rank: rank,
-          page,
-          pageSize: PAGE_SIZE,
+          page: String(page),
+          qty,
+          pageSize: qty,
         },
       });
-      return data;
+      return res.data;
     },
-    enabled: !!fromDate && !!toDate && !!rank,
   });
 
-  const reports = data?.data || [];
-  const pagination = data?.pagination;
+  const reports = mutation?.data?.data || [];
+  const pagination = mutation?.data?.pagination;
   const totalPages = pagination?.totalPages ?? 1;
 
   const handleExcel = () => {
@@ -98,9 +96,19 @@ const OfferReport = () => {
     saveAs(blob, `Offer_Report_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
 
-  const handleSearch = () => {
+  const handleSearch = (page: number) => {
     const MIN_DATE = "2026-08-04";
     const MAX_DATE = "2026-09-15";
+
+    if (!fromDate) {
+      toast.error(`From Date is required`);
+      return;
+    }
+
+    if (!toDate) {
+      toast.error(`To Date is required`);
+      return;
+    }
 
     if (fromDate && (fromDate < MIN_DATE || fromDate > MAX_DATE)) {
       toast.error(
@@ -119,8 +127,8 @@ const OfferReport = () => {
       return;
     }
 
-    setPage(1);
-    refetch();
+    setPage(page);
+    mutation.mutate(page);
   };
 
   return (
@@ -183,6 +191,7 @@ const OfferReport = () => {
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="fresher">Fresher</SelectItem>
                   <SelectItem value="bronze">Bronze</SelectItem>
                   <SelectItem value="silver">Silver</SelectItem>
                   <SelectItem value="star">Star</SelectItem>
@@ -232,10 +241,31 @@ const OfferReport = () => {
               />
             </div>
 
+            <div className="space-y-2">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground opacity-0">
+                Rank
+              </label>
+
+              <Select value={qty} onValueChange={setQty}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* BUTTONS */}
             <div className="flex items-end gap-2">
-              <Button onClick={handleSearch} disabled={isFetching}>
-                {isFetching ? "Loading..." : "Search"}
+              <Button
+                onClick={() => handleSearch(1)}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Loading..." : "Search"}
               </Button>
 
               <Button
@@ -259,7 +289,7 @@ const OfferReport = () => {
 
       {/* OFFER LIST */}
       <div className="overflow-x-auto">
-        {isFetching ? (
+        {mutation.isPending ? (
           <div className="flex min-h-100 flex-col items-center justify-center">
             <div className="relative flex items-center justify-center">
               {/* Outer ring */}
@@ -448,7 +478,7 @@ const OfferReport = () => {
           </table>
         )}
 
-        {!isFetching && reports?.length === 0 && (
+        {!mutation.isPending && reports?.length === 0 && (
           <div className="py-20 text-center">
             <Gift className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
@@ -472,7 +502,7 @@ const OfferReport = () => {
               onClick={(e) => {
                 e.preventDefault();
                 if (page > 1) {
-                  setPage(page - 1);
+                  handleSearch(page - 1);
                 }
               }}
               className={page === 1 ? "pointer-events-none opacity-50" : ""}
@@ -488,7 +518,7 @@ const OfferReport = () => {
                   isActive={page === 1}
                   onClick={(e) => {
                     e.preventDefault();
-                    setPage(1);
+                    handleSearch(1);
                   }}
                 >
                   1
@@ -523,7 +553,7 @@ const OfferReport = () => {
                   isActive={page === pageNumber}
                   onClick={(e) => {
                     e.preventDefault();
-                    setPage(pageNumber);
+                    handleSearch(pageNumber);
                   }}
                 >
                   {pageNumber}
@@ -544,7 +574,7 @@ const OfferReport = () => {
                   isActive={page === totalPages}
                   onClick={(e) => {
                     e.preventDefault();
-                    setPage(totalPages);
+                    handleSearch(totalPages);
                   }}
                 >
                   {totalPages}
@@ -559,8 +589,9 @@ const OfferReport = () => {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
+
                 if (page < totalPages) {
-                  setPage(page + 1);
+                  handleSearch(page + 1);
                 }
               }}
               className={

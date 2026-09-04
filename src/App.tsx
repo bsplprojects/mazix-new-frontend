@@ -16,6 +16,11 @@ import AdminRightTeam from "./routes/admin/AdminRightTeam";
 import PayoutReport from "./routes/admin/PayoutReport";
 import Offer from "./routes/admin/Offer";
 import OfferReport from "./routes/admin/OfferReport";
+import NotFound from "./components/NotFound";
+import { CartProvider } from "./context/CartContext";
+import { Toaster } from "./components/ui/sonner";
+import CartDrawer from "./components/CartDrawer";
+import SignIn from "./routes/signin";
 const KYC = lazy(() => import("./routes/admin/KYC"));
 const AddUser = lazy(() => import("./routes/admin/AddUser"));
 const ChangePassword = lazy(() => import("./routes/admin/ChangePassword"));
@@ -40,9 +45,6 @@ const GSTReport = lazy(() => import("./routes/admin/GSTReport"));
 const AdminMemberCredentials = lazy(
   () => import("./routes/admin/AdminMemberCredentials"),
 );
-
-// Auth
-const Signin = lazy(() => import("./routes/signin"));
 
 // User Dashboard
 const DashboardLayout = lazy(() => import("./routes/dashboard"));
@@ -76,7 +78,7 @@ const RepurchaseWalletTransfer = lazy(
 );
 
 // Admin
-const AdminLogin = lazy(() => import("./routes/admin/AdminLogin"));
+// const AdminLogin = lazy(() => import("./routes/admin/AdminLogin"));
 const AdminLayout = lazy(() => import("./routes/admin/dashboard"));
 const AdminDashboardHome = lazy(
   () => import("./routes/admin/AdminDashboardHome"),
@@ -115,16 +117,109 @@ const EventMaster = lazy(() => import("./routes/admin/EventManager"));
 const Product = lazy(() => import("./routes/admin/Product"));
 const Category = lazy(() => import("./routes/admin/Category"));
 
+// ecommerce routes
+const AboutPage = lazy(() => import("./routes/ecomm/AboutPage"));
+const ProductsPage = lazy(() => import("./routes/ecomm/ProductsPage"));
+const ProductDetailPage = lazy(
+  () => import("./routes/ecomm/ProductDetailPage"),
+);
+const CheckoutPage = lazy(() => import("./routes/ecomm/CheckoutPage"));
+
+const MyOrdersPage = lazy(() => import("./routes/ecomm/MyOrdersPage"));
+
+const OrderConfirmationPage = lazy(
+  () => import("./routes/ecomm/OrderConfirmationPage"),
+);
+
+const SalesMarketingPage = lazy(
+  () => import("./routes/ecomm/SalesMarketingPage"),
+);
+
+const RecognitionRewardPage = lazy(
+  () => import("./routes/ecomm/RecognitionRewardPage"),
+);
+
+const TopAchieversPage = lazy(() => import("./routes/ecomm/TopAchieversPage"));
+
+const GrievancePolicyPage = lazy(
+  () => import("./routes/ecomm/GrievancePolicyPage"),
+);
+
+const PrivacyPolicyPage = lazy(
+  () => import("./routes/ecomm/PrivacyPolicyPage"),
+);
+
+const DisclaimerPage = lazy(() => import("./routes/ecomm/DisclaimerPage"));
+
+const RefundPolicyPage = lazy(() => import("./routes/ecomm/RefundPolicyPage"));
+
+const ShippingPolicy = lazy(() => import("./routes/ecomm/ShippingPolicy"));
+
+const TermsAndCondition = lazy(
+  () => import("./routes/ecomm/TermsAndCondition"),
+);
+
+const SelfDeclarationPage = lazy(
+  () => import("./routes/ecomm/SelfDeclarationPage"),
+);
+
+const DeListingPage = lazy(() => import("./routes/ecomm/DeListingPage"));
+
+const LegalPage = lazy(() => import("./routes/ecomm/LegalPage"));
+
+const ContactPage = lazy(() => import("./routes/ecomm/ContactPage"));
+
+const RegisterPage = lazy(() => import("./routes/ecomm/RegisterPage"));
+
+const CertifiedPage = lazy(() => import("./routes/ecomm/CertifiedPage"));
+
+const Index = lazy(() => import("./routes/ecomm/Index"));
+
 export default function App() {
   return (
     <TooltipProvider>
       <BrowserRouter>
+        {/* Auth */}
+        <CartProvider>
+          <Toaster position="top-center" />
+
+          <CartDrawer />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/signin" element={<SignIn />} />
+
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:category" element={<ProductsPage />} />
+            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/orders" element={<MyOrdersPage />} />
+            <Route
+              path="/order-confirmation"
+              element={<OrderConfirmationPage />}
+            />
+            <Route path="/sales-marketing" element={<SalesMarketingPage />} />
+            <Route
+              path="/recognition-reward"
+              element={<RecognitionRewardPage />}
+            />
+            <Route path="/top-achievers" element={<TopAchieversPage />} />
+            <Route path="/grievance-policy" element={<GrievancePolicyPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
+            <Route path="/refund-policy" element={<RefundPolicyPage />} />
+            <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/terms-conditions" element={<TermsAndCondition />} />
+            <Route path="/self-declaration" element={<SelfDeclarationPage />} />
+            <Route path="/de-listing" element={<DeListingPage />} />
+            <Route path="/legal" element={<LegalPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/certified" element={<CertifiedPage />} />
+            <Route path="/about" element={<AboutPage />} />
+          </Routes>
+        </CartProvider>
+
         <Routes>
-          {/* Auth */}
-          <Route path="/" element={<Signin />} />
-
-          <Route path="/admin-login" element={<AdminLogin />} />
-
           {/* Dashboard */}
           <Route element={<Protected />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
@@ -289,6 +384,7 @@ export default function App() {
             <Route path="/admin/kyc" element={<KYC />} />
             <Route path="/admin/support" element={<AdminSupport />} />
             <Route path="/admin/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

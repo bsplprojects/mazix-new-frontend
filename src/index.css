@@ -71,7 +71,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 :root {
   --radius: 0.75rem;
 
-  /* Soft warm-white canvas */
   --background: oklch(0.985 0.004 95);
   --foreground: oklch(0.24 0.018 250);
 
@@ -81,7 +80,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.24 0.018 250);
 
-  /* Muted emerald primary */
   --primary: oklch(0.5 0.09 158);
   --primary-foreground: oklch(0.99 0.002 95);
   --emerald-glow: oklch(0.6 0.1 158);
@@ -95,7 +93,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   --accent: oklch(0.94 0.03 158);
   --accent-foreground: oklch(0.3 0.05 158);
 
-  /* Soft brass */
   --brass: oklch(0.68 0.1 78);
   --brass-foreground: oklch(0.99 0.002 95);
 
@@ -123,7 +120,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   --sidebar-border: oklch(0.9 0.008 100);
   --sidebar-ring: oklch(0.5 0.09 158 / 0.5);
 
-  /* Soft gradients & shadows for a light surface */
   --gradient-emerald: linear-gradient(
     135deg,
     oklch(0.56 0.1 158) 0%,
@@ -202,8 +198,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 
   --ring: oklch(0.72 0.16 158);
 
-  /* Sidebar */
-
   --sidebar: oklch(0.18 0.015 165);
   --sidebar-foreground: oklch(0.94 0.01 90);
 
@@ -216,8 +210,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   --sidebar-border: oklch(0.31 0.015 165);
 
   --sidebar-ring: oklch(0.72 0.16 158);
-
-  /* Gradients */
 
   --gradient-card: linear-gradient(
     180deg,
@@ -358,7 +350,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
     background-size: 32px 32px;
   }
 }
-/* ===== CLEAN, LOW-CONTRAST SCROLLBAR FOR LIGHT SURFACES ===== */
 
 ::-webkit-scrollbar {
   width: 6px;
@@ -376,7 +367,6 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   background: var(--primary);
 }
 
-/* Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: oklch(0.24 0.02 250 / 0.22) transparent;
