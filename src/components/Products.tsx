@@ -45,7 +45,7 @@ const Products = () => {
     <section id="products" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <span className="inline-block text-secondary font-medium tracking-wider uppercase text-sm mb-3">
+          <span className="inline-block text-primary font-medium tracking-wider uppercase text-sm mb-3">
             Featured
           </span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">

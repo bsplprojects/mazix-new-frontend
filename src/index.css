@@ -16,6 +16,22 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   filter: none;
 }
 
+
+
+@keyframes splash {
+  0% {
+    transform: scale(0) rotate(40deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.2) rotate(40deg);
+  }
+  100% {
+    transform: scale(1) rotate(40deg);
+    opacity: 1;
+  }
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap");
 
 @theme inline {
@@ -371,3 +387,5 @@ input[type="month"]::-webkit-calendar-picker-indicator {
   scrollbar-width: thin;
   scrollbar-color: oklch(0.24 0.02 250 / 0.22) transparent;
 }
+
+

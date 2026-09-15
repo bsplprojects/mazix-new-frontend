@@ -11,7 +11,7 @@ import {
 import { axiosInstance } from "@/config/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { Loader2, Users } from "lucide-react";
+import { BanknoteCheck, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 // import {
@@ -299,7 +299,7 @@ const KYC = () => {
 
         {!isFetching && reports?.length === 0 && (
           <div className="py-20 text-center">
-            <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
+            <BanknoteCheck  className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
             <h3 className="text-xl font-semibold text-accent-foreground">
               No Records Found

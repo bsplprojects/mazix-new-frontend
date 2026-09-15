@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import { formatDate } from "@/helpers/formatDate";
 
 const AdminChargeReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -301,7 +302,7 @@ const AdminChargeReport = () => {
                   {/* MEMBER ID */}
 
                   <td className="px-6 py-5 text-sm font-medium text-accent-foreground">
-                    {new Date(user.PayoutDate).toLocaleDateString() || "-"}
+                    {formatDate(user.PayoutDate)}
                   </td>
 
                   <td className="px-6 py-5 text-sm font-medium text-accent-foreground">

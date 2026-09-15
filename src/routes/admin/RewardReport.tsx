@@ -24,6 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { formatDate } from "@/helpers/formatDate";
 
 const PAGE_SIZE = "10";
 
@@ -505,7 +506,7 @@ const RewardReport = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.ModifyDate).toLocaleDateString() || "-"}
+                    {formatDate(user.ModifyDate)}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">

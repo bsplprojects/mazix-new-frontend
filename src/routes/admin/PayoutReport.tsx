@@ -2,10 +2,9 @@ import StatusModal from "@/components/StatusModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
@@ -15,9 +14,18 @@ const PayoutReport = () => {
   const [toDate, setToDate] = useState("");
   const [singleMember, setSingleMember] = useState(false);
   const [progress, setProgress] = useState(0);
+
   const [modal, setModal] = useState({
     type: "",
     message: "",
+  });
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["payout-check"],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/reports/payout/check?type=payout`);
+      return res.data;
+    },
   });
 
   const mutation = useMutation({
@@ -87,22 +95,41 @@ const PayoutReport = () => {
     const now = new Date();
 
     const currentHour = now.getHours();
-
-    // Only allowed from 10:00 PM  to 11:59 PM
     const isAllowedTime = currentHour >= 22 && currentHour < 24;
 
-    // if (!isAllowedTime) {
-    //   setModal({
-    //     type: "info",
-    //     message:
-    //       "Payment report can be generated only between 10:00 PM to 12:00 AM",
-    //   });
-    //   return;
-    // }
+    if (data?.msg === "PAYOUT CREATED") {
+      setModal({
+        type: "info",
+        message: `Payout report has already been generated for ${data?.data?.date}. Please try again tomorrow.`,
+      });
+      return;
+    }
 
     if (singleMember && !memberId) {
-      return toast.error("Please enter the Member ID");
+      setModal({
+        type: "validation",
+        message: `Please provide a member ID.`,
+      });
+      return;
     }
+
+    if (!singleMember && (!fromDate || !toDate)) {
+      setModal({
+        type: "validation",
+        message: `Please select a date range.`,
+      });
+      return;
+    }
+
+      if (!isAllowedTime) {
+        setModal({
+          type: "warn",
+          message:
+            "Payment report can be generated only between 10:00 PM to 12:00 AM. Please try again tomorrow.",
+        });
+        return;
+      }
+
 
     mutation.mutate();
   };
@@ -205,7 +232,7 @@ const PayoutReport = () => {
 
             <Button
               onClick={handleGenerate}
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || isLoading}
               size="lg"
               className="mt-2 h-12 rounded-xl text-base font-semibold"
             >

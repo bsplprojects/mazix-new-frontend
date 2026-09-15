@@ -19,6 +19,7 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { formatDate } from "@/helpers/formatDate";
 
 const PurchaseReport = () => {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ const PurchaseReport = () => {
   });
 
   const reports = data?.data || [];
+  console.log(reports);
 
   const mutation = useMutation({
     mutationFn: async (orderNo: string) => {
@@ -256,7 +258,7 @@ const PurchaseReport = () => {
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (
-          <table className="w-full min-w-250">
+          <table className="w-full min-w-200">
             <thead className="border-b border-border bg-muted/40 text-nowrap">
               <tr className="text-left">
                 {/* TABLE HEADER */}
@@ -281,6 +283,10 @@ const PurchaseReport = () => {
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   City
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider w-1/2   text-accent-foreground">
+                  Address
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
@@ -346,13 +352,13 @@ const PurchaseReport = () => {
 
                   {/* DATE */}
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.OrderDate).toLocaleDateString()}
+                    {formatDate(user?.OrderDate)}
                   </td>
 
                   {/* MEMBER */}
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-primary font-medium">
                         {user.CustomerName || "-"}
                       </div>
                     </div>
@@ -362,8 +368,12 @@ const PurchaseReport = () => {
                     {user.Phone || "-"}
                   </td>
 
-                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                  <td className="px-6 py-5 text-sm text-accent-foreground ">
                     {user.City || "-"}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.Address || "-"}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">

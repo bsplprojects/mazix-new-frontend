@@ -6,6 +6,7 @@ import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { formatDate } from "@/helpers/formatDate";
 
 const PAGE_SIZE = 10;
 
@@ -252,7 +253,7 @@ const SaleReport = () => {
                   {/* DATE */}
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.DOJ).toLocaleDateString()}
+                    {formatDate(user.DOJ)}
                   </td>
 
                   {/* MEMBER ID */}

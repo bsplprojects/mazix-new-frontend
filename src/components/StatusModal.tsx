@@ -1,4 +1,11 @@
-import { CheckCircle2, CircleX, TriangleAlert, X } from "lucide-react";
+import {
+  CheckCircle2,
+  CircleX,
+  Info,
+  Siren,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type ModalType = {
@@ -11,13 +18,68 @@ interface Props {
   setModal: (modal: ModalType) => void;
 }
 
+function getBackgroundColor(type: string) {
+  let color = "bg-red-500/10 text-red-500";
+  switch (type) {
+    case "success":
+      color = "bg-emerald-500/10 text-emerald-500";
+      break;
+    case "info":
+      color = "bg-cyan-500/10 text-cyan-500";
+      break;
+    case "warn":
+      color = "bg-amber-500/10 text-amber-500";
+      break;
+    case "validation":
+      color = "bg-orange-500/10 text-orange-500";
+      break;
+  }
+  return color;
+}
+
+function getIcon(type: string) {
+  const iconSize = "h-12 w-12";
+  let icon = <CircleX className={iconSize} />;
+  switch (type) {
+    case "success":
+      icon = <CheckCircle2 className={iconSize} />;
+      break;
+    case "info":
+      icon = <Info className={iconSize} />;
+      break;
+    case "warn":
+      icon = <TriangleAlert className={iconSize} />;
+      break;
+    case "validation":
+      icon = <Siren className={iconSize} />;
+      break;
+  }
+  return icon;
+}
+
+function getModalTitle(type: string) {
+  let message = "Something went wrong";
+  switch (type) {
+    case "success":
+      message = "Success!";
+      break;
+    case "info":
+      message = "Info!";
+      break;
+    case "warn":
+      message = "Warning!";
+      break;
+    case "validation":
+      message = "Fill the required fields!";
+      break;
+  }
+  return message;
+}
+
 export default function StatusModal({ modal, setModal }: Props) {
   const isOpen = !!modal.type;
 
   if (!isOpen) return null;
-
-  const isSuccess = modal.type === "success";
-  const isInfo = modal.type === "info";
 
   const close = () =>
     setModal({
@@ -37,26 +99,14 @@ export default function StatusModal({ modal, setModal }: Props) {
 
         <div className="flex flex-col items-center text-center">
           <div
-            className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full ${
-              isSuccess
-                ? "bg-emerald-500/10 text-emerald-500"
-                : isInfo
-                  ? "bg-amber-500/10 text-amber-500"
-                  : "bg-red-500/10 text-red-500"
-            }`}
+            className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full ${getBackgroundColor(
+              modal.type,
+            )}`}
           >
-            {isSuccess ? (
-              <CheckCircle2 className="h-12 w-12" />
-            ) : isInfo ? (
-              <TriangleAlert className="h-12 w-12" />
-            ) : (
-              <CircleX className="h-12 w-12" />
-            )}
+            {getIcon(modal.type)}
           </div>
 
-          <h2 className="text-2xl font-bold">
-            {isSuccess ? "Success!" : isInfo ? "Warning!" : "Oops!"}
-          </h2>
+          <h2 className="text-2xl font-bold">{getModalTitle(modal.type)}</h2>
 
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
             {modal.message}

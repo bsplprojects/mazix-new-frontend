@@ -60,7 +60,7 @@ const Categories = () => {
     <section id="categories" className="py-20  bg-nature-gradient">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <span className="inline-block dark:text-white dark-primary font-medium tracking-wider uppercase text-sm mb-3">
+          <span className="inline-block text-primary dark-primary font-medium tracking-wider uppercase text-sm mb-3">
             Browse By
           </span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { formatDate } from "@/helpers/formatDate";
 
 const PaymentTransferDetail = () => {
   const [memberId, setMemberId] = useState("");
@@ -24,6 +25,7 @@ const PaymentTransferDetail = () => {
   yesterday.setDate(yesterday.getDate() - 1);
 
   const [dateList, setDateList] = useState("");
+  const [month, setMonth] = useState("");
 
   const [page, setPage] = useState(1);
 
@@ -38,12 +40,13 @@ const PaymentTransferDetail = () => {
   const dates = paidDates?.data || [];
 
   const { data, refetch, isFetching } = useQuery({
-    queryKey: ["sale-reports"],
+    queryKey: ["payment-reports"],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/reports/pay-transfer", {
         params: {
           dateList,
           memberId,
+          month,
         },
       });
       return data;
@@ -140,7 +143,7 @@ const PaymentTransferDetail = () => {
       return res.data;
     },
     onSuccess: () => {
-      client.invalidateQueries({ queryKey: ["sale-reports"] });
+      client.invalidateQueries({ queryKey: ["payment-reports"] });
       toast.success("Deleted Successfully");
     },
     onError: (err) => {
@@ -175,7 +178,7 @@ const PaymentTransferDetail = () => {
             results
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* MEMBER ID SEARCH */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="space-y-2">
@@ -248,6 +251,40 @@ const PaymentTransferDetail = () => {
               </div>
             </div>
           </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="space-y-2">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
+                Payout Month
+              </label>
+
+              {/* <Input
+                type="date"
+                value={dateList}
+                onChange={(e) => setDateList(e.target.value)}
+                className="h-11 rounded-2xl border border-white/10 bg-zinc-900/80 text-white"
+              /> */}
+
+              <Input
+                type="month"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+              />
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={() => {
+                    setPage(1);
+                    refetch();
+                  }}
+                  disabled={isFetching}
+                  className="w-full"
+                >
+                  {isFetching ? "Loading..." : "Display"}
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 mt-5 justify-end">
@@ -261,6 +298,7 @@ const PaymentTransferDetail = () => {
             onClick={() => {
               setMemberId("");
               setDateList("");
+              setMonth("");
             }}
             className=" rounded-2xl border-white/10 text-accent-foreground"
           >
@@ -397,9 +435,7 @@ const PaymentTransferDetail = () => {
                     {/* MEMBER */}
 
                     <td className="px-6 py-5">
-                      {new Date(user?.PayoutDate)?.toLocaleDateString(
-                        "en-IN",
-                      ) || "-"}
+                      {formatDate(user?.PayoutDate)}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-accent-foreground">

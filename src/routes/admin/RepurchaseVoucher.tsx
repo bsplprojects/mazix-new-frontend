@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import { formatDate } from "@/helpers/formatDate";
 
 const RepurchaseVoucher = () => {
   const [memberId, setMemberId] = useState("");
@@ -355,7 +356,7 @@ const RepurchaseVoucher = () => {
                     {/* DATE */}
 
                     <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {new Date(user?.ModifyDate).toLocaleDateString()}
+                      {formatDate(user?.ModifyDate)}
                     </td>
 
                     {/* MEMBER ID */}

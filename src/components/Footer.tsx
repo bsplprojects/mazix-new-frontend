@@ -29,12 +29,12 @@ const Footer = () => {
 
   const socialLinks = [
     {
-      icon: AxeIcon,
+      icon: "https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
       href: "https://www.facebook.com/Megdootmarketing/",
       label: "Facebook",
     },
     {
-      icon: AxeIcon,
+      icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyvXmspdFe2uZOrbKEHa1hFtznR0WN7AXi4D7C_ZPlxA&s",
       href: "https://www.instagram.com/meghdoot_marketing_pvt_lvt",
       label: "Instagram",
     },
@@ -50,7 +50,7 @@ const Footer = () => {
           <div>
             <Link to="/" className="flex items-center gap-2 mb-6">
               <div>
-                <img src={Logo} className="h-20 w-55 text-accent-foreground" />
+                <img src={Logo} className="h-20 w-55 " />
               </div>
               {/* <span className="text-2xl font-serif font-bold">Mazix</span> */}
             </Link>
@@ -99,13 +99,13 @@ const Footer = () => {
             <h4 className="font-serif font-semibold text-lg mb-5">Support</h4>
             <div className="w-12 h-1 bg-primary mb-5"></div>
             <div className="flex flex-wrap gap-3">
-              <a
-                href={"https://new.mazix.co.in"}
+              <Link
+                to={"/signin"}
                 target="_blank"
                 className="px-4 py-2 border border-accent-foreground/20 rounded-md text-accent-foreground/70 hover:text-accent-foreground hover:border-accent-foreground/40 transition-colors text-sm"
               >
                 Login
-              </a>
+              </Link>
               {supportLinks.map((link) => (
                 <Link
                   key={link.label}
@@ -137,15 +137,15 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => (
-                <a
+                <Link
                   key={social.label}
-                  href={social.href}
+                  to={social.href}
                   target="_blank"
                   aria-label={social.label}
                   className="p-2 rounded-full bg-accent-foreground/10 text-accent-foreground/70 hover:bg-accent-foreground/20 hover:text-accent-foreground transition-all"
                 >
-                  <social.icon className="h-5 w-5" />
-                </a>
+                  <img src={social.icon} width={22} />
+                </Link>
               ))}
             </div>
           </div>

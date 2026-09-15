@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
+import { formatDate } from "@/helpers/formatDate";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { IndianRupee, Loader2, Trash, User, Users } from "lucide-react";
@@ -355,7 +356,7 @@ const JoiningWalletTransfer = () => {
                   {/* DATE */}
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.Date).toLocaleDateString("en-IN")}
+                    {formatDate(user.Date)}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">

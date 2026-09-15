@@ -6,6 +6,7 @@ import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ExcelJS from "exceljs";
+import { formatDate } from "@/helpers/formatDate";
 
 const SaleInvoiceReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -279,7 +280,7 @@ const SaleInvoiceReport = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.MPDate).toLocaleDateString()}
+                    {formatDate(user.MPDate)}
                   </td>
 
                   {/* MEMBER ID */}
@@ -292,7 +293,7 @@ const SaleInvoiceReport = () => {
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="text-white font-medium">
+                      <div className="text-white font-medium text-sm">
                         {user.MemberName || "-"}
                       </div>
                     </div>

@@ -6,6 +6,7 @@ import { Download, Loader2, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
 import { StatCard } from "@/components/dashboard-ui";
+import { formatDate } from "@/helpers/formatDate";
 
 const WalletTransferReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -176,7 +177,7 @@ const WalletTransferReport = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 w-3/4">
           <StatCard
             label="Total Sent"
@@ -352,7 +353,7 @@ const WalletTransferReport = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.Date).toLocaleDateString() || "-"}
+                    {formatDate(user.Date)}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, ShoppingCart, ChevronDown } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/hooks/use-products";
-import Logo from "@/assets/12.png";
+import Logo from "@/assets/logo.png";
 import LanguageSelector from "./LanguageSelector";
 import { ModeToggle } from "@/components/ModeToggle";
 import type { Category } from "@/types/categories";
@@ -55,7 +55,7 @@ const Header = () => {
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
     { label: "Orders", href: "/orders" },
-    { label: "Login", href: "https://mymazix.com" },
+    { label: "Login", href: "/signin" },
   ];
 
   return (
@@ -69,8 +69,8 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between ">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className=" overflow-hidden ">
-              <img src={Logo} width={50} />
+            <div className="overflow-hidden">
+              <img src={Logo} className="h-19 w-53" />
             </div>
             <span
               className={`text-2xl font-serif font-bold tracking-wide transition-colors duration-300 ${
@@ -204,7 +204,7 @@ const Header = () => {
                 Shop Now
               </Button>
             </Link> */}
-            <Link to="/signin" target="_blank">
+            <Link to="/signin">
               <Button
                 variant={showScrolledStyle ? "default" : "outline"}
                 size="lg"

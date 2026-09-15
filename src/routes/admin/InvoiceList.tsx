@@ -17,6 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { formatDate } from "@/helpers/formatDate";
 
 const PAGE_SIZE = 10;
 
@@ -319,7 +320,7 @@ const InvoiceList = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.date).toLocaleDateString("en-IN") || "-"}
+                    {formatDate(user.date)}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
@@ -374,50 +375,49 @@ const InvoiceList = () => {
             </p>
           </div>
         )}
-
       </div>
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
+      <Pagination className="mt-6">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page > 1) setPage(page - 1);
+              }}
+              className={page === 1 ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+
+          {Array.from({ length: totalPages }, (_, i) => (
+            <PaginationItem key={i + 1}>
+              <PaginationLink
                 href="#"
+                isActive={page === i + 1}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (page > 1) setPage(page - 1);
+                  setPage(i + 1);
                 }}
-                className={page === 1 ? "pointer-events-none opacity-50" : ""}
-              />
+              >
+                {i + 1}
+              </PaginationLink>
             </PaginationItem>
+          ))}
 
-            {Array.from({ length: totalPages }, (_, i) => (
-              <PaginationItem key={i + 1}>
-                <PaginationLink
-                  href="#"
-                  isActive={page === i + 1}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(i + 1);
-                  }}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (page < totalPages) setPage(page + 1);
-                }}
-                className={
-                  page === totalPages ? "pointer-events-none opacity-50" : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (page < totalPages) setPage(page + 1);
+              }}
+              className={
+                page === totalPages ? "pointer-events-none opacity-50" : ""
+              }
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </main>
   );
 };

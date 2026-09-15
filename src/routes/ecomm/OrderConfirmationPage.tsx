@@ -28,7 +28,6 @@ const OrderConfirmationPage = () => {
     city,
     email,
     fullName,
-
     phone,
     pincode,
     state,

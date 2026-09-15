@@ -2,13 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Users,
-  Eye,
   ShieldCheck,
-  Download,
   Loader2,
   RefreshCw,
   Edit,
-  KeyRound,
 } from "lucide-react";
 import {
   Pagination,
@@ -25,11 +22,12 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import type { UserType } from "@/types/user";
+import { formatDate } from "@/helpers/formatDate";
 
 export default function AllUsersPage() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<UserType[]>([]);
 
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -46,12 +44,14 @@ export default function AllUsersPage() {
     enabled: false,
   });
 
+  console.log(data);
+
   const filteredUsers = useMemo(() => {
     return users.filter(
-      (u: any) =>
+      (u: UserType) =>
         u.MemberName?.toLowerCase().includes(search.toLowerCase()) ||
         u.MID?.toLowerCase().includes(search.toLowerCase()) ||
-        u.MobileNo?.includes(search),
+        u.ContactNo?.includes(search),
     );
   }, [search, users]);
 
@@ -63,7 +63,7 @@ export default function AllUsersPage() {
 
   const navigate = useNavigate();
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: UserType) => {
     navigate(`/admin/edit-user/${user.MID}`);
   };
 
@@ -227,7 +227,7 @@ export default function AllUsersPage() {
         </div>
 
         <div className="overflow-x-auto">
-          {loading ? (
+          {isFetching ? (
             <div className="flex items-center justify-center py-24">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
@@ -310,149 +310,130 @@ export default function AllUsersPage() {
               </thead>
 
               <tbody className="divide-y divide-white/5">
-                {filteredUsers.map((user: any, index) => (
-                  <tr
-                    key={index}
-                    className="transition hover:bg-white/3 text-nowrap"
-                  >
-                    {/* SR NO */}
-                    <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
-                      {index + 1}
-                    </td>
-                    {/* DATE */}
+                {!isFetching &&
+                  filteredUsers.map((user: UserType, index) => (
+                    <tr
+                      key={index}
+                      className="transition hover:bg-white/3 text-nowrap"
+                    >
+                      {/* SR NO */}
+                      <td className="px-6 py-5 text-sm font-semibold text-accent-foreground">
+                        {index + 1}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {new Date(user.ModifyDate).toLocaleString("en-IN")}
-                    </td>
+                      {/* DATE */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {formatDate(user.ModifyDate as string)}
+                      </td>
 
-                    {/* MEMBER ID */}
+                      {/* MEMBER ID */}
+                      <td className="px-6 py-5 text-sm font-medium text-primary">
+                        {user.MemberID || user.MID || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm font-medium text-primary">
-                      {user.MemberID || user.MID || "-"}
-                    </td>
-
-                    {/* MEMBER */}
-
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="text-accent-foreground font-medium">
-                          {user.MemberName || "-"}
+                      {/* MEMBER */}
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="text-accent-foreground font-medium text-sm">
+                            {user.MemberName || "-"}
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* GUARDIAN NAME */}
+                      {/* GUARDIAN NAME */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.GuardianName || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.GuardianName || "-"}
-                    </td>
+                      {/* GENDER */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.Gender || "-"}
+                      </td>
 
-                    {/* GENDER */}
+                      {/* AGE */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.Age || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.Gender || "-"}
-                    </td>
+                      {/* ADDRESS */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
+                        {user.Address || "-"}
+                      </td>
 
-                    {/* AGE */}
+                      {/* DISTRICT */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.District || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.Age || "-"}
-                    </td>
+                      {/* STATE */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.StateName || "-"}
+                      </td>
 
-                    {/* ADDRESS */}
+                      {/* PINCODE */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.Pincode || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground min-w-62.5">
-                      {user.Address || "-"}
-                    </td>
+                      {/* COUNTRY */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.Country || "-"}
+                      </td>
 
-                    {/* DISTRICT */}
+                      {/* CONTACT */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.ContactNo || user.AltContactNo || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.District || "-"}
-                    </td>
+                      {/* EMAIL */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.EmailID || "-"}
+                      </td>
 
-                    {/* STATE */}
+                      {/* AADHAR */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.AadharNo || "-"}
+                      </td>
 
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.State || "-"}
-                    </td>
+                      {/* PAN */}
+                      <td className="px-6 py-5 text-sm text-accent-foreground">
+                        {user.PAN || "-"}
+                      </td>
 
-                    {/* PINCODE */}
-
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.PinCode || "-"}
-                    </td>
-
-                    {/* COUNTRY */}
-
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.Country || "-"}
-                    </td>
-
-                    {/* CONTACT */}
-
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.ContactNo || user.MobileNo || "-"}
-                    </td>
-
-                    {/* EMAIL */}
-
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.EmailID || "-"}
-                    </td>
-
-                    {/* AADHAR */}
-
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.AadharNo || "-"}
-                    </td>
-
-                    {/* PAN */}
-
-                    <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {user.PAN || "-"}
-                    </td>
-
-                    {/* STATUS */}
-
-                    <td className="px-6 py-5">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          user.Status === "Active" ||
-                          user.Status === "ACTIVE" ||
-                          user.Status === 1
-                            ? "bg-green-500/10 text-green-400"
-                            : "bg-red-500/10 text-red-400"
-                        }`}
-                      >
-                        {user.Status || "Inactive"}
-                      </span>
-                    </td>
-
-                    {/* ACTIONS */}
-
-                    <td className="px-6 py-5">
-                      <div className="flex items-center justify-center gap-2">
-                        {/* VIEW USER */}
-
-                        {/* EDIT USER */}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleEdit(user)}
-                          className="text-accent-foreground hover:bg-primary/10 hover:text-primary/50"
+                      {/* STATUS */}
+                      <td className="px-6 py-5">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                            user.Status.toLowerCase() === "active"
+                              ? "bg-green-500/10 text-green-400"
+                              : "bg-red-500/10 text-red-400"
+                          }`}
                         >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {user.Status || "Inactive"}
+                        </span>
+                      </td>
+
+                      {/* ACTIONS */}
+                      <td className="px-6 py-5">
+                        <div className="flex items-center justify-center gap-2">
+                          {/* EDIT USER */}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => handleEdit(user)}
+                            className="text-accent-foreground hover:bg-primary/10 hover:text-primary/50"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           )}
 
-          {!loading && filteredUsers.length === 0 && (
+          {filteredUsers.length === 0 && (
             <div className="py-20 text-center">
               <Users className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 

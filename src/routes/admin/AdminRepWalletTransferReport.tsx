@@ -6,6 +6,7 @@ import { Download, Loader2, Users, Wallet } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
 import { StatCard } from "@/components/dashboard-ui";
+import { formatDate } from "@/helpers/formatDate";
 
 const AdminRepWalletTransferReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -319,7 +320,7 @@ const AdminRepWalletTransferReport = () => {
 
                   {/* DATE */}
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {new Date(user.Date).toLocaleDateString("en-IN")}
+                    {formatDate(user.Date)}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
+import { formatDate } from "@/helpers/formatDate";
 
 const PAGE_SIZE = "10";
 
@@ -173,6 +174,7 @@ const PANConfirmation = () => {
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
+
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   DOJ
                 </th>
@@ -196,10 +198,19 @@ const PANConfirmation = () => {
                 <tr key={index} className="transition hover:bg-white/3 ">
                   {/* SR NO */}
                   <td className="px-6 py-5 text-xs font-semibold text-accent-foreground">
-                    <Checkbox
+                    {/* <Checkbox
                       checked={checkLists.includes(user?.MemberID)}
                       onCheckedChange={() => handleCheck(user?.MemberID)}
-                    />
+                    /> */}
+
+                    <label className="container">
+                      <input
+                        type="checkbox"
+                        checked={checkLists.includes(user?.MemberID)}
+                        onChange={() => handleCheck(user?.MemberID)}
+                      />
+                      <div className="checkmark"></div>
+                    </label>
                   </td>
 
                   <td className="px-6 py-5 text-xs font-semibold text-accent-foreground">
@@ -208,7 +219,7 @@ const PANConfirmation = () => {
                   {/* DATE */}
 
                   <td className="px-6 py-5 text-xs text-accent-foreground">
-                    {new Date(user.ModifyDate).toLocaleDateString()}
+                    {formatDate(user.ModifyDate)}
                   </td>
 
                   {/* MEMBER ID */}

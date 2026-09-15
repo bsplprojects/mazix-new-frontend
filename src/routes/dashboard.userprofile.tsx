@@ -645,6 +645,17 @@ function BankInfo() {
   );
 }
 
+const BASE_URL = "https://app.mymazix.com/";
+
+type KYCDocType = {
+  DocName: string;
+  DocPath: string;
+  KYCID: string;
+  MID: string;
+  MemberID: string;
+  ModifyDate: string;
+  Status: string;
+};
 function KycInfo() {
   const client = useQueryClient();
   const [aadhar, setAadhar] = useState<File | null>(null);
@@ -661,7 +672,22 @@ function KycInfo() {
     },
   });
 
-  const BASE_URL = "https://app.mymazix.com/";
+  const hasAadhar =
+    data?.length > 0 &&
+    data?.filter((d: KYCDocType) => d.DocName.toUpperCase() === "AADHAR")
+      .length > 0;
+  const hasPAN =
+    data?.length > 0 &&
+    data?.filter((d: KYCDocType) => d.DocName.toUpperCase() === "PAN").length >
+      0;
+  const hasPhoto =
+    data?.length > 0 &&
+    data?.filter((d: KYCDocType) => d.DocName.toUpperCase() === "PHOTO")
+      .length > 0;
+  const hasPassbook =
+    data?.length > 0 &&
+    data?.filter((d: KYCDocType) => d.DocName.toUpperCase() === "BANK PASSBOOK")
+      .length > 0;
 
   const mutation = useMutation({
     mutationFn: async (formdata: FormData) => {
@@ -701,8 +727,8 @@ function KycInfo() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {data && data.length > 0 ? (
-        data.map((doc, index: number) => (
+      {data?.length > 0 &&
+        data.map((doc: KYCDocType, index: number) => (
           <div
             key={index}
             className="border rounded-xl p-4 bg-white/5 text-white"
@@ -741,14 +767,14 @@ function KycInfo() {
               </span>
             </p>
           </div>
-        ))
-      ) : (
-        // fallback upload UI
-        <SectionCard
-          title="KYC Verification"
-          description="Upload your Aadhaar, PAN and a recent photograph"
-        >
-          <div className="grid md:grid-cols-2 gap-4">
+        ))}
+
+      <SectionCard
+        title="KYC Verification"
+        description="Upload your Aadhaar, PAN and a recent photograph"
+      >
+        <div className="grid md:grid-cols-2 gap-4">
+          {!hasAadhar && (
             <UploadTile
               icon={<FileText className="h-6 w-6" />}
               title="Aadhaar Card"
@@ -757,6 +783,9 @@ function KycInfo() {
               file={aadhar as File}
               setFile={setAadhar}
             />
+          )}
+
+          {!hasPAN && (
             <UploadTile
               icon={<FileText className="h-6 w-6" />}
               title="PAN Card"
@@ -765,6 +794,9 @@ function KycInfo() {
               file={pan as File}
               setFile={setPan}
             />
+          )}
+
+          {!hasPhoto && (
             <UploadTile
               icon={<Camera className="h-6 w-6" />}
               title="Passport Photo"
@@ -774,6 +806,9 @@ function KycInfo() {
               file={photo as File}
               setFile={setPhoto}
             />
+          )}
+
+          {!hasPassbook && (
             <UploadTile
               icon={<Camera className="h-6 w-6" />}
               title="Passbook"
@@ -783,30 +818,27 @@ function KycInfo() {
               file={passbook as File}
               setFile={setPassbook}
             />
-          </div>
+          )}
+        </div>
 
-          <div className="mt-6 p-4 rounded-xl bg-card/40 border border-border/60 text-xs text-muted-foreground space-y-1">
-            <div className="text-foreground font-medium mb-1">Guidelines</div>
-            <p>
-              • Documents must be clear, color scans — all four corners visible.
-            </p>
-            <p>• Name on PAN and Aadhaar must match the personal info above.</p>
-            <p>• Photograph: plain background, face centered, no filters.</p>
-          </div>
+        <div className="mt-6 p-4 rounded-xl bg-card/40 border border-border/60 text-xs text-muted-foreground space-y-1">
+          <div className="text-foreground font-medium mb-1">Guidelines</div>
+          <p>
+            • Documents must be clear, color scans — all four corners visible.
+          </p>
+          <p>• Name on PAN and Aadhaar must match the personal info above.</p>
+          <p>• Photograph: plain background, face centered, no filters.</p>
+        </div>
 
-          <div className="flex justify-end mt-6 gap-3">
-            <Button variant="outline" className="border-border">
-              Save Draft
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
-            >
-              Submit for Verification
-            </Button>
-          </div>
-        </SectionCard>
-      )}
+        <div className="flex justify-end mt-6 gap-3">
+          <Button
+            onClick={handleSubmit}
+            className="bg-gradient-emerald text-primary-foreground shadow-glow hover:opacity-90"
+          >
+            Submit for Verification
+          </Button>
+        </div>
+      </SectionCard>
     </div>
   );
 }

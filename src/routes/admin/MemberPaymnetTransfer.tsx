@@ -15,6 +15,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { formatDate } from "@/helpers/formatDate";
 
 const MemberPaymentTransfer = () => {
   const [PANList, setPANList] = useState("");
@@ -43,6 +44,7 @@ const MemberPaymentTransfer = () => {
   });
 
   const reports = memberPayoutDetails || [];
+  console.log(reports);
 
   const handleExcel = async () => {
     const workbook = new ExcelJS.Workbook();
@@ -326,6 +328,22 @@ const MemberPaymentTransfer = () => {
                   C-ORG 2
                 </th>
 
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground ">
+                  Old ORG 1 Carry
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground ">
+                  Old ORG 2 Carry
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground ">
+                  Curr. Purchase ORG 1
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground ">
+                  Curr. Purchase ORG 2
+                </th>
+
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Pair
                 </th>
@@ -419,7 +437,7 @@ const MemberPaymentTransfer = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">
-                    {user.Pdate || "-"}
+                    {formatDate(user.Pdate)}
                   </td>
                   <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.PAN || "-"}
@@ -430,9 +448,27 @@ const MemberPaymentTransfer = () => {
                   <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.CurrentRight || 0}
                   </td>
+
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.OldLeftCarry || 0}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.OldRightCarry || 0}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.PurCurrentLeft || 0}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm text-accent-foreground">
+                    {user.PurCurrentRight || 0}
+                  </td>
+
                   <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Pair || 0}
                   </td>
+
                   <td className="px-6 py-5 text-sm text-accent-foreground">
                     {user.Bonus || 0}
                   </td>

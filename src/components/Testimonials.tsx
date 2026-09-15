@@ -11,7 +11,7 @@ const Testimonials = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <span className="inline-block text-secondary font-medium tracking-wider uppercase text-sm mb-3">Testimonials</span>
+          <span className="inline-block text-primary font-medium tracking-wider uppercase text-sm mb-3">Testimonials</span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">What Our Customers Say</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">Don't just take our word for it. Here's what our valued customers have to say about their experience with Mazix.</p>
         </div>

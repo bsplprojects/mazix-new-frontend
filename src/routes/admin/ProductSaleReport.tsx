@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import { formatDate } from "@/helpers/formatDate";
 
 const ProductSaleReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -386,7 +387,7 @@ const ProductSaleReport = () => {
                     {/* DATE */}
 
                     <td className="px-6 py-5 text-sm text-accent-foreground">
-                      {new Date(user.MPDate).toLocaleDateString()}
+                      {formatDate(user.MPDate)}
                     </td>
 
                     {/* MEMBER ID */}
@@ -399,7 +400,7 @@ const ProductSaleReport = () => {
 
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="text-white font-medium">
+                        <div className="text-primary font-medium">
                           {user.MemberName || "-"}
                         </div>
                       </div>

@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatDate } from "@/helpers/formatDate";
 
 const PAGE_SIZE = "10";
 
@@ -67,20 +68,18 @@ const GSTReport = () => {
     workbook.creator = "Buck Softech";
     workbook.created = new Date();
 
-    const worksheet = workbook.addWorksheet("Member Report");
+    const worksheet = workbook.addWorksheet("GST Report");
 
     worksheet.columns = [
       { header: "Sr.", key: "sr", width: 8 },
-      { header: "DOJ", key: "doj", width: 15 },
       { header: "Member ID", key: "memberId", width: 18 },
-      { header: "Member", key: "memberName", width: 28 },
-      { header: "Contact No.", key: "contactNo", width: 18 },
-      { header: "Sponsor ID", key: "sponsorId", width: 18 },
-      { header: "Placement ID", key: "placementId", width: 18 },
-      { header: "Leaf", key: "leaf", width: 12 },
-      { header: "State", key: "state", width: 20 },
-      { header: "District", key: "district", width: 20 },
-      { header: "BV", key: "bv", width: 12 },
+      { header: "Order No.", key: "orderNo", width: 28 },
+      { header: "Order Date", key: "orderDate", width: 18 },
+      { header: "Total Amount", key: "totalAmount", width: 18 },
+      { header: "IGST", key: "igst", width: 18 },
+      { header: "CGST", key: "cgst", width: 12 },
+      { header: "sgst", key: "sgst", width: 20 },
+      { header: "Total Discount", key: "totalDiscount", width: 20 },
     ];
 
     // Header Styling
@@ -117,16 +116,14 @@ const GSTReport = () => {
     reports.forEach((user: any, index: number) => {
       const row = worksheet.addRow({
         sr: index + 1,
-        doj: user.DOJ ? new Date(user.DOJ).toLocaleDateString() : "-",
         memberId: user.MemberID || "-",
-        memberName: user.MemberName || "-",
-        contactNo: user.ContactNo || "-",
-        sponsorId: user.SponserID || "-",
-        placementId: user.PlacementID || "-",
-        leaf: user.Leaf || "-",
-        state: user.StateName || "-",
-        district: user.CityName || "-",
-        bv: Number(user.BV || 0),
+        orderNo: user.OrderNo || "-",
+        orderDate: user.OrderNo || "-",
+        totalAmount: user.TotalAmount || "-",
+        igst: "0",
+        cgst: Number(user.TotalGST / 2).toFixed(2) || "-",
+        sgst: Number(user.TotalGST / 2).toFixed(2) || "-",
+        totalDiscount: user.TotalDiscount || "-",
       });
 
       row.height = 22;
@@ -145,9 +142,6 @@ const GSTReport = () => {
         };
       });
     });
-
-    // Format BV Column
-    worksheet.getColumn("bv").numFmt = "0.00";
 
     // Freeze Header
     worksheet.views = [
@@ -168,9 +162,7 @@ const GSTReport = () => {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Member_Report_${new Date()
-      .toISOString()
-      .slice(0, 10)}.xlsx`;
+    link.download = `GST_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
     document.body.appendChild(link);
     link.click();
@@ -337,7 +329,15 @@ const GSTReport = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  Total GST
+                  IGST
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  CGST
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  SGST
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
@@ -370,15 +370,23 @@ const GSTReport = () => {
                   </td>
 
                   <td className="px-6 py-5 text-sm  text-accent-foreground">
-                    {new Date(user?.OrderDate).toLocaleDateString("en-IN") ||
-                      "-"}
+                    {formatDate(user?.OrderDate)}
                   </td>
 
                   <td className="px-6 py-5 text-sm  text-accent-foreground">
                     {user?.TotalAmount || "-"}
                   </td>
+
                   <td className="px-6 py-5 text-sm font-medium text-primary">
-                    {user?.TotalGST || "-"}
+                    {0}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
+                    {Number(user?.TotalGST / 2).toFixed(2) || 0}
+                  </td>
+
+                  <td className="px-6 py-5 text-sm font-medium text-primary">
+                    {Number(user?.TotalGST / 2).toFixed(2) || 0}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-accent-foreground">

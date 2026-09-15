@@ -5,11 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const TDSReport = () => {
   const [memberId, setMemberId] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [type, setType] = useState("all");
   const [page, setPage] = useState(1);
 
   const { data, refetch, isFetching } = useQuery({
@@ -20,6 +23,7 @@ const TDSReport = () => {
           FromDate: fromDate,
           MemberId: memberId,
           Todate: toDate,
+          type,
         },
       });
       return data;
@@ -49,7 +53,7 @@ const TDSReport = () => {
       { header: "Contact", key: "contact", width: 18 },
       { header: "Amount", key: "amount", width: 15 },
       { header: "Payable", key: "payable", width: 15 },
-      { header: "TDS (5%)", key: "tds", width: 15 },
+      { header: "TDS (2%)", key: "tds", width: 15 },
       { header: "Admin (5%)", key: "admin", width: 15 },
     ];
 
@@ -169,8 +173,35 @@ const TDSReport = () => {
         </div>
 
         <div className="border-b border-white/10 bg-white/2 p-5">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {/* MEMBER ID */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
+                Type
+              </label>
+              <RadioGroup
+                defaultValue="all"
+                orientation="horizontal"
+                className="flex items-center justify-between mt-2"
+                onValueChange={(val) => setType(val)}
+              >
+                <div className="flex items-center gap-3 w-1/2  rounded-2xl">
+                  <RadioGroupItem value="all" id="all" />
+                  <Label htmlFor="all">ALL</Label>
+                </div>
+                <div className="flex items-center gap-3 w-1/2  rounded-2xl">
+                  <RadioGroupItem value="pan" id="pan" />
+                  <Label htmlFor="pan">PAN</Label>
+                </div>
+                <div className="flex items-center gap-3 w-1/2  rounded-2xl">
+                  <RadioGroupItem value="no_pan" id="no_pan" />
+                  <Label htmlFor="no_pan" className="text-nowrap">
+                    NO PAN
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
                 Member ID
@@ -286,7 +317,7 @@ const TDSReport = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
-                  TDS(5%)
+                  TDS(2%)
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">

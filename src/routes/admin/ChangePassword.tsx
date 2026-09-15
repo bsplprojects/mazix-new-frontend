@@ -3,7 +3,16 @@ import { Input } from "@/components/ui/input";
 import { axiosInstance } from "@/config/axios";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { Loader2, Users } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  LockKeyhole,
+  Save,
+  Search,
+  Users,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,6 +20,8 @@ const ChangePassword = () => {
   const [memberId, setMemberId] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -73,59 +84,161 @@ const ChangePassword = () => {
       <h2 className="text-2xl font-bold tracking-tight text-foreground">
         Change Password
       </h2>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5 mt-5">
-        {/* MEMBER ID */}
-        <div className="space-y-2">
-          <label className="text-xs font-medium uppercase tracking-wider text-accent-foreground">
-            Member ID
-          </label>
 
-          <div className="relative">
-            <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+      <div className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-sm">
+        {/* SEARCH */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+          <div className="w-full max-w-md space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Member ID
+            </label>
 
-            <Input
-              placeholder="RMG1001"
-              value={memberId}
-              onChange={(e) => setMemberId(e.target.value)}
-              className=" rounded-2xl border border-border bg-card pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
-            />
+            <div className="relative">
+              <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+
+              <Input
+                placeholder="Enter Member ID"
+                value={memberId}
+                onChange={(e) => setMemberId(e.target.value)}
+                className=" rounded-xl border-border bg-background pl-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
+              />
+            </div>
           </div>
-        </div>
 
-        {/* BUTTONS */}
-        <div className="flex items-end gap-2">
           <Button
             onClick={handleSearch}
             disabled={mutation.isPending || !memberId}
+            className=" rounded-xl "
           >
             {mutation.isPending ? (
-              <Loader2 className="animate-spin" />
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Searching...
+              </>
             ) : (
-              "Search"
+              <>
+                <Search className=" h-4 w-4" />
+                Search
+              </>
             )}
           </Button>
         </div>
       </div>
+
+      {/* PASSWORD UPDATE */}
       {mutation.data && (
-        <>
-          <div className="my-5">
-            <h1 className="font-semibold text-primary">Member ID</h1>
-            <span>{mutation.data?.[0]}</span>
+        <div className="mt-5 rounded-2xl border border-border bg-card shadow-sm">
+          {/* HEADER */}
+          <div className="border-b border-border px-5 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                <LockKeyhole className="h-5 w-5 text-primary" />
+              </div>
+
+              <div>
+                <h2 className="font-semibold text-foreground">
+                  Password Management
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Update the member's login password
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="my-5">
-            <h1 className="font-semibold text-primary">Old Password</h1>
-            <Input value={oldPassword} className="w-fit" disabled />
+
+          {/* FORM */}
+          <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-3">
+            {/* MEMBER ID */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Member ID
+              </label>
+
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+
+                <Input
+                  value={mutation.data?.[0] ?? ""}
+                  disabled
+                  className="h-11 rounded-xl border-border bg-muted/40 pl-10 font-medium text-foreground"
+                />
+              </div>
+            </div>
+
+            {/* OLD PASSWORD */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Old Password
+              </label>
+
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+                <Input
+                  value={oldPassword}
+                  disabled
+                  type={showOldPassword ? "text" : "password"}
+                  className="h-11 rounded-xl border-border bg-muted/40 pl-10 pr-10 text-foreground"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowOldPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {showOldPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* NEW PASSWORD */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                New Password
+              </label>
+
+              <div className="relative">
+                <LockKeyhole className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
+
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="Enter new password"
+                  className="h-11 rounded-xl border-border bg-background pl-10 pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:ring-primary"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-primary"
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="my-5">
-            <h1 className="font-semibold text-primary">New Password</h1>
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-fit"
-            />
+
+          {/* ACTION */}
+          <div className="flex justify-end border-t border-border px-5 py-4">
+            <Button
+              onClick={handlePasswordUpdate}
+              disabled={!password}
+              className="rounded-xl px-6 h-11"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Update Password
+            </Button>
           </div>
-          <Button onClick={handlePasswordUpdate}>Update</Button>
-        </>
+        </div>
       )}
     </div>
   );

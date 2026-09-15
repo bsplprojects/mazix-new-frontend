@@ -2,7 +2,7 @@ import { FileText, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PanCard from "@/assets/Mazix_PanCard1.jpg";
 import IncomeTax from "@/assets/income-tax.pdf";
-import GSTReturn from "@/assets/Goods-and-service-tax-return.pdf";
+import GSTReturn from "@/assets/mazix_goods_and_services.pdf";
 import tanDetails from "@/assets/tan-details.pdf";
 import directorDetails from "@/assets/Director-Detail.pdf";
 import meghAOA from "@/assets/Megh-AOA.pdf";
@@ -18,6 +18,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const LegalPage = () => {
+  
   const documents = [
     {
       title: "Articles of Association",

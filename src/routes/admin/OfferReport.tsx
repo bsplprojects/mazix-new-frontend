@@ -336,6 +336,10 @@ const OfferReport = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  Member Name
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sponsor ID
                 </th>
 
@@ -406,6 +410,9 @@ const OfferReport = () => {
                   </td>
 
                   {/* MEMBER */}
+                  <td className="px-6 py-5 text-sm font-medium text-accent-foreground">
+                    {user.MemberName || "-"}
+                  </td>
 
                   <td className="px-6 py-5 text-xs">
                     <div className="flex items-center gap-3">
@@ -482,7 +489,7 @@ const OfferReport = () => {
           <div className="py-20 text-center">
             <Gift className="mx-auto mb-4 h-14 w-14 text-zinc-700" />
 
-            <h3 className="text-xl font-semibold text-white">
+            <h3 className="text-xl font-semibold dark:text-white">
               No Offer report data found
             </h3>
 

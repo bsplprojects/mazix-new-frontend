@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { axiosInstance } from "@/config/axios";
+import { formatDate } from "@/helpers/formatDate";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Users } from "lucide-react";
 import { useState } from "react";
@@ -188,6 +189,7 @@ const AdminTokenList = () => {
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Sr.
                 </th>
+
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   DOJ
                 </th>
@@ -231,7 +233,7 @@ const AdminTokenList = () => {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {reports?.map((user: any, index) => (
+              {reports?.map((user: any, index: number) => (
                 <tr key={index} className="transition hover:bg-white/3">
                   {/* SR NO */}
                   <td className="px-6 py-5 text-sm font-semibold text-zinc-300">
@@ -240,7 +242,7 @@ const AdminTokenList = () => {
                   {/* DATE */}
 
                   <td className="px-6 py-5 text-sm text-zinc-300">
-                    {new Date(user.DOJ).toLocaleDateString()}
+                    {formatDate(user.DOJ)}
                   </td>
 
                   {/* MEMBER ID */}

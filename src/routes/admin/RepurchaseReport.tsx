@@ -6,6 +6,7 @@ import { Download, Loader2, Users } from "lucide-react";
 import { useState } from "react";
 import ExcelJS from "exceljs";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "@/helpers/formatDate";
 
 const RepurchaseReport = () => {
   const [memberId, setMemberId] = useState("");
@@ -258,6 +259,10 @@ const RepurchaseReport = () => {
                 </th>
 
                 <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
+                  Member Name
+                </th>
+
+                <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-accent-foreground">
                   Order No
                 </th>
 
@@ -306,6 +311,10 @@ const RepurchaseReport = () => {
                     {user.MemberID || "-"}
                   </td>
 
+                  <td className="px-6 py-5 text-sm font-semibold text-muted-foreground">
+                    {user.MemberName || "-"}
+                  </td>
+
                   {/* CUSTOMER NAME */}
                   <td className="px-6 py-5 text-sm font-medium text-primary">
                     {user.OrderNo || "-"}
@@ -313,8 +322,7 @@ const RepurchaseReport = () => {
 
                   {/* PHONE */}
                   <td className="px-6 py-5 text-sm text-muted-foreground ">
-                    {new Date(user.OrderDate).toLocaleDateString("en-IN") ||
-                      "-"}
+                    {formatDate(user.OrderDate)}
                   </td>
 
                   <td className="px-6 py-5 text-sm text-muted-foreground">

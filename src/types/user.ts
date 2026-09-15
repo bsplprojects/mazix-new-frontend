@@ -1,0 +1,30 @@
+export interface UserType {
+  AadharNo: string | null;
+  Address: string | null;
+  Age: string | null;
+  AltContactNo: string | null;
+  CityName: string | null;
+  ContactNo: string | null;
+  Country: string | null;
+  CountryID: string | null;
+  District: number | null;
+  EmailID: string | null;
+  ExtraFD: string | null;
+  Flag: string | null;
+  Gender: string | null;
+  GuardianName: string | null;
+  LoginID: string | null;
+  MID: string;
+  MPersonID: string;
+  MemberName: string;
+  MemberID: string;
+  ModifyDate: string | Date;
+  PAN: string | null;
+  PhotoPath: string | null;
+  Pincode: string | null;
+  RequiredFD: string | null;
+  Sex: string | null;
+  StateID: number | null;
+  StateName: string;
+  Status: string;
+}
